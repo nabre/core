@@ -1,0 +1,29 @@
+{
+    "name": "nabre/core",
+    "type": "library",
+    "version": "1.5",
+    "license": "MIT",
+    "require":{
+        "jenssegers/mongodb": "^3.9",
+        "mpdf/mpdf": "^8.0",
+        "livewire/livewire":"^2",
+        "mostafamaklad/laravel-permission-mongodb":"^4.0",
+        "laravie/html":"~7",
+        "diglactic/laravel-breadcrumbs":"~7",
+        "spatie/db-dumper":"~3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nabre\\": "src/",
+            "Nabre\\Database\\Seeds\\": "database/seeds/"
+        }
+    },
+
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Nabre\\Providers\\AppServiceProvider"
+            ]
+        }
+    }
+}

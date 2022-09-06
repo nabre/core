@@ -1,0 +1,1 @@
+@livewire($fn,$param,$id)
