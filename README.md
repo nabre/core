@@ -3,12 +3,10 @@
 Il presente pacchetto viene impiegato per impostare alcune funzionalità di background per lo sviluppo di applicazioni basate sul framework Laravel.
 # Installazione
 Installazione del framework Laravel secondo la [guida](https://laravel.com/docs).
-
 Installa il presente pacchetto:
 ```bash
 composer require nabre/core
 ```
-
 Procedere con la modifica dei file di Laravel elencati nel capitolo successivo.
 ## Modifica file Laravel
 Editare i seguenti file di seguito elencati:
@@ -40,18 +38,14 @@ $app->singleton(
 
 return $app;
 ```
-
 ## MongoDB
-
 ## NPM
-
 ```bash
 npm install fortawesome/fontawesome-free
 npm install flag-icons
 npm install jquery
 npm install livewire-sortable
 ```
-
 ***/webpack.mix.js***
 ```js
 const mix = require('laravel-mix');
@@ -61,11 +55,9 @@ mix.js('vendor/nabre/core/resources/js/app.js', 'public/js')
    .sourceMaps()
    .version();
 ```
-
 ```bash
 npm run dev
 ```
-
 # Funzionalità
 ## Route
 ## Breadcrumbs
