@@ -13,7 +13,7 @@ class InstallPkgFiles extends Command
      *
      * @var string
      */
-    protected $signature = 'nabrecore:install';
+    protected $signature = 'install:nabrecore';
 
     /**
      * The console command description.
