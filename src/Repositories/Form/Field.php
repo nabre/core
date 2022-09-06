@@ -235,11 +235,11 @@ class Field
             case self::STATIC:
               //  $html="static variable";
 
-              /*  if (!is_null($list ?? null)) {
+                if (!is_null($list ?? null) && optional($list)->count()) {
                     $value = collect((array)$value)->map(function ($v) use ($it) {
                         return $list[$v] ?? null;
                     })->unique()->values()->toArray();
-                }*/
+                }
 
                 if (is_array($value)) {
                     $value = implode(", ", $value);
