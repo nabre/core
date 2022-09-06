@@ -233,19 +233,19 @@ class Field
                 break;
                 ###
             case self::STATIC:
-                $html="static variable";
+              //  $html="static variable";
 
               /*  if (!is_null($list ?? null)) {
                     $value = collect((array)$value)->map(function ($v) use ($it) {
                         return $list[$v] ?? null;
                     })->unique()->values()->toArray();
-                }
+                }*/
 
                 if (is_array($value)) {
                     $value = implode(", ", $value);
                 }
 
-                $html = $value;*/
+                $html = $value;
                 break;
                 ###
             default:
