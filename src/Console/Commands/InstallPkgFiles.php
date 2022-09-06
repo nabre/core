@@ -32,7 +32,8 @@ class InstallPkgFiles extends Command
         $this->info("Installazione");
 
         $directory=__DIR__.'/../../../files/';
+        $this->info($directory);
         $files=Storage::allFiles($directory);
-        dd($files);
+        $this->info($files);
     }
 }
