@@ -15,6 +15,7 @@ use Nabre\Http\Middleware\SettingOverrideMiddleware;
 use Nabre\Setting\Facade;
 use Nabre\Setting\Manager;
 use Blade;
+use Nabre\Console\Commands\InstallPkgFiles;
 
 class AppServiceProvider extends Sp
 {
@@ -88,6 +89,7 @@ class AppServiceProvider extends Sp
                 PageSyncCommand::class,
                 DumpMongoDBCommand::class,
                 RestoreMongoDBCommand::class,
+                InstallPkgFiles::class,
             ]);
         }
 
