@@ -1,2 +1,13 @@
-# core
-Pacchetto di gestione per database mongoDB.
+# nabre/core
+## Introduzione
+
+## Installazione
+
+### File Laravel
+
+### MongoDB
+
+
+## Artisan
+Comandi aggiuntivi:
+
