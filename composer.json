@@ -5,6 +5,8 @@
     "version": "1.0.1-dev",
     "license": "MIT",
     "require":{
+        "php": ">=8.0",
+        "laravel/framework": ">=9",
         "jenssegers/mongodb": "^3.9",        
         "livewire/livewire":"^2",
         "mostafamaklad/laravel-permission-mongodb":"^4.0",
