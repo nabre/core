@@ -2,17 +2,15 @@
     "name": "nabre/core",
     "description":"",
     "type": "library",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "license": "MIT",
-    "require-dev":{
+    "require":{
         "jenssegers/mongodb": "^3.9",        
         "livewire/livewire":"^2",
         "mostafamaklad/laravel-permission-mongodb":"^4.0",
         "laravie/html":"~7",
         "diglactic/laravel-breadcrumbs":"~7",
-        "spatie/db-dumper":"~3"
-    },
-    "require":{
+        "spatie/db-dumper":"~3",
         "mpdf/mpdf": "^8.0"
     },
     "autoload": {

@@ -1,16 +1,18 @@
 # nabre/core
 ## Introduzione
-Il presente pacchetto è la base per lo sviluppo di applicazioni basate sul framework Laravel.
+Il presente pacchetto viene impiegato per impostare alcune funzionalità di background per lo sviluppo di applicazioni basate sul framework Laravel.
 ## Installazione
 
 ### File Laravel
 
 ### MongoDB
 
-## Artisan
-Comandi aggiuntivi:
-
 ## Funzionalità
+### Route
+### Breadcrumbs
 ### Form
 ### Table
 ### Template
+
+## Artisan
+Comandi aggiuntivi:
