@@ -4,7 +4,7 @@
     "type": "library",
     "version": "1.5.0",
     "license": "MIT",
-    "require":{
+    "require-dev":{
         "jenssegers/mongodb": "^3.9",
         "mpdf/mpdf": "^8.0",
         "livewire/livewire":"^2",
