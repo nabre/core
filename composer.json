@@ -2,7 +2,7 @@
     "name": "nabre/core",
     "description":"",
     "type": "library",
-    "version": "0.0.1-dev",
+    "version": "1.0.1-dev",
     "license": "MIT",
     "require":{
         "jenssegers/mongodb": "^3.9",        
