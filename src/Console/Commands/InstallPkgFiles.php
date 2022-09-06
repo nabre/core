@@ -30,10 +30,10 @@ class InstallPkgFiles extends Command
     public function handle()
     {        
         $this->info("Installazione");
-
-        $directory=__DIR__.'/../../../';
+/*
+        $directory=__DIR__.'/../../../files/';
         $this->info($directory);
         $files=Storage::allFiles($directory);
-        dd($files);
+        dd($files);*/
     }
 }
