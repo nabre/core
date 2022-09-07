@@ -63,6 +63,13 @@ class MacroServiceProvider extends ServiceProvider
             return $this->sortBy(['root', 'def_page', 'uri'])->values();
         });
 
+        Collection::macro('existClass', function ($key = null) {
+            return $this->filter(function ($string) use ($key) {
+                $string = is_null($key) ? $string : data_get($string, $key);
+                return class_exists($string);
+            })->values();
+        });
+
         Route::macro('getRoutesList', function () {
             $routes = collect(Route::getRoutes())->map(function ($route) {
                 return (object)[

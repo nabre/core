@@ -8,7 +8,7 @@ use Nabre\Tables\Builder\Collections\RelationsTable as Table;
 use Nabre\Http\Controllers\Controller;
 use Nabre\Repositories\Form\Build;
 use Nabre\Repositories\Form\Validator;
-use Nabre\Services\CollectionService;
+use Nabre\Repositories\Relations\Generate;
 
 class RelationsController extends Controller
 {
@@ -21,7 +21,7 @@ class RelationsController extends Controller
 
     function index()
     {
-        CollectionService::checkExists();
+        $generate=(new Generate);
         $content = (new Table())->html();
         return view("Nabre::quick.admin", compact('content'));
     }

@@ -9,9 +9,7 @@ class CollectionService
 {
     static function checkExists()
     {
-        $notRemove = Model::get()->filter(function ($coll) {
-            return class_exists($coll->class);
-        })->pluck('_id')->values()->toArray();
+        $notRemove = Model::get()->existClass('class')->pluck('_id')->values()->toArray();
         Model::whereNotIn('_id', $notRemove)->delete();
     }
 
