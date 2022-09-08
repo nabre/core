@@ -6,7 +6,7 @@ use Collective\Html\HtmlFacade as Html;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Collection;
-use Nabre\Repositories\Form\Define;
+use Illuminate\Support\Str;
 
 class MacroServiceProvider extends ServiceProvider
 {
@@ -17,6 +17,20 @@ class MacroServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Collection::macro('whereDoesntHave',function($key){
+            return $this->filter(function($item)use($key){
+                $string=Str::random(40);
+                return data_get($item, $key,$string)==$string;
+            });
+        });
+
+        Collection::macro('whereHas',function($key){
+            return $this->reject(function($item)use($key){
+                $string=Str::random(40);
+                return data_get($item, $key,$string)==$string;
+            });
+        });
+
         Collection::macro('like', function ($key, $string) {
             return $this->filter(function ($item) use ($key, $string) {
                 $value = data_get($item, $key);
@@ -66,8 +80,8 @@ class MacroServiceProvider extends ServiceProvider
         Collection::macro('existClass', function ($key = null) {
             return $this->filter(function ($string) use ($key) {
                 $string = is_null($key) ? $string : data_get($string, $key);
-                return class_exists($string);
-            })->values();
+                return is_string($string) && class_exists($string);
+            });
         });
 
         Route::macro('getRoutesList', function () {

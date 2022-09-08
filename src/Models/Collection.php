@@ -2,6 +2,7 @@
 
 namespace Nabre\Models;
 
+use Jenssegers\Mongodb\Relations\BelongsToMany;
 use Jenssegers\Mongodb\Relations\EmbedsMany;
 use Jenssegers\Mongodb\Relations\HasOne;
 use Nabre\Casts\LocalCast;
@@ -10,7 +11,7 @@ use Nabre\Models\Embeds\CollectionField;
 
 class Collection extends Model
 {
-    protected $fillable = ['title', 'class'];
+    protected $fillable = ['title', 'class','with'];
     protected $attributes = [];
     protected $casts = ['title' => LocalCast::class];
 
@@ -19,9 +20,24 @@ class Collection extends Model
         return $this->embedsMany(CollectionField::class);
     }
 
-    function relation(): HasOne
+    function parents(): BelongsToMany
     {
-        return $this->hasOne(CollectionRelation::class);
+        return $this->belongsToMany(self::class, null, 'childs_ids', 'parents_ids');
+    }
+
+    function childs(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, null, 'parents_ids', 'childs_ids');
+    }
+
+    function filter(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, null, 'filter2_ids', 'filter_ids');
+    }
+
+    function topfilter(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, null, 'top_filter2_ids', 'top_filter_ids');
     }
 
     function getStringAttribute()

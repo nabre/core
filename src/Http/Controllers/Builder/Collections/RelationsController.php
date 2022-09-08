@@ -2,7 +2,7 @@
 
 namespace Nabre\Http\Controllers\Builder\Collections;
 
-use Nabre\Models\CollectionRelation as Model;
+use Nabre\Models\Collection as Model;
 use Nabre\Forms\Builder\Collections\RelationsForm as Form;
 use Nabre\Tables\Builder\Collections\RelationsTable as Table;
 use Nabre\Http\Controllers\Controller;

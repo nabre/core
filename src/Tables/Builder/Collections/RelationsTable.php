@@ -4,7 +4,7 @@ namespace Nabre\Tables\Builder\Collections;
 
 use Collective\Html\HtmlFacade as Html;
 use Nabre\Repositories\Table\Structure;
-use Nabre\Models\CollectionRelation as Model;
+use Nabre\Models\Collection as Model;
 
 class RelationsTable extends Structure
 {
@@ -12,15 +12,15 @@ class RelationsTable extends Structure
 
     function columns()
     {
-        return ['collection.class'];
+        return ['class'];
     }
 
     function actions()
     {
         return [
-            'create' => 'nabre.builder.collections.relations.create',
-            'edit' => 'nabre.builder.collections.relations.edit',
-            'destroy' => 'nabre.builder.collections.relations.destroy',
+          //  'create' => 'nabre.builder.collections.relations.create',
+         //   'edit' => 'nabre.builder.collections.relations.edit',
+          //  'destroy' => 'nabre.builder.collections.relations.destroy',
         ];
     }
 /*
