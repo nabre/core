@@ -66,6 +66,7 @@ Route::group(['middleware' => ['web']], function () {
                 Route::name("collections.")->group(function () {
                     Route::resource('admin/builder/collections/fields', Nabre\Http\Controllers\Builder\Collections\FieldsController::class, ['key' => 'data'])->only(['index', 'create', 'edit']);
                     Route::resource('admin/builder/collections/relations', Nabre\Http\Controllers\Builder\Collections\RelationsController::class, ['key' => 'data'])->only(['index', 'create', 'edit','destroy']);
+                    Route::resource('admin/builder/collections/demo-console', Nabre\Http\Controllers\Builder\Collections\DemoController::class, ['key' => 'data'])->only(['index']);
                 });
 
                 Route::name("navigation.")->group(function () {
