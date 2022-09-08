@@ -11,7 +11,7 @@ use Nabre\Models\Collection;
 class NavigationConsole extends Component
 {
     var $domain = Istituto::class;
-    protected $collection;
+    var $collection;
     var $navigation;
     var $value_nav;
 
@@ -41,18 +41,23 @@ class NavigationConsole extends Component
             $add = $this->nodeNavigation($items);
             $this->navigation = $this->navigation->push($add);
         }
+        $this->getCheckNavigation();
+    }
 
-        $take = $this->checkNodeNavigation() + 1;
+    protected function getCheckNavigation($position = 0, $value = null)
+    {
+        $take = $this->checkNodeNavigation($position, $value) + 1;
         $this->navigation = $this->navigation->take($take);
     }
 
     protected function checkNodeNavigation($position = 0, $value = null)
     {
-
         if (!is_null($value)) {
-           // $this->navigation->put($position, compact('value'));
+            $edit = $this->navigation->where('position', $position)->first();
+            data_set($edit, 'value', $value);
+            $this->navigation->put($position, $edit);
         }
-        dd(get_defined_vars(), $this->navigation);
+
         $item = $this->navigation->where('position', $position)->first();
         $items = optional($this->collection->where('id', data_get($item, 'value'))->first())->childs;
         if (!is_null($items)) {
@@ -70,8 +75,7 @@ class NavigationConsole extends Component
 
     public function change_nav($position)
     {
-        $this->checkNodeNavigation($position, $this->value_nav);
-        dd($this);
+        $this->getCheckNavigation($position, $this->value_nav);
     }
 
     protected function nodeNavigation($items, $value = 0)
