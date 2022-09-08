@@ -35,9 +35,27 @@ class Collection extends Model
         return $this->belongsToMany(self::class, null, 'filter2_ids', 'filter_ids');
     }
 
+    function filter2(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, null, 'filter_ids', 'filter2_ids');
+    }
+
     function topfilter(): BelongsToMany
     {
         return $this->belongsToMany(self::class, null, 'top_filter2_ids', 'top_filter_ids');
+    }
+
+    function topfilter2(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, null, 'top_filter_ids', 'top_filter2_ids');
+    }
+
+    function system():BelongsToMany{
+        return $this->belongsToMany(self::class,null,'system2_ids','system_ids');
+    }
+
+    function system2():BelongsToMany{
+        return $this->belongsToMany(self::class,null,'system_ids','system2_ids');
     }
 
     function getStringAttribute()

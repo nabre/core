@@ -25,6 +25,7 @@ class Generate
             $parents = $parentsRel->pluck('to')->unique()->sort()->values()->toArray();
             $filterTo = $parentsRel->where('step', 1)->pluck('to')->unique()->values()->toArray();
             $btm=$parentsRel->where('step', 1)->where('type','BelongsToMany')->pluck('to')->unique()->values()->toArray();
+            $system=$this->combination->where('from', $class)->pluck('to')->unique()->sort()->values()->toArray();
             unset($parentsRel);
             return get_defined_vars();
         });
@@ -53,7 +54,12 @@ class Generate
 
         $this->tmp->each(function($item){
             $model=$this->classes->where('class',data_get($item,'class'))->first();
-            $data=['filter'=>$this->convertClassToId($item,'filterTo'),'topfilter'=>$this->convertClassToId($item,'filterFrom'),'parents'=>$this->convertClassToId($item,'parents'),'with'=>data_get($item,'with')];
+            $data=['filter'=>$this->convertClassToId($item,'filterTo'),
+            'topfilter'=>$this->convertClassToId($item,'filterFrom'),
+            'parents'=>$this->convertClassToId($item,'parents'),
+            'system2'=>$this->convertClassToId($item,'system'),
+            'with'=>data_get($item,'with'),
+        ];
             $model->recursiveSave($data);
         });
     }

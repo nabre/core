@@ -38,28 +38,34 @@ class CollectionService
             }
             return $item->recursiveSave(compact('name', 'coll'))->toArray();
         })->toArray();
-        $collection=$collection->recursiveSave(['fields' => $arrayToSave]);
+        $collection = $collection->recursiveSave(['fields' => $arrayToSave]);
     }
 
-    static function getString($collection, $variable)
+    static function getString($collection, $variable = null)
     {
-        $items = collect(explode(".", $variable))->reverse();
-        $name = $items->first();
+        if (!is_null($variable)) {
+            $items = collect(explode(".", $variable))->reverse();
+            $name = $items->first();
 
-        $items->skip(1)->reverse()->each(function ($name) use (&$collection) {
-            if (!is_null($collection)) {
-                $class = optional($collection->reletionshipFind($name))->model;
-                $collection = is_null($class) ? null : new $class;
-            }
-        });
+            $items->skip(1)->reverse()->each(function ($name) use (&$collection) {
+                if (!is_null($collection)) {
+                    $class = optional($collection->reletionshipFind($name))->model;
+                    $collection = is_null($class) ? null : new $class;
+                }
+            });
+        }
 
         $class = is_null($collection) ? null : get_class($collection);
 
-        if(!is_null($class)){
-            $fields=Collection::firstOrCreate(compact('class'), compact('class'))->fields()->get();
-            $string=optional($fields->where('name', $name)->first())->string;
+        if (!is_null($class)) {
+            if (!is_null($variable)) {
+                $fields = Collection::firstOrCreate(compact('class'), compact('class'))->fields()->get();
+                $string = optional($fields->where('name', $name)->first())->string;
+            } else {
+                $string = Collection::firstOrCreate(compact('class'), compact('class'))->string;
+            }
         }
 
-        return  $string ?? $variable;
+        return  $string ?? $variable ?? $class;
     }
 }
