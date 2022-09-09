@@ -44,8 +44,11 @@ class Generate
                 return count(array_diff($i->classes, $parents));
             })->values();
 
-            $with = $selector->groupBy('from')->map(function ($with, $class) {
-                $with = array_undot($with->pluck(true, 'with')->toArray());
+            $with = $selector->groupBy('from')->map(function ($with, $from) {
+                $with = $with->groupBy('to')->map(function($with,$to){
+                    $with=$with->pluck('with')->toArray();
+                    return get_defined_vars();
+                })->values()->toArray();
                 return get_defined_vars();
             })->values()->toArray();
 
