@@ -58,7 +58,7 @@ class AppServiceProvider extends Sp
         $router->aliasMiddleware('permission', \Maklad\Permission\Middlewares\PermissionMiddleware::class);
         $router->aliasMiddleware('registration', \Nabre\Http\Middleware\RegisterPagesMiddleware::class);
         $router->pushMiddlewareToGroup('web', DisabledPagesMiddleware::class);
-        $router->pushMiddlewareToGroup('web',LocalizationMiddleware::class);
+        $router->pushMiddlewareToGroup('web', LocalizationMiddleware::class);
         $kernel->pushMiddleware(StartSession::class);
         $kernel->pushMiddleware(ImpersonateMiddleware::class);
 
@@ -81,7 +81,9 @@ class AppServiceProvider extends Sp
         $this->loadRoutesFrom(__DIR__ . '/../../routes/web.php');
 
         //Translation
-        $this->loadTranslationsFrom(__DIR__ . '/../../lang', 'Nabre');
+        $this->loadTranslationsFrom(base_path('lang'), 'Nabre');
+        $this->loadTranslationsFrom(__DIR__ . '/../../lang','Nabre');
+        $this->publishes([__DIR__ . '/../../lang' => base_path('lang')], 'lang');
 
         //Commands
         if ($this->app->runningInConsole()) {
