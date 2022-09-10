@@ -18,14 +18,14 @@ class Generate
         $this->combination = $this->relation = collect([]);
         $this->classesCall();
         $this->combination();
-         $this->parent = $this->combination->where('parent', true)->values();
+        $this->parent = $this->combination->where('parent', true)->values();
 
         $this->tmp = $this->classesName->map(function ($class) {
             $parentsRel = $this->parent->where('from', $class)->sort()->values();
             $parents = $parentsRel->pluck('to')->unique()->sort()->values()->toArray();
             $filterTo = $parentsRel->where('step', 1)->pluck('to')->unique()->values()->toArray();
-            $btm=$parentsRel->where('step', 1)->where('type','BelongsToMany')->pluck('to')->unique()->values()->toArray();
-            $system=$this->combination->where('from', $class)->pluck('to')->unique()->sort()->values()->toArray();
+            $btm = $parentsRel->where('step', 1)->where('type', 'BelongsToMany')->pluck('to')->unique()->values()->toArray();
+            $system = $this->combination->where('from', $class)->pluck('to')->unique()->sort()->values()->toArray();
             unset($parentsRel);
             return get_defined_vars();
         });
@@ -33,20 +33,20 @@ class Generate
         $this->recursiveParent();
 
         $this->tmp = $this->tmp->map(function ($_item) {
-            foreach(array_keys($_item) as $_key){
-                $$_key=data_get($_item,$_key);
+            foreach (array_keys($_item) as $_key) {
+                $$_key = data_get($_item, $_key);
             }
             unset($_key);
             unset($_item);
 
-            $filterFrom = array_diff($parents,$filterTo);
+            $filterFrom = array_diff($parents, $filterTo);
             $selector = $this->combination->whereIn('from', $filterFrom)->whereIn('to', $parents)->reject(function ($i) use ($parents) {
                 return count(array_diff($i->classes, $parents));
             })->values();
 
             $with = $selector->groupBy('from')->map(function ($with, $from) {
-                $with = $with->groupBy('to')->map(function($with,$to){
-                    $with=$with->pluck('with')->toArray();
+                $with = $with->groupBy('to')->map(function ($with, $to) {
+                    $with =  $this->withOptimize($with->pluck('with'))->toArray();
                     return get_defined_vars();
                 })->values()->toArray();
                 return get_defined_vars();
@@ -55,21 +55,37 @@ class Generate
             return get_defined_vars();
         })->pluck(null, 'class');
 
-        $this->tmp->each(function($item){
-            $model=$this->classes->where('class',data_get($item,'class'))->first();
-            $data=['filter'=>$this->convertClassToId($item,'filterTo'),
-            'topfilter'=>$this->convertClassToId($item,'filterFrom'),
-            'parents'=>$this->convertClassToId($item,'parents'),
-            'system2'=>$this->convertClassToId($item,'system'),
-            'with'=>data_get($item,'with'),
-        ];
+        $this->tmp->each(function ($item) {
+            $model = $this->classes->where('class', data_get($item, 'class'))->first();
+            $data = [
+                'filter' => $this->convertClassToId($item, 'filterTo'),
+                'topfilter' => $this->convertClassToId($item, 'filterFrom'),
+                'parents' => $this->convertClassToId($item, 'parents'),
+                'system2' => $this->convertClassToId($item, 'system'),
+                'with' => data_get($item, 'with'),
+            ];
             $model->recursiveSave($data);
         });
     }
 
-    function convertClassToId($target,$key){
-        $value=(array)data_get($target,$key);
-        return $this->classes->whereIn('class',$value)->pluck('id')->toArray();
+    private function withOptimize($with)
+    {
+        return $with->reject(function ($haystack) use ($with) {
+            $bool = false;
+            $with->each(function ($needle) use (&$bool, $haystack) {
+                if (!$bool) {
+                    $pos = strpos($haystack, $needle);
+                    $bool = $pos !== false && $pos == 0 && $haystack != $needle;
+                }
+            });
+            return $bool;
+        })->sort()->values();
+    }
+
+    function convertClassToId($target, $key)
+    {
+        $value = (array)data_get($target, $key);
+        return $this->classes->whereIn('class', $value)->pluck('id')->toArray();
     }
 
     function recursiveParent($bool = false, $inc = 0)
@@ -164,7 +180,11 @@ class Generate
 
         $relType = $links->pluck('type');
         $relTypeList = $relType->unique()->values()->toArray();
-        if (count(array_intersect($relTypeList, ['HasMany', 'HasOne'])) || $links->where('type', 'BelongsToMany')->count() > 1 || ($links->where('type', 'BelongsToMany')->count() == 1 && $relType->last() != 'BelongsToMany')) {
+        if (
+            count(array_intersect($relTypeList, ['HasMany', 'HasOne']))
+            || $links->where('type', 'BelongsToMany')->count() > 1
+            || ($links->where('type', 'BelongsToMany')->count() == 1 && $links->count()>1 /*&& $relType->last() != 'BelongsToMany'*/)
+        ) {
             $node->parent = false;
         } else {
             $node->parent = true;

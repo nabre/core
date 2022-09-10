@@ -34,7 +34,7 @@ class NavigationConsole extends Component
         $this->domain = $this->collection->where('class', $this->domain)->first();
         $this->structureNavigation();
         $this->structureFilter();
-        dd($this);
+        //dd($this);
     }
 
     protected function structureNavigation()
@@ -42,22 +42,20 @@ class NavigationConsole extends Component
         if (is_null($this->navigation)) {
             $this->navigation = collect([]);
         }
-
         if (!$this->navigation->count()) {
             $items = $this->domain->system;
             $add = $this->nodeNavigation($items);
             $this->navigation = $this->navigation->push($add);
             $this->values_nav[0] = data_get($add, 'value');
         }
-
         $this->getCheckNavigation();
     }
 
     protected function structureFilter()
     {
-        if (is_null($this->values)) {
+        //if (is_null($this->values)) {
             $this->values = collect([]);
-        }
+       // }
         if (is_null($this->filter_defined)) {
             $this->filter_defined = collect([]);
         }
@@ -78,6 +76,8 @@ class NavigationConsole extends Component
             $this->filter_defined = $this->filter_defined->merge($addFilter->pluck('class'));
         });
 
+
+        //$this->values=$this->values->take($position+1)->values();
         return $this;
     }
 
@@ -123,6 +123,7 @@ class NavigationConsole extends Component
     public function change_nav($position)
     {
         $this->getCheckNavigation($position, $this->values_nav[$position] ?? null);
+        $this->structureFilter();
     }
 
     protected function nodeNavigation($items, $position = 0, $value = 0)
@@ -163,11 +164,16 @@ class NavigationConsole extends Component
     protected function filter()
     {
         // dd($this);
-        /* $html = '';
-        if (is_null($this->filter_defined)) {
-            $this->filter_defined = collect([]);
-        }
+        $html = '';
+        $this->values->each(function($i)use(&$html){
+            $id = 'input';
+            $content = Form::input('text', '', '-Nessun valore-', ['class' => 'form-control is-invalid', 'id' => $id, 'disabled']);
+            $node = Html::div($content . Html::tag('label', data_get($i,'name'), ['for' => $id]), ['class' => 'form-floating']);
+            $html .= Html::div($node, ['class' => 'col-3']);
+        });
 
+        return Html::div($html, ['class' => 'row']);
+/*
         collect($this->values_nav)->filter()->each(function ($classId) use (&$html) {
             $item = $this->collection->where('id', $classId)->first();
             $exclude = $this->filter_defined->toArray();
