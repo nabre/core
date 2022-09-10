@@ -72,18 +72,16 @@ class AppServiceProvider extends Sp
 
         //view
         $dir_views_package   = __DIR__ . '/../../resources/views';
-        $dir_views_resources = base_path('resources/views');
+        $dir_views_resources = base_path('/resources/views');
         $this->loadViewsFrom($dir_views_resources, 'Nabre');
         $this->loadViewsFrom($dir_views_package, 'Nabre');
-        $this->publishes([$dir_views_package => $dir_views_resources], 'views');
+        $this->publishes([$dir_views_package => $dir_views_resources],'views');
 
         //routes
         $this->loadRoutesFrom(__DIR__ . '/../../routes/web.php');
 
         //Translation
-        $this->loadTranslationsFrom(base_path('lang'), 'Nabre');
-        $this->loadTranslationsFrom(__DIR__ . '/../../lang','Nabre');
-        $this->publishes([__DIR__ . '/../../lang' => base_path('lang')], 'lang');
+        $this->publishes([__DIR__ . '/../../lang'=>base_path('/lang')],'lang');
 
         //Commands
         if ($this->app->runningInConsole()) {

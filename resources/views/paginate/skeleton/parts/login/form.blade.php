@@ -35,7 +35,7 @@
     <div class="col-sm-2 col-form-label"></div>
     <div class="col-sm-10">
         <button class="btn btn-primary" type="submit">
-             {{ __('Nabre::loginpage.button') }}
+             {{ __('loginpage.button') }}
         </button>
     </div>
   </div>

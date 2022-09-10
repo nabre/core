@@ -1,5 +1,5 @@
 <?php
 
 return [
-'button'=>'Accedi'
+'button'=>'Login'
 ];
