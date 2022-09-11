@@ -41,6 +41,11 @@ class Setting extends Model
         return $this->belongsTo(User::class);
     }
 
+    function settingGroup(): BelongsTo
+    {
+        return $this->belongsTo(SettingGroup::class);
+    }
+
     function getTypeLoadAttribute()
     {
         return $this->getRawOriginal('type');

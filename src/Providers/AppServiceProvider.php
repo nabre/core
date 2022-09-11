@@ -81,7 +81,8 @@ class AppServiceProvider extends Sp
         $this->loadRoutesFrom(__DIR__ . '/../../routes/web.php');
 
         //Translation
-        $this->publishes([__DIR__ . '/../../lang'=>base_path('/lang')],'lang');
+        $this->loadTranslationsFrom(__DIR__ . '/../../lang', 'Nabre');
+        //$this->publishes([__DIR__ . '/../../lang'=>base_path('/lang')],'lang');
 
         //Commands
         if ($this->app->runningInConsole()) {

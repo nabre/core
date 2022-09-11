@@ -164,6 +164,14 @@ trait FormSetQuery
         return $this;
     }
 
+    function addHtml($html=null,$method=null){
+        if (!is_null($html)) {
+            $this->add('', Field::HTML,  null, 'fake')->itemVisible($method);
+            $this->setFakeValue(compact('html'));
+        }
+        return $this;
+    }
+
     function setFakeValue($value = null)
     {
         if ($this->item['type'] == 'fake') {

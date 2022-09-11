@@ -51,6 +51,7 @@ class Field
     const EMBEDS_ONE = 'embeds-one';
     //Other
     const MSG = 'message';
+    const HTML = 'html';
     const FIELD_TYPE_LIST = 'field-type-list';
     const LANG_SELECT = 'lang-select';
     //Buttons
@@ -98,7 +99,7 @@ class Field
             case self::PASSWORD2:
                 self::classAdd($options['class'], "form-control");
                 self::name($name);
-                $html.=Form::passwordToggle( $name, $value, $options);
+                $html .= Form::passwordToggle($name, $value, $options);
                 break;
                 ###
             case self::TEXT:
@@ -160,7 +161,7 @@ class Field
                     $options[] = 'checked';
                 }
                 $html = Html::div(
-                    Form::hidden($name, 0,['id'=>null]) .
+                    Form::hidden($name, 0, ['id' => null]) .
                         Form::input('checkbox', $name, true, $options),
                     ['class' => 'form-check form-switch']
                 );
@@ -240,6 +241,9 @@ class Field
                 $html = Html::div($value['text'], ['class' => 'alert p-1 alert-' . $value['theme']]);
                 break;
                 ###
+            case self::HTML:
+                $html = $value['html'];
+                break;
             case self::STATIC:
                 //  $html="static variable";
 

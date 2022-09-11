@@ -63,9 +63,9 @@ class Build
     {
         $html = '';
 
-        $this->elementsFilter()->each(function ($it,$itNum) use (&$html, $embedMode) {
+        $this->elementsFilter()->each(function ($it, $itNum) use (&$html, $embedMode) {
             $this->item = $it;
-            $this->first=!$itNum;
+            $this->first = !$itNum;
 
             $label = $this->label();
 
@@ -90,6 +90,7 @@ class Build
             switch ($this->item['output']) {
                 case Field::HIDDEN:
                 case Field::MSG:
+                case Field::HTML:
                     $html .= $content . "\r\n";
                     break;
                 default:
@@ -140,11 +141,11 @@ class Build
         $html = '';
 
         if ($this->isRequired()) {
-            $html .= '<div>*</div>';
+            $html .= Html::div('<i class="fa-solid fa-asterisk"></i>', ['class' => 'badge bg-danger', 'title' => __('validation.required', ['attribute' => '"' . data_get($this->item, 'label') . '"'])]);
         }
 
-        collect($this->item['set']['info']??[])->each(function($i)use(&$html){
-            $html.=Html::div($i['text'],['class'=>'alert m-0 p-1 alert-'.$i['theme']]);
+        collect($this->item['set']['info'] ?? [])->each(function ($i) use (&$html) {
+            $html .= Html::div($i['text'], ['class' => 'alert m-0 p-1 alert-' . $i['theme']]);
         });
         return $html;
     }
@@ -171,7 +172,7 @@ class Build
     private function item($content, $label = null, $info = null)
     {
 
-        return '<div class="row mb-3 '.($this->first?'':'border-top').'">
+        return '<div class="row mb-3 ' . ($this->first ? '' : 'border-top') . '">
                     ' . $label . '
                     <div class="col pt-1">' . $content . '</div>
                     <div class="col-md-3 pt-1">' . $info . '</div>
@@ -218,7 +219,7 @@ class Build
         })->values();
 
         $this->submit = (bool) $this->elements()->filter(function ($it) {
-            return !in_array($it['output'], [Field::STATIC, Field::MSG]);
+            return !in_array($it['output'], [Field::STATIC, Field::MSG, Field::HTML]);
         })->count();
 
         return $this;

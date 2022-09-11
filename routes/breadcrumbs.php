@@ -16,17 +16,17 @@ Breadcrumbs::macro('resource', function (string $name, string $title, string $pa
 
     Breadcrumbs::for("{$name}.create", function (BreadcrumbTrail $trail) use ($name) {
         $trail->parent("{$name}.index");
-        $trail->push(__('Nabre::pagination.create'));
+        $trail->push(__('Nabre::resource.Create'));
     });
 
     Breadcrumbs::for("{$name}.show", function (BreadcrumbTrail $trail) use ($name) {
         $trail->parent("{$name}.index");
-        $trail->push(__('Nabre::pagination.view'));
+        $trail->push(__('Nabre::resource.View'));
     });
 
     Breadcrumbs::for("{$name}.edit", function (BreadcrumbTrail $trail) use ($name) {
         $trail->parent("{$name}.index");
-        $trail->push(__('Nabre::pagination.edit'));
+        $trail->push(__('Nabre::resource.Edit'));
     });
 });
 
