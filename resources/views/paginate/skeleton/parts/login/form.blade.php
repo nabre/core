@@ -13,7 +13,13 @@
           <div class="mb-3 row">
             <label for="inputPsw" class="col-md-3 col-form-label">{{__('Password')}}</label>
             <div class="col">
-              <input class="form-control" autocomplete="current-password" required id="inputPsw" type="password" name="password">
+                <div class="input-group">
+                    <input class="form-control" autocomplete="current-password" required id="inputPsw" type="password" name="password">
+                    <span class="btn btn-outline-dark toggle-password">
+                        <i class="fa-regular fa-eye"></i>
+                        <i class="fa-regular fa-eye-slash" style="display: none"></i>
+                    </span>
+                </div>
             </div>
           </div>
 

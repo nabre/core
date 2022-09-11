@@ -81,13 +81,20 @@ return [
     */
     'override' => [
         'app.locale' => 'app_locale',
-        'app.name'=>'app_name',
-        'app.debug'=>'app_debug',
-        'setting.define.autousergenerate'=>'setting_define_autousergenerate',
+        'app.name' => 'app_name',
+        'app.debug' => 'app_debug',
+        'mail.mailers.smtp.host' => 'mail_host',
+        'mail.mailers.smtp.port' => 'mail_port',
+        'mail.mailers.smtp.encryption' => 'mail_encryption',
+        'mail.mailers.smtp.username' => 'mail_username',
+        'mail.mailers.smtp.password' => 'mail_password',
+        'mail.from.address' => 'mail_from_address',
+        'mail.from.name' => 'mail_from_name',
+        'setting.define.autousergenerate' => 'setting_define_autousergenerate',
     ],
 
-    'define'=>[
-        'autousergenerate'=>false,
+    'define' => [
+        'autousergenerate' => false,
     ],
 
     /*

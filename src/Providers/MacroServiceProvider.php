@@ -3,6 +3,7 @@
 namespace Nabre\Providers;
 
 use Collective\Html\HtmlFacade as Html;
+use Collective\Html\FormFacade as Form;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Collection;
@@ -144,6 +145,13 @@ class MacroServiceProvider extends ServiceProvider
 
         Html::macro('td', function ($content = null, $options = []) {
             return Html::tag('td', $content, $options);
+        });
+
+        Form::macro('passwordToggle', function ($name=null,$value=null, $options = []) {
+            $input=Form::input('password', $name, $value, $options);
+            $icon=Html::tag('i',null,['class'=>'fa-regular fa-eye']).Html::tag('i',null,['class'=>'fa-regular fa-eye-slash','style'=>'display:none']);
+            $span=Html::tag('span',$icon,['class'=>"btn btn-outline-dark toggle-password"]);
+            return Html::div($input.$span,['class'=>'input-group']);
         });
     }
 }

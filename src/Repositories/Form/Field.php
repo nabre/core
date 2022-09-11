@@ -21,6 +21,7 @@ class Field
     const BOOLEAN = 'bool';
     //   const RADIO = 'radio';
     const PASSWORD = 'password';
+    const PASSWORD2 = 'password2';
     const HIDDEN = 'hidden';
     //  const FILE = 'file'; //
     const STATIC = 'static';
@@ -91,8 +92,15 @@ class Field
         }
 
         switch ($output) {
+                ###
             case self::PASSWORD:
                 $value = null;
+            case self::PASSWORD2:
+                self::classAdd($options['class'], "form-control");
+                self::name($name);
+                $html.=Form::passwordToggle( $name, $value, $options);
+                break;
+                ###
             case self::TEXT:
             case self::EMAIL:
                 self::classAdd($options['class'], "form-control");
@@ -152,7 +160,7 @@ class Field
                     $options[] = 'checked';
                 }
                 $html = Html::div(
-                    Form::hidden($name, 0) .
+                    Form::hidden($name, 0,['id'=>null]) .
                         Form::input('checkbox', $name, true, $options),
                     ['class' => 'form-check form-switch']
                 );
@@ -233,7 +241,7 @@ class Field
                 break;
                 ###
             case self::STATIC:
-              //  $html="static variable";
+                //  $html="static variable";
 
                 if (!is_null($list ?? null) && optional($list)->count()) {
                     $value = collect((array)$value)->map(function ($v) use ($it) {
