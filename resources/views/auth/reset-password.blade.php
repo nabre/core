@@ -1,10 +1,8 @@
-@extends('Nabre::template.app.container')
+@extends('Nabre::paginate.area.app')
 @section('CONTENT')
 
 <div class="card w-50 m-auto">
         <div class="card-body">
-                    <!-- Validation Errors -->
-                    <x-auth-validation-errors class="mb-4" :errors="$errors" />
             <form method="POST" action="{{ route('password.update') }}">
                 @csrf
                 <!-- Password Reset Token -->
