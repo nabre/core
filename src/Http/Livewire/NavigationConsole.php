@@ -8,6 +8,8 @@ use App\Models\Data\Istituto;
 use Livewire\Component;
 use Mpdf\Tag\Select;
 use Nabre\Models\Collection;
+use Illuminate\Support\Arr;
+use Nabre\Repositories\Relations\GenerateTable;
 
 class NavigationConsole extends Component
 {
@@ -16,17 +18,21 @@ class NavigationConsole extends Component
     var $navigation;
     var $values_nav;
     var $values;
+    var $with;
+    var $model;
     protected $filter_defined;
+    protected $array;
 
     function mount()
     {
-        $this->collection = Collection::with(['filter', 'topFilter', 'childs', 'parents', 'system'])->where('class', $this->domain)->orWhereHas('system', function ($q) {
+        $this->collection = Collection::with(['filter', 'topFilter', 'childs', 'parents', 'system'])->where('class', $this->domain)->orWhereHas('system2', function ($q) {
             $q->where('class', $this->domain);
         })->get();
 
         if (is_null($this->navigation)) {
             $this->navigation = collect([]);
         }
+
         if (is_string($this->domain) && !class_exists($this->domain) && !in_array($this->domain, $this->collection->pluck('class')->toArray())) {
             abort(404);
         }
@@ -34,7 +40,11 @@ class NavigationConsole extends Component
         $this->domain = $this->collection->where('class', $this->domain)->first();
         $this->structureNavigation();
         $this->structureFilter();
-        //dd($this);
+    }
+
+    function values_edit()
+    {
+        $this->structureFilter();
     }
 
     protected function structureNavigation()
@@ -53,9 +63,9 @@ class NavigationConsole extends Component
 
     protected function structureFilter()
     {
-        //if (is_null($this->values)) {
+        if (is_null($this->values)) {
             $this->values = collect([]);
-       // }
+        }
         if (is_null($this->filter_defined)) {
             $this->filter_defined = collect([]);
         }
@@ -63,22 +73,82 @@ class NavigationConsole extends Component
         collect($this->values_nav)->filter()->each(function ($classId) use (&$position) {
             $item = $this->collection->where('id', $classId)->first();
             $exclude = $this->filter_defined->toArray();
-            $addFilter = $item->topFilter->whereNotIn('class', $exclude);
-            $filter = $item->filter->whereNotIn('class', $exclude);
-            $addFilter = $addFilter->merge($filter)->whereIn('id', $this->collection->modelKeys());
+            $addFilter = $item->topFilter->whereNotIn('class', $exclude)->whereIn('class', $this->collection->pluck('class')->toArray());
+            $filter = $item->filter->whereNotIn('class', $exclude)->whereIn('class', $this->collection->pluck('class')->toArray());
+            $addFilter = $addFilter->merge($filter)->unique();
             $addFilter->each(function ($i) use (&$position, $filter) {
+                $class = data_get($i, 'class');
+                $value = $this->generateItems($class);
                 $edit = [
-                    'name' => $i->string
+                    'class' => data_get($i, 'class'),
+                    'name' => data_get($i, 'string'),
+                    'isFilter' => in_array($class, $filter->pluck('class')->toArray()),
+                    'items' => $this->arrayFindOrCreate($class)->pluck('eti', 'id'),
+                    'value' => $value,
+                    'show' => true,
                 ];
-                $this->values= $this->values->put($position, $edit);
+
+                $this->values = $this->values->put($position, $edit);
                 $position++;
             });
             $this->filter_defined = $this->filter_defined->merge($addFilter->pluck('class'));
         });
 
-
-        //$this->values=$this->values->take($position+1)->values();
+        $take = $position+($position? 1:0);
+        $this->values = $this->values->take($take)->values();
         return $this;
+    }
+
+    protected function generateItems($class)
+    {
+        $with = collect([]);
+        collect(data_get(optional($this->with->where('from', $class)->first()), 'with'))->whereNotIn('to', $this->filter_defined)->pluck('with')->each(function ($w) use (&$with) {
+            $with = $with->merge($w)->unique()->sort()->values();
+        });
+        $with = Arr::undot(collect(array_flip($with->toArray()))->map(fn ($fn) => (false)));
+        return $this->recursiveWith($with, $class);
+    }
+
+    protected function recursiveWith($with, $class = null)
+    {
+        $this->arrayFindOrCreate($class);
+
+        collect($with)->each(function ($with, $fn) use ($class) {
+            $current = collect([]);
+            $this->array[$class]->whereIn('id', (array)$this->getValue($class))->each(function ($i) use (&$current, $fn) {
+                $add = $i->$fn;
+                if (!($add instanceof \Illuminate\Database\Eloquent\Collection)) {
+                    $current = $current->push($add)->unique();
+                } else {
+                    $current = $current->merge($add)->unique();
+                }
+            });
+
+            $class = optional((new $class)->reletionshipFind($fn))->model;
+            if (!is_null($class)) {
+                $this->array[$class] = $this->arrayFindOrCreate($class)->whereIn('id', $current->pluck('id')->toArray())->values();
+                if ($with) {
+                    $this->recursiveWith($with, $class);
+                }
+            }
+        });
+
+        return $this->getValue($class);
+    }
+
+    protected function getValue($class)
+    {
+        $items = $this->arrayFindOrCreate($class)->pluck('id');
+        $value = data_get($this->values->where('class', $class)->first(), 'value');
+        $list = $items->toArray();
+        $value = ($value == 0 || is_array($value)) ? $list : (!in_array($value, $list) ? $items->first() : $value);
+        return $value;
+    }
+
+    protected function arrayFindOrCreate($class)
+    {
+        $this->array[$class] = $this->array[$class] ?? $class::all()->sortBy('eti');
+        return $this->array[$class];
     }
 
     protected function getCheckNavigation($position = 0, $value = null)
@@ -95,8 +165,14 @@ class NavigationConsole extends Component
             data_set($edit, 'value', $value);
             $this->navigation = $this->navigation->put($position, $edit);
         }
-
         $item = $this->navigation->where('position', $position)->first();
+
+        if ($v = data_get($item, 'value')) {
+            $node = $this->collection->where('id', $v)->first();
+            $this->with = collect(data_get($node, 'with'));
+            $this->model = data_get($node, 'class');
+        }
+
         $exclude = $this->navigation->where('position', '<', $position)->pluck('value')->toArray();
         $items = optional(optional($this->collection->where('id', data_get($item, 'value'))->first())->childs)->whereNotIn('id', $exclude);
         if (!is_null($items) && $items->count()) {
@@ -113,11 +189,6 @@ class NavigationConsole extends Component
             $this->navigation = $this->navigation->push(false);
         }
         return $position;
-    }
-
-    function values_edit()
-    {
-        //dd($this->values);
     }
 
     public function change_nav($position)
@@ -138,10 +209,21 @@ class NavigationConsole extends Component
 
     public function render()
     {
+        $nav = $this->navigation();
+        $table = $this->table();
+
+        $this->values = $this->values->map(function ($i) {
+            if (is_array(data_get($i, 'value'))) {
+                data_set($i, 'value', 0);
+            }
+            return $i;
+        });
+        $filter = $this->filter();
+
         return '<div>'
-            . $this->navigation()
-            . $this->filter()
-            . $this->values()
+            . $nav
+            . $filter
+            . $table
             . '</div>';
     }
 
@@ -163,60 +245,72 @@ class NavigationConsole extends Component
 
     protected function filter()
     {
-        // dd($this);
         $html = '';
-        $this->values->each(function($i)use(&$html){
-            $id = 'input';
-            $content = Form::input('text', '', '-Nessun valore-', ['class' => 'form-control is-invalid', 'id' => $id, 'disabled']);
-            $node = Html::div($content . Html::tag('label', data_get($i,'name'), ['for' => $id]), ['class' => 'form-floating']);
-            $html .= Html::div($node, ['class' => 'col-3']);
+        $print=$this->values->where('show', true);
+        $print->each(function ($i, $pos) use (&$html) {
+            $id = "selector-" . $pos;
+            $items = data_get($i, 'items');
+
+            if (!($items instanceof \Illuminate\Database\Eloquent\Collection)) {
+                $items=collect($items);
+            }
+            $value = data_get($i, 'value');
+
+            switch ($items->count()) {
+                case 0:
+                    $content = Form::input('text', '', '-Nessun valore-', ['class' => 'form-control is-invalid', 'id' => $id, 'disabled']);
+                    break;
+                case 1:
+                    $class = ['form-control'];
+                    $value = $items->first();
+                    if (is_null($value)) {
+                        $value = '#errore';
+                        $class[] = 'is-invalid';
+                    }
+                    $content = Form::input('text', '', $value, ['class' => $class, 'id' => $id, 'disabled']);
+                    break;
+                default:
+                    if (data_get($i, 'isFilter')) {
+                        $items = $items->prepend('-Seleziona-', 0);
+                    }
+                    $content = Form::select('option', $items, null, ['class' => 'form-select', 'id' => $id, 'wire:model' => 'values.' . $pos . '.value', 'wire:change' => 'values_edit']);
+                    break;
+            }
+
+            $node = Html::div($content . Html::tag('label', data_get($i, 'name'), ['for' => $id]), ['class' => 'form-floating']);
+            $html .= Html::div($node, ['class' => 'col-3 mb-1']);
         });
-
-        return Html::div($html, ['class' => 'row']);
-/*
-        collect($this->values_nav)->filter()->each(function ($classId) use (&$html) {
-            $item = $this->collection->where('id', $classId)->first();
-            $exclude = $this->filter_defined->toArray();
-            $addFilter = $item->topFilter->whereNotIn('class', $exclude);
-            $filter = $item->filter->whereNotIn('class', $exclude);
-            $addFilter = $addFilter->merge($filter)->whereIn('id', $this->collection->modelKeys());
-
-            $this->filter_defined = $this->filter_defined->merge($addFilter->pluck('class'));
-
-            $addFilter->each(function ($i) use (&$html, $filter) {
-                $id = 'input';
-                $items = collect(['aaa' => 'valore aaa', 'bbb' => 'Secondo valore bbb']);
-                $content = "@Non caricato";
-                //  $this->values[$i->class]=$value;
-                switch ($items->count()) {
-                    case 0:
-                        $content = Form::input('text', '', '-Nessun valore-', ['class' => 'form-control is-invalid', 'id' => $id, 'disabled']);
-                        break;
-                    case 1:
-                        $value = $items->toArray()[$value] ?? null;
-                        $class = ['form-control'];
-                        if (is_null($value)) {
-                            $value = '#errore';
-                            $class[] = 'is-invalid';
-                        }
-                        $content = Form::input('text', '', $value, ['class' => $class, 'id' => $id, 'disabled']);
-                        break;
-                    default:
-                        if (in_array($i->class, $filter->pluck('class')->toArray())) {
-                            $items = $items->prepend('-Seleziona-', 0);
-                        }
-                        $content = Form::select('', $items, null, ['class' => 'form-select', 'id' => $id, 'wire:model' => 'values.' . $i->class, 'wire:change' => 'values_edit']);
-                        break;
-                }
-                $node = Html::div($content . Html::tag('label', $i->string, ['for' => $id]), ['class' => 'form-floating']);
-                $html .= Html::div($node, ['class' => 'col-3']);
-            });
-        });
-
-        return Html::div($html, ['class' => 'row']) . ($this->filter_defined->count() ? '<hr>' : null);*/
+        return Html::div($html, ['class' => 'row']). (($print->count())? '<hr>':null);
     }
 
     protected function values()
     {
+        $items = new $this->model;
+        $rel = $items->definedRelations();
+        $this->values->where('isFilter', true)->pluck('class')->each(function ($class) use (&$items, $rel) {
+            //  $class=data_get($i,'class');
+            $values = (array)$this->getValue($class);
+            $fn = optional($rel->where('model', $class)->first())->name;
+            if (!is_null($fn)) {
+                $items = $items->wherehas($fn, function ($q) use ($values) {
+                    $q->whereIn('_id', $values);
+                });
+            }
+        });
+
+        return $items->get();
+    }
+
+    protected function table()
+    {
+        $table = new GenerateTable;
+        $table->model = $this->model;
+        $table->data = $this->values();
+        $rel = (new $table->model)->definedRelations();
+        $table->filter = $this->values->where('isFilter', true)->pluck('class')->map(function ($class) use ($rel) {
+            return optional($rel->where('model', $class)->first())->name;
+        })->toArray();
+
+        return $table->html();
     }
 }

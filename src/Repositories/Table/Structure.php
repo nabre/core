@@ -57,7 +57,7 @@ class Structure
 
     function html()
     {
-        $this->data = $this->query();
+        $this->data = $this->data ?? $this->query();
         $this->table();
 
         $tableContent = [];
@@ -76,9 +76,12 @@ class Structure
         });
 
         #btn create
-        $createRoute = $this->actions->filter(function ($route, $name) {
-            return $name == 'create' && Gate::allows($name, new $this->model);
-        })->first();
+        if(!is_null($this->model)){
+            $createRoute = $this->actions->filter(function ($route, $name) {
+                return $name == 'create' && Gate::allows($name, new $this->model);
+            })->first();
+        }
+
 
         if (!is_null($createRoute)) {
             $icon = $this->iconAction['create']['icon'];
@@ -204,6 +207,7 @@ class Structure
             }
         });
         $this->col = $cont;
+
         if ($fn = $this->customCol($col)) {
             $cont = $this->$fn();
         } else {
