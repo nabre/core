@@ -26,7 +26,7 @@ class Generate
             $filterTo = $parentsRel->where('step', 1)->pluck('to')->unique()->values()->toArray();
             $btm = $parentsRel->where('step', 1)->where('type', 'BelongsToMany')->pluck('to')->unique()->values()->toArray();
             $system = $this->combination->where('from', $class)->pluck('to')->unique()->sort()->values()->toArray();
-            unset($parentsRel);
+            //unset($parentsRel);
             return get_defined_vars();
         });
 
@@ -65,6 +65,27 @@ class Generate
                 'with' => data_get($item, 'with'),
             ];
             $model->recursiveSave($data);
+        });
+
+        $this->tmp->each(function ($item) {
+            $class = data_get($item, 'class');
+            $model = $this->classes->where('class', $class)->first();
+
+            $errors = collect([]);
+            $position = 0;
+            optional(data_get($item, 'parentsRel'))->sortBy(['step', 'to'])->each(function ($rel) use (&$errors, &$position) {
+                $class = data_get($rel, 'to');
+                if (!$errors->where('class', $class)->count()) {
+                    $data = [];
+                    data_set($data, 'class', $class);
+                    data_set($data, 'position', $position);
+                    $errors = $errors->push($data);
+                    $position++;
+                }
+            });
+
+            $errors_priority= $errors->toArray();
+            $model->recursiveSave(compact('errors_priority'));
         });
     }
 
@@ -183,7 +204,7 @@ class Generate
         if (
             count(array_intersect($relTypeList, ['HasMany', 'HasOne']))
             || $links->where('type', 'BelongsToMany')->count() > 1
-            || ($links->where('type', 'BelongsToMany')->count() == 1 && $links->count()>1 /*&& $relType->last() != 'BelongsToMany'*/)
+            || ($links->where('type', 'BelongsToMany')->count() == 1 && $links->count() > 1 /*&& $relType->last() != 'BelongsToMany'*/)
         ) {
             $node->parent = false;
         } else {

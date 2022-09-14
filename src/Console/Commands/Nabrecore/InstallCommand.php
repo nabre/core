@@ -1,19 +1,19 @@
 <?php
 
-namespace Nabre\Console\Commands;
+namespace Nabre\Console\Commands\Nabrecore;
 
 use Illuminate\Console\Command;
 use Nabre\Database\MongoDB\Backup\Execute;
 use Storage;
 
-class InstallPkgFiles extends Command
+class InstallCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'install:nabrecore';
+    protected $signature = 'nabrecore:install';
 
     /**
      * The console command description.
@@ -28,7 +28,7 @@ class InstallPkgFiles extends Command
      * @return mixed
      */
     public function handle()
-    {        
+    {
         $this->info("Installazione");
 /*
         $directory=__DIR__.'/../../../files/';

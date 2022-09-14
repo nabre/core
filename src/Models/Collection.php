@@ -11,7 +11,7 @@ use Nabre\Models\Embeds\CollectionField;
 
 class Collection extends Model
 {
-    protected $fillable = ['title', 'class','with'];
+    protected $fillable = ['title', 'class','with','errors_priority'];
     protected $attributes = [];
     protected $casts = ['title' => LocalCast::class];
 

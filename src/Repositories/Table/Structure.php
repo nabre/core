@@ -13,6 +13,7 @@ class Structure
     var $actions;
     var $modifyCol = false;
     var $data;
+    var $columns;
     var $model;
     var $col;
     var $item;
@@ -61,7 +62,7 @@ class Structure
         $this->table();
 
         $tableContent = [];
-        $columns = collect($this->columns());
+        $columns = $this->columns??collect($this->columns());
 
         $this->actions = collect($this->actions())->filter(function ($v, $k) {
             return in_array($k, $this->actionMode) && \Route::Has($v);

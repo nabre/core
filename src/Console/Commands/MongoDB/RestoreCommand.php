@@ -1,18 +1,18 @@
 <?php
 
-namespace Nabre\Console\Commands;
+namespace Nabre\Console\Commands\MongoDB;
 
 use Illuminate\Console\Command;
 use Nabre\Database\MongoDB\Backup\Execute;
 
-class DumpMongoDBCommand extends Command
+class RestoreCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'dump:mongodb';
+    protected $signature = 'mongodb:restore';
 
     /**
      * The console command description.
@@ -28,7 +28,10 @@ class DumpMongoDBCommand extends Command
      */
     public function handle()
     {
-        $info=Execute::dump();
-        $this->info($info);
+        $disk = \Storage::disk('backup');
+        $path = $disk->path('');
+        $file=collect($disk->allFiles())->sort()->reverse()->values()->first();
+        $file = $path . $file;
+        $this->info(Execute::restore($file));
     }
 }

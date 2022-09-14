@@ -5,6 +5,7 @@ namespace Nabre\Http\Livewire;
 use Collective\Html\HtmlFacade as Html;
 use Collective\Html\FormFacade as Form;
 use App\Models\Data\Istituto;
+use App\Models\Data\Student;
 use Livewire\Component;
 use Mpdf\Tag\Select;
 use Nabre\Models\Collection;
@@ -14,6 +15,8 @@ use Nabre\Repositories\Relations\GenerateTable;
 class NavigationConsole extends Component
 {
     var $domain = Istituto::class;
+    var $isAdmin = true;
+    var $viewEdit = false;
     var $collection;
     var $navigation;
     var $values_nav;
@@ -42,6 +45,13 @@ class NavigationConsole extends Component
         $this->structureFilter();
     }
 
+    public function change_nav($position)
+    {
+        $this->viewEdit=true;
+        $this->getCheckNavigation($position, $this->values_nav[$position] ?? null);
+        $this->structureFilter();
+    }
+
     function values_edit()
     {
         $this->structureFilter();
@@ -53,7 +63,7 @@ class NavigationConsole extends Component
             $this->navigation = collect([]);
         }
         if (!$this->navigation->count()) {
-            $items = $this->domain->system;
+            $items = data_get($this->domain, ($this->isAdmin ? 'system' : 'childs'));
             $add = $this->nodeNavigation($items);
             $this->navigation = $this->navigation->push($add);
             $this->values_nav[0] = data_get($add, 'value');
@@ -74,28 +84,37 @@ class NavigationConsole extends Component
             $item = $this->collection->where('id', $classId)->first();
             $exclude = $this->filter_defined->toArray();
             $addFilter = $item->topFilter->whereNotIn('class', $exclude)->whereIn('class', $this->collection->pluck('class')->toArray());
-            $filter = $item->filter->whereNotIn('class', $exclude)->whereIn('class', $this->collection->pluck('class')->toArray());
+            $table = $item->filter;
+            $filter = $table->whereNotIn('class', $exclude)->whereIn('class', $this->collection->pluck('class')->toArray());
             $addFilter = $addFilter->merge($filter)->unique();
-            $addFilter->each(function ($i) use (&$position, $filter) {
+            $addFilter->each(function ($i) use (&$position, $filter, $table) {
                 $class = data_get($i, 'class');
-                $value = $this->generateItems($class);
-                $edit = [
-                    'class' => data_get($i, 'class'),
-                    'name' => data_get($i, 'string'),
-                    'isFilter' => in_array($class, $filter->pluck('class')->toArray()),
-                    'items' => $this->arrayFindOrCreate($class)->pluck('eti', 'id'),
-                    'value' => $value,
-                    'show' => true,
-                ];
 
-                $this->values = $this->values->put($position, $edit);
+                $edit = (array)$this->values->where('class', $class)->first();
+
+                data_set($edit, 'class', data_get($i, 'class'));
+                data_set($edit, 'name', data_get($i, 'string'));
+                data_set($edit, 'isFilter', in_array($class, $filter->pluck('class')->toArray()));
+                data_set($edit, 'isTableField', in_array($class, $table->pluck('class')->toArray()));
+                data_set($edit, 'items', $this->arrayFindOrCreate($class)->pluck('eti', 'id'));
+                data_set($edit, 'show', true);
+
+                $this->putValues($position, $edit);
+                data_set($edit, 'value', $this->generateItems($class));
+                $this->putValues($position, $edit);
                 $position++;
             });
             $this->filter_defined = $this->filter_defined->merge($addFilter->pluck('class'));
         });
 
-        $take = $position+($position? 1:0);
+        $take = $position + ($position ? 1 : 0);
         $this->values = $this->values->take($take)->values();
+        return $this;
+    }
+
+    protected function putValues($position, $edit)
+    {
+        $this->values = $this->values->put($position, $edit);
         return $this;
     }
 
@@ -141,7 +160,10 @@ class NavigationConsole extends Component
         $items = $this->arrayFindOrCreate($class)->pluck('id');
         $value = data_get($this->values->where('class', $class)->first(), 'value');
         $list = $items->toArray();
-        $value = ($value == 0 || is_array($value)) ? $list : (!in_array($value, $list) ? $items->first() : $value);
+
+        $node = $this->values->where('class', $class)->first();
+        $bool = data_get($node, 'isFilter');
+        $value = (!is_null($value) && $value == 0 || is_array($value)) ? $list : (!in_array($value, $list) ? ($bool ? $list : $items->first()) : $value);
         return $value;
     }
 
@@ -191,12 +213,6 @@ class NavigationConsole extends Component
         return $position;
     }
 
-    public function change_nav($position)
-    {
-        $this->getCheckNavigation($position, $this->values_nav[$position] ?? null);
-        $this->structureFilter();
-    }
-
     protected function nodeNavigation($items, $position = 0, $value = 0)
     {
         $items = $items->pluck('string', 'id');
@@ -210,7 +226,7 @@ class NavigationConsole extends Component
     public function render()
     {
         $nav = $this->navigation();
-        $table = $this->table();
+        $content = $this->errors()?? $this->table();
 
         $this->values = $this->values->map(function ($i) {
             if (is_array(data_get($i, 'value'))) {
@@ -219,11 +235,21 @@ class NavigationConsole extends Component
             return $i;
         });
         $filter = $this->filter();
-
-        return '<div>'
-            . $nav
+        $title=data_get($this->collection->where('class',$this->model)->first(),'string');
+        return '<div>
+        <div class="toggle-content alert alert-dark p-1">
+            <div class="row" style="'.(!$this->viewEdit?null:'display:none').'">
+                <div class="col-auto h1">'.$title.'</div>
+                <div class="col handle"><i class="fa-regular fa-pen-to-square cursor-pointer" title="Modifica"></i></div>
+            </div>
+            <div style="'.($this->viewEdit?null:'display:none').'" class="row">
+                <div class="col-auto">' . $nav . '</div>
+                <div class="col handle"><i class="fa-solid fa-xmark cursor-pointer" title="Chiudi"></i></div>
+            </div>
+        </div>
+         <hr>'
             . $filter
-            . $table
+            . $content
             . '</div>';
     }
 
@@ -236,23 +262,23 @@ class NavigationConsole extends Component
                 $this->values_nav[$position] = data_get($i, 'value');
                 $select = Form::select('', data_get($i, 'items'), null, ['class' => "form-select", 'wire:model' => 'values_nav.' . $position, 'wire:change' => "change_nav(" . $position . ")"]);
             } else {
-                $select = "<< Fine";
+                $select = ""; #segnale finito
             }
             $items .= Html::div($select, ['class' => 'col-auto']);
         });
-        return Html::div($items, ['class' => 'row']) . '<hr>';
+        return Html::div($items, ['class' => 'row']);
     }
 
     protected function filter()
     {
         $html = '';
-        $print=$this->values->where('show', true);
+        $print = $this->values->where('show', true);
         $print->each(function ($i, $pos) use (&$html) {
             $id = "selector-" . $pos;
             $items = data_get($i, 'items');
 
             if (!($items instanceof \Illuminate\Database\Eloquent\Collection)) {
-                $items=collect($items);
+                $items = collect($items);
             }
             $value = data_get($i, 'value');
 
@@ -280,7 +306,7 @@ class NavigationConsole extends Component
             $node = Html::div($content . Html::tag('label', data_get($i, 'name'), ['for' => $id]), ['class' => 'form-floating']);
             $html .= Html::div($node, ['class' => 'col-3 mb-1']);
         });
-        return Html::div($html, ['class' => 'row']). (($print->count())? '<hr>':null);
+        return Html::div($html, ['class' => 'row']) . (($print->count()) ? '<hr>' : null);
     }
 
     protected function values()
@@ -307,10 +333,23 @@ class NavigationConsole extends Component
         $table->model = $this->model;
         $table->data = $this->values();
         $rel = (new $table->model)->definedRelations();
-        $table->filter = $this->values->where('isFilter', true)->pluck('class')->map(function ($class) use ($rel) {
+        $table->filter = $this->values->where('isTableField', true)->pluck('class')->map(function ($class) use ($rel) {
             return optional($rel->where('model', $class)->first())->name;
         })->toArray();
+        $table->columns = collect($table->filter)->prepend('eti');
 
         return $table->html();
+    }
+
+    protected function errors(){
+        $errorValue=$this->values->filter(function($item){
+            $value=data_get($item,'value');
+            return is_null($value) || is_array($value) && !count($value);
+        });
+        if($errorValue->count()){
+            $error=collect(data_get($this->collection->where('class',$this->model)->first(),'errors_priority'))->whereIn('class',$errorValue->pluck('class')->toArray());
+            return $error;
+        }
+        return null;
     }
 }

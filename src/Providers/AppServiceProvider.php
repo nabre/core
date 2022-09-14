@@ -5,9 +5,6 @@ namespace Nabre\Providers;
 use Nabre\Http\Middleware\LocalizationMiddleware;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\ServiceProvider as Sp;
-use Nabre\Console\Commands\DumpMongoDBCommand;
-use Nabre\Console\Commands\PageSyncCommand;
-use Nabre\Console\Commands\RestoreMongoDBCommand;
 use Nabre\Http\Middleware\DisabledPagesMiddleware;
 use Nabre\Http\Middleware\ImpersonateMiddleware;
 use Nabre\Http\Middleware\SettingAutoSaveMiddleware;
@@ -15,7 +12,10 @@ use Nabre\Http\Middleware\SettingOverrideMiddleware;
 use Nabre\Setting\Facade;
 use Nabre\Setting\Manager;
 use Blade;
-use Nabre\Console\Commands\InstallPkgFiles;
+use Nabre\Console\Commands\MongoDB\DumpCommand as MongoDBDumpCommand;
+use Nabre\Console\Commands\MongoDB\RestoreCommand as MOngoDBRestoreCommand;
+use Nabre\Console\Commands\Nabrecore\InstallCommand as NabrecoreInstallCommand;
+use Nabre\Console\Commands\Page\InstallCommand as PageInstallCommand;
 
 class AppServiceProvider extends Sp
 {
@@ -75,7 +75,7 @@ class AppServiceProvider extends Sp
         $dir_views_resources = base_path('/resources/views');
         $this->loadViewsFrom($dir_views_resources, 'Nabre');
         $this->loadViewsFrom($dir_views_package, 'Nabre');
-        $this->publishes([$dir_views_package => $dir_views_resources],'views');
+        $this->publishes([$dir_views_package => $dir_views_resources], 'views');
 
         //routes
         $this->loadRoutesFrom(__DIR__ . '/../../routes/web.php');
@@ -87,10 +87,10 @@ class AppServiceProvider extends Sp
         //Commands
         if ($this->app->runningInConsole()) {
             $this->commands([
-                PageSyncCommand::class,
-                DumpMongoDBCommand::class,
-                RestoreMongoDBCommand::class,
-                InstallPkgFiles::class,
+                MongoDBDumpCommand::class,
+                MongoDBRestoreCommand::class,
+                NabrecoreInstallCommand::class,
+                PageInstallCommand::class,
             ]);
         }
 

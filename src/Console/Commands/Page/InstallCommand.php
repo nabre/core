@@ -1,6 +1,6 @@
 <?php
 
-namespace Nabre\Console\Commands;
+namespace Nabre\Console\Commands\Page;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -8,7 +8,7 @@ use Nabre\Models\Page;
 use Nabre\Sync\PageSync;
 use Nabre\Repositories\Pages;
 
-class PageSyncCommand extends Command
+class InstallCommand extends Command
 {
     protected $hidden = true;
     protected $signature = 'page:install';

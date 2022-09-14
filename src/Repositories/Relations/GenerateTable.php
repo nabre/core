@@ -14,21 +14,6 @@ class GenerateTable extends Structure
         $this->colName['eti']='#';
     }
 
-    function columns()
-    {
-        return collect($this->filter)->prepend('eti')->toArray();
-    }
-
-    /*
-    function actions()
-    {
-        return [
-            'create' => 'nabre.manage.contact.create',
-            'edit' => 'nabre.manage.contact.edit',
-            'destroy' => 'nabre.manage.contact.destroy',
-        ];
-    }*/
-
     function colEti(){
         return Html::tag('i',$this->col);
     }
