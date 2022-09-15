@@ -345,10 +345,12 @@ class NavigationConsole extends Component
         $errorValue=$this->values->filter(function($item){
             $value=data_get($item,'value');
             return is_null($value) || is_array($value) && !count($value);
-        });
+        })->where('isTableField', true);
         if($errorValue->count()){
             $error=collect(data_get($this->collection->where('class',$this->model)->first(),'errors_priority'))->whereIn('class',$errorValue->pluck('class')->toArray());
-            return $error;
+
+            $content='';
+            return Html::tag('ul',$content,['class'=>'list-group']);
         }
         return null;
     }
