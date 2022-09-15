@@ -47,7 +47,7 @@ class NavigationConsole extends Component
 
     public function change_nav($position)
     {
-        $this->viewEdit=true;
+        $this->viewEdit = true;
         $this->getCheckNavigation($position, $this->values_nav[$position] ?? null);
         $this->structureFilter();
     }
@@ -226,7 +226,7 @@ class NavigationConsole extends Component
     public function render()
     {
         $nav = $this->navigation();
-        $content = $this->errors()?? $this->table();
+        $content = $this->errors() ?? $this->table();
 
         $this->values = $this->values->map(function ($i) {
             if (is_array(data_get($i, 'value'))) {
@@ -235,14 +235,14 @@ class NavigationConsole extends Component
             return $i;
         });
         $filter = $this->filter();
-        $title=data_get($this->collection->where('class',$this->model)->first(),'string');
+        $title = data_get($this->collection->where('class', $this->model)->first(), 'string');
         return '<div>
         <div class="toggle-content alert alert-dark p-1">
-            <div class="row" style="'.(!$this->viewEdit?null:'display:none').'">
-                <div class="col-auto h1">'.$title.'</div>
+            <div class="row" style="' . (!$this->viewEdit ? null : 'display:none') . '">
+                <div class="col-auto h1">' . $title . '</div>
                 <div class="col handle"><i class="fa-regular fa-pen-to-square cursor-pointer" title="Modifica"></i></div>
             </div>
-            <div style="'.($this->viewEdit?null:'display:none').'" class="row">
+            <div style="' . ($this->viewEdit ? null : 'display:none') . '" class="row">
                 <div class="col-auto">' . $nav . '</div>
                 <div class="col handle"><i class="fa-solid fa-xmark cursor-pointer" title="Chiudi"></i></div>
             </div>
@@ -341,16 +341,21 @@ class NavigationConsole extends Component
         return $table->html();
     }
 
-    protected function errors(){
-        $errorValue=$this->values->filter(function($item){
-            $value=data_get($item,'value');
+    protected function errors()
+    {
+        $errorValue = $this->values->filter(function ($item) {
+            $value = data_get($item, 'value');
             return is_null($value) || is_array($value) && !count($value);
         })->where('isTableField', true);
-        if($errorValue->count()){
-            $error=collect(data_get($this->collection->where('class',$this->model)->first(),'errors_priority'))->whereIn('class',$errorValue->pluck('class')->toArray());
 
-            $content='';
-            return Html::tag('ul',$content,['class'=>'list-group']);
+        if ($errorValue->count()) {
+            $error = $this->collection->whereIn('class', $errorValue->pluck('class')->toArray())
+                ->map(function ($i) {
+                    data_set($i, 'html', Html::tag('li', data_get($i, 'class'), ['class' => 'list-group-item list-group-item-warning']));
+                    return $i;
+                });
+            $content = $error->implode('html');
+            return Html::tag('ul', $content, ['class' => 'list-group']);
         }
         return null;
     }
