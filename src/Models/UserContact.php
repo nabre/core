@@ -33,4 +33,8 @@ class UserContact extends Model
     {
         return $this->lastname . " " . $this->firstname;
     }
+
+    function getEtiAttribute(){
+        return $this->fullname;
+    }
 }

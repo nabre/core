@@ -21,7 +21,7 @@ class RelationsController extends Controller
 
     function index()
     {
-       // $generate=(new Generate);
+        $generate=(new Generate);
         $content = (new Table())->html();
         return view("Nabre::quick.admin", compact('content'));
     }

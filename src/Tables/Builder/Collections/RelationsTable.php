@@ -32,6 +32,10 @@ class RelationsTable extends Structure
         return $this->colSystem();
     }
 
+    function colSystem2(){
+        return $this->colSystem();
+    }
+
     function colSystem()
     {
         $list = $this->col->map(function ($i) {

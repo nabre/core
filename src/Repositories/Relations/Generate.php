@@ -25,7 +25,7 @@ class Generate
             $parents = $parentsRel->pluck('to')->unique()->sort()->values()->toArray();
             $filterTo = $parentsRel->where('step', 1)->pluck('to')->unique()->values()->toArray();
             $btm = $parentsRel->where('step', 1)->where('type', 'BelongsToMany')->pluck('to')->unique()->values()->toArray();
-            $system = $this->combination->where('from', $class)->pluck('to')->unique()->sort()->values()->toArray();
+            $system = $this->combination->where('from', $class)->pluck('to')->push($class)->unique()->sort()->values()->toArray();
             //unset($parentsRel);
             return get_defined_vars();
         });
@@ -55,38 +55,44 @@ class Generate
             return get_defined_vars();
         })->pluck(null, 'class');
 
+        $this->collectionPosition();
+
         $this->tmp->each(function ($item) {
             $model = $this->classes->where('class', data_get($item, 'class'))->first();
             $data = [
                 'filter' => $this->convertClassToId($item, 'filterTo'),
                 'topfilter' => $this->convertClassToId($item, 'filterFrom'),
                 'parents' => $this->convertClassToId($item, 'parents'),
-                'system2' => $this->convertClassToId($item, 'system'),
+                'system' => $this->convertClassToId($item, 'system'),
                 'with' => data_get($item, 'with'),
+                'position' => data_get($item, 'position'),
             ];
             $model->recursiveSave($data);
         });
+    }
 
-        $this->tmp->each(function ($item) {
-            $class = data_get($item, 'class');
-            $model = $this->classes->where('class', $class)->first();
+    private function collectionPosition($position = 1, $lvl = 0)
+    {
+        $sorted = $this->tmp->whereNotNull('position')->pluck('class')->toArray();
 
-            $errors = collect([]);
-            $position = 0;
-            optional(data_get($item, 'parentsRel'))->sortBy(['step', 'to'])->each(function ($rel) use (&$errors, &$position) {
-                $class = data_get($rel, 'to');
-                if (!$errors->where('class', $class)->count()) {
-                    $data = [];
-                    data_set($data, 'class', $class);
-                    data_set($data, 'position', $position);
-                    $errors = $errors->push($data);
-                    $position++;
-                }
-            });
-
-            $errors_priority= $errors->toArray();
-            $model->recursiveSave(compact('errors_priority'));
+        $items = $this->tmp->whereNotIn('class', $sorted)->reject(function ($i) use ($sorted) {
+            return count(array_diff(data_get($i, 'parents'), $sorted, (array)data_get($i, 'class')));
+        })->map(function ($i) {
+            data_set($i, 'parents_count', count(data_get($i, 'parents')));
+            return $i;
         });
+
+        $min=$items->pluck('parents_count')->min();
+
+        $items->where('parents_count',$min)->each(function ($i, $k) use (&$position) {
+            data_set($i, 'position', $position);
+            $this->tmp = $this->tmp->put($k, $i);
+            $position++;
+        });
+
+        if (count($sorted) < $this->tmp->count() && $lvl <= $this->tmp->count()) {
+            $this->collectionPosition($position, $lvl + 1);
+        }
     }
 
     private function withOptimize($with)
@@ -134,7 +140,7 @@ class Generate
             $this->recursiveParent($bool, $inc + 1);
         }
     }
-
+    /*
     function order($order = 0)
     {
         $list = $this->tmp->whereHas('order');
@@ -150,7 +156,7 @@ class Generate
         if ($this->tmp->whereDoesntHave('order')->count()) {
             $this->order($order);
         }
-    }
+    }*/
 
     function classesCall()
     {
@@ -202,9 +208,9 @@ class Generate
         $relType = $links->pluck('type');
         $relTypeList = $relType->unique()->values()->toArray();
         if (
-            count(array_intersect($relTypeList, ['HasMany', 'HasOne']))
-            || $links->where('type', 'BelongsToMany')->count() > 1
-            || ($links->where('type', 'BelongsToMany')->count() == 1 && $links->count() > 1 /*&& $relType->last() != 'BelongsToMany'*/)
+            count(array_intersect($relTypeList, ['HasMany', 'HasOne', 'BelongsToMany']))
+            /* || $links->where('type', 'BelongsToMany')->count() > 1
+            || ($links->where('type', 'BelongsToMany')->count() == 1 && $links->count() > 1 && $relType->last() != 'BelongsToMany')*/
         ) {
             $node->parent = false;
         } else {

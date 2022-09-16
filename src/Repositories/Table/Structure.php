@@ -49,7 +49,6 @@ class Structure
 
     function setIcon($name, $icon = null, $theme = null)
     {
-
         collect(['icon', 'theme'])->each(function ($i) use ($name, $icon, $theme) {
             $this->iconAction[$name][$i] = $$i ?? $this->iconAction[$name][$i] ?? null;
         });
@@ -201,11 +200,7 @@ class Structure
         $cast = null;
         collect(explode(".", $col))->each(function ($part) use (&$cont, &$cast) {
             $cast = optional($cont)->getCasts()[$part] ?? null;
-            if (is_array($cont)) {
-                $cont = optional($cont)[$part];
-            } else {
-                $cont = optional($cont)->$part;
-            }
+            $cont=data_get($cont,$part);
         });
         $this->col = $cont;
 

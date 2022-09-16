@@ -30,7 +30,7 @@ class NavigationConsole extends Component
     {
         $this->collection = Collection::with(['filter', 'topFilter', 'childs', 'parents', 'system'])->where('class', $this->domain)->orWhereHas('system2', function ($q) {
             $q->where('class', $this->domain);
-        })->get();
+        })->orderBy('position')->get();
 
         if (is_null($this->navigation)) {
             $this->navigation = collect([]);
@@ -83,8 +83,8 @@ class NavigationConsole extends Component
         collect($this->values_nav)->filter()->each(function ($classId) use (&$position) {
             $item = $this->collection->where('id', $classId)->first();
             $exclude = $this->filter_defined->toArray();
-            $addFilter = $item->topFilter->whereNotIn('class', $exclude)->whereIn('class', $this->collection->pluck('class')->toArray());
-            $table = $item->filter;
+            $addFilter = $item->topFilter->whereNotIn('class', $exclude)->whereIn('class', $this->collection->pluck('class')->toArray())->sortBy('position')->values();
+            $table = $item->filter->sortBy('position')->values();
             $filter = $table->whereNotIn('class', $exclude)->whereIn('class', $this->collection->pluck('class')->toArray());
             $addFilter = $addFilter->merge($filter)->unique();
             $addFilter->each(function ($i) use (&$position, $filter, $table) {
@@ -215,7 +215,7 @@ class NavigationConsole extends Component
 
     protected function nodeNavigation($items, $position = 0, $value = 0)
     {
-        $items = $items->pluck('string', 'id');
+        $items = $items->sortBy(['position','string'])->pluck('string', 'id');
         if ($position) {
             $items = $items->prepend('-Seleziona-', 0);
         }
@@ -299,7 +299,7 @@ class NavigationConsole extends Component
                     if (data_get($i, 'isFilter')) {
                         $items = $items->prepend('-Seleziona-', 0);
                     }
-                    $content = Form::select('option', $items, null, ['class' => 'form-select', 'id' => $id, 'wire:model' => 'values.' . $pos . '.value', 'wire:change' => 'values_edit']);
+                    $content = Form::select('', $items, '', ['class' => 'form-select', 'id' => $id, 'wire:model' => 'values.' . $pos . '.value', 'wire:change' => 'values_edit']);
                     break;
             }
 
@@ -324,7 +324,7 @@ class NavigationConsole extends Component
             }
         });
 
-        return $items->get();
+        return $items->get()->sortBy('eti')->values();
     }
 
     protected function table()
