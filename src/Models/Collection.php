@@ -11,7 +11,7 @@ use Nabre\Models\Embeds\CollectionField;
 
 class Collection extends Model
 {
-    protected $fillable = ['title', 'class', 'with','position',];
+    protected $fillable = ['title', 'class', 'with', 'position'];
     protected $attributes = [];
     protected $casts = ['title' => LocalCast::class];
 
@@ -58,6 +58,11 @@ class Collection extends Model
     function system2(): BelongsToMany
     {
         return $this->belongsToMany(self::class, null, 'system_ids', 'system2_ids');
+    }
+
+    function hide(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, null, 'hide_ids', 'hide2_ids');
     }
 
     function getStringAttribute()
