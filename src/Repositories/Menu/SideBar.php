@@ -15,7 +15,7 @@ class SideBar
         if ($this->isCurrent($url)) {
             $active = 'list-group-item-primary';
         }
-        return Html::div(Html::a($this->label, ['href' => $url ]), ['class' => ["list-group-item",$active]]);
+        return Html::a($this->label, ['href' => $url,'class' => ["list-group-item",$active]]);
     }
 
     function header($title){
