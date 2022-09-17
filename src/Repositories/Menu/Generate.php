@@ -22,8 +22,8 @@ class Generate
         self::pagesMiddleware($pages);
 
         $items = ($menu->auto || ($menu->tree ?? false)) ? self::tree($pages) : self::singleLevel($pages);
-        $array = self::buildRecursiveArray($items->unique());
 
+        $array = self::buildRecursiveArray($items->unique());
 
         if (!$array->pluck('sub')->filter()->count()) {
             $array = collect([['i' => null, 'sub' => $array]]);

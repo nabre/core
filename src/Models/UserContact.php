@@ -37,4 +37,9 @@ class UserContact extends Model
     function getEtiAttribute(){
         return $this->fullname;
     }
+
+    function getShowStringAttribute()
+    {
+        return $this->fullname;
+    }
 }

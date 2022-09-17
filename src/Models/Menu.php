@@ -44,4 +44,9 @@ class Menu extends Model
     {
         return (bool) !is_null($this->page);
     }
+
+    function getShowStringAttribute()
+    {
+        return $this->name;
+    }
 }

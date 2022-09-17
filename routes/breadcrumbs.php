@@ -19,13 +19,14 @@ Breadcrumbs::macro('resource', function (string $name, string $title, string $pa
         $trail->push(__('Nabre::resource.Create'));
     });
 
-    Breadcrumbs::for("{$name}.show", function (BreadcrumbTrail $trail) use ($name) {
+    Breadcrumbs::for("{$name}.show", function (BreadcrumbTrail $trail,$data) use ($name) {
         $trail->parent("{$name}.index");
-        $trail->push(__('Nabre::resource.View'));
+        $url=\Route::has($name.'.show')?route($name.'.show',data_get($data,'id')):null;
+        $trail->push(data_get($data,'show_string')??data_get($data,'id'),$url);
     });
 
-    Breadcrumbs::for("{$name}.edit", function (BreadcrumbTrail $trail) use ($name) {
-        $trail->parent("{$name}.index");
+    Breadcrumbs::for("{$name}.edit", function (BreadcrumbTrail $trail,$data) use ($name) {
+        $trail->parent("{$name}.show",$data);
         $trail->push(__('Nabre::resource.Edit'));
     });
 });

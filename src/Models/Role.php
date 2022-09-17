@@ -23,23 +23,29 @@ class Role extends Original
         'guard_name' => 'web',
     ];
 
-    protected $casts=[
-        'slug'=> LocalCast::class,
+    protected $casts = [
+        'slug' => LocalCast::class,
     ];
 
-    function getEtiAttribute(){
-        $ret=$this->priority;
+    function getEtiAttribute()
+    {
+        $ret = $this->priority;
 
-        if(!is_null($ret)){
-          $ret.='] ';
+        if (!is_null($ret)) {
+            $ret .= '] ';
         }
 
-        if(empty($this->slug)){
-          $ret.= $this->name;
-        }else{
-          $ret.= $this->slug;
+        if (empty($this->slug)) {
+            $ret .= $this->name;
+        } else {
+            $ret .= $this->slug;
         }
 
         return $ret;
-      }
+    }
+
+    function getShowStringAttribute()
+    {
+        return $this->name;
+    }
 }

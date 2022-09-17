@@ -85,4 +85,9 @@ class Page extends Model
     function getEnabledAttribute(){
         return !$this->disabled;
     }
+
+    function getShowStringAttribute()
+    {
+        return $this->uri;
+    }
 }

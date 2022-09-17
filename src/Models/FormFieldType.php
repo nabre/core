@@ -25,4 +25,9 @@ class FormFieldType extends Model
     {
         return ucfirst($this->name ?? $this->key);
     }
+
+    function getShowStringAttribute()
+    {
+        return $this->key;
+    }
 }

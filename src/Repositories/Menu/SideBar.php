@@ -10,7 +10,12 @@ class SideBar
 
     function item($uri)
     {
-        return Html::div(Html::a($this->label, ['href' => url($uri) ]), ['class' => "list-group-item"]);
+        $url=url($uri);
+        $active = '';
+        if ($this->isCurrent($url)) {
+            $active = 'list-group-item-primary';
+        }
+        return Html::div(Html::a($this->label, ['href' => $url ]), ['class' => ["list-group-item",$active]]);
     }
 
     function header($title){

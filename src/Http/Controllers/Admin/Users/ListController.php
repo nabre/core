@@ -17,7 +17,7 @@ class ListController extends Controller
 
     function __construct()
     {
-       $this->authorizeResource(Model::class,'data');
+        $this->authorizeResource(Model::class, 'data');
     }
 
     function index()

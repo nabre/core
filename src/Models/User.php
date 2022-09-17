@@ -76,6 +76,12 @@ class User extends JUser implements AuthenticatableContract, AuthorizableContrac
     function getEtiAttribute(){
         return $this->email;
     }
+
+    function getShowStringAttribute()
+    {
+        return $this->email;
+    }
+
     #impersonate
     public function setImpersonating($id)
     {

@@ -55,4 +55,10 @@ class Setting extends Model
     {
         return $this->name ?? $this->key;
     }
+
+    function getShowStringAttribute()
+    {
+        $key=config('setting.database.key');
+        return $this->$key;
+    }
 }

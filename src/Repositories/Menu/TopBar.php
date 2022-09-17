@@ -10,7 +10,12 @@ class TopBar
 
     function item( $uri)
     {
-        return Html::tag('li',Html::a($this->label, ['href' => url($uri), 'class' => 'nav-link','title'=>$this->title]), ['class' => "nav-item"]);
+        $url=url($uri);
+        $active = '';
+        if ($this->isCurrent($url)) {
+            $active = 'active';
+        }
+        return Html::tag('li',Html::a($this->label, ['href' => $url, 'class' => ['nav-link',$active],'title'=>$this->title]), ['class' => "nav-item"]);
     }
 
     function subItem( $uri)

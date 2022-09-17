@@ -69,4 +69,8 @@ class Collection extends Model
     {
         return ucfirst(trim($this->title ?? collect(explode("\\", $this->class))->reverse()->first()));
     }
+    function getShowStringAttribute()
+    {
+        return $this->class;
+    }
 }

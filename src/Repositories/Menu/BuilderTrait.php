@@ -7,12 +7,14 @@ use Collective\Html\HtmlFacade as Html;
 trait BuilderTrait
 {
     var $set;
+    var $currents;
 
     function __construct($menu)
     {
         $text = $menu->text ?? false;
         $icon = $menu->icon ?? false;
 
+        $this->currents = \Breadcrumbs::generate()->pluck('url')->toArray();
         unset($menu);
         $this->set = (object)get_defined_vars();
     }
@@ -32,14 +34,14 @@ trait BuilderTrait
                 $uri = $item['i']['uri'];
                 $html .= $this->item($uri);
             } else {
-                $html .= $this->container($this->folder($this->label,$this->recursive($item['sub'])));
+                $html .= $this->container($this->folder($this->label, $this->recursive($item['sub'])));
             }
         });
 
         return $html;
     }
 
-    function folder($label,$list)
+    function folder($label, $list)
     {
         $content = ($label) ? $this->header($label) : null;
         $content .= $this->list($list);
@@ -51,7 +53,7 @@ trait BuilderTrait
         if (is_null($page)) {
             return false;
         }
-        return trim(($this->set->icon ? $page->icon : null) . " " . (($this->set->text || !$this->set->icon || is_null($page->icon) ) ? $page->string : null));
+        return trim(($this->set->icon ? $page->icon : null) . " " . (($this->set->text || !$this->set->icon || is_null($page->icon)) ? $page->string : null));
     }
 
     function title($page)
@@ -59,9 +61,22 @@ trait BuilderTrait
         return optional($page)->string;
     }
 
+    function isCurrent($url)
+    {
+        if (in_array($url, $this->currents)) {
+            return true;
+        }
+        return false;
+    }
+
     function item($uri)
     {
-        return Html::a($this->label, ['href' => url($uri), 'title' => $this->title]);
+        $url = url($uri);
+        $active = '';
+        if ($this->isCurrent($url)) {
+            $active = 'active';
+        }
+        return Html::a($this->label, ['href' => $url, 'title' => $this->title, 'class' => $active]);
     }
 
     function subItem($uri)

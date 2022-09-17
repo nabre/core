@@ -37,6 +37,10 @@ class Permission extends Original
         return $this->slug;
     }
 
+    function getShowStringAttribute()
+    {
+        return $this->name;
+    }
 
     public static function findByName(string $name, string $guardName = null): PermissionInterface
     {
