@@ -21,7 +21,7 @@
     "autoload": {
         "psr-4": {
             "Nabre\\": "src/",
-            "Nabre\\Database\\Seeds\\": "database/seeds/"
+            "Nabre\\Database\\Seeders\\": "database/seeders/"
         }
     },
     "extra": {

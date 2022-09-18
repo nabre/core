@@ -1,9 +1,12 @@
 <?php
 
-namespace Nabre\Database\Seeds;
+namespace Nabre\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
 class PageSeed extends Seeder
 {
+    function run()
+    {
+    }
 }
