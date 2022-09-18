@@ -1,9 +1,9 @@
 <?php
 
-namespace Nabre\Http\Controllers\User;
+namespace Nabre\Http\Controllers\User\Profile;
 
 use Illuminate\Http\Request;
-use Nabre\Forms\User\SettingsForm as Form;
+use Nabre\Forms\User\Profile\SettingsForm as Form;
 use Nabre\Http\Controllers\Controller;
 use Nabre\Models\Setting as Model;
 use Nabre\Repositories\Form\Build;
@@ -12,7 +12,7 @@ use Nabre\Repositories\Form\Build;
 class SettingsController extends Controller
 {
 
-    protected $routeRoot = 'nabre.user.settings';
+    protected $routeRoot = 'nabre.user.profile.settings';
 
     function __construct()
     {

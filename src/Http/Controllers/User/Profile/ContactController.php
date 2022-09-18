@@ -1,10 +1,10 @@
 <?php
 
-namespace Nabre\Http\Controllers\User;
+namespace Nabre\Http\Controllers\User\Profile;
 
 use App\Models\UserContact as Model;
 use Illuminate\Http\Request;
-use Nabre\Forms\User\ContactForm as Form;
+use Nabre\Forms\User\Profile\ContactForm as Form;
 use Nabre\Http\Controllers\Controller;
 use Nabre\Repositories\Form\Build;
 use Nabre\Repositories\Form\Validator;
@@ -12,7 +12,7 @@ use Nabre\Repositories\Form\Validator;
 class ContactController extends Controller
 {
 
-    protected $routeRoot = 'nabre.user.contact';
+    protected $routeRoot = 'nabre.user.profile.contact';
 
     function __construct()
     {

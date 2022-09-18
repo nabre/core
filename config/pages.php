@@ -26,10 +26,10 @@ return [
     'nabre_builder_settings_variables_index' => ['i' => 'fa-solid fa-tags'],
     'nabre_manage_contact_index' => ['i' => 'fa-solid fa-user-pen'],
     'nabre_manage_dashboard_index' => ['i' => 'fa-solid fa-gauge'],
-    'nabre_user_account_index' => ['i' => 'fa-solid fa-key'],
-    'nabre_user_contact_index' => ['i' => 'fa-solid fa-id-badge'],
     'nabre_user_dashboard_index' => ['i' => 'fa-solid fa-gauge'],
-    'nabre_user_settings_index' => ['i' => 'fa-solid fa-sliders'],
+    'nabre_user_profile_account_index' => ['i' => 'fa-solid fa-key'],
+    'nabre_user_profile_contact_index' => ['i' => 'fa-solid fa-id-badge'],
+    'nabre_user_profile_settings_index' => ['i' => 'fa-solid fa-sliders'],
 
     //Folder
     "admin" => ['i' => 'fa-solid fa-gears', 'd' => 'nabre_admin_settings_index'],
@@ -41,4 +41,5 @@ return [
     'admin_users' => ['i' => 'fa-solid fa-users-gear', 'd' => 'nabre_admin_users_list_index'],
     'manage' => ['i' => 'fa-solid fa-screwdriver-wrench', 'd' => 'nabre_manage_dashboard_index'],
     'user' => ['i' => 'fa-solid fa-circle-user', 'd' => 'nabre_user_dashboard_index'],
+    'user_profile' => ['i' => 'fa-solid fa-users-gear', 'd' => 'nabre_user_profile_account_index','t'=>['it'=>'Profilo']],
 ];

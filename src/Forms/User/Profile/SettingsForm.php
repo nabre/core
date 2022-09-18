@@ -1,6 +1,6 @@
 <?php
 
-namespace Nabre\Forms\User;
+namespace Nabre\Forms\User\Profile;
 
 use Nabre\Models\Setting;
 use Nabre\Repositories\Form\Structure;

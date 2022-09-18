@@ -34,9 +34,12 @@ Route::group(['middleware' => ['web']], function () {
         Route::middleware(['auth', 'verified'])->group(function () {
             Route::name("user.")->group(function () {
                 Route::resource('user/dashboard', Nabre\Http\Controllers\User\DashController::class, ['key' => 'data'])->only(['index']);
-                Route::resource('user/account', Nabre\Http\Controllers\User\AccountController::class, ['key' => 'data'])->only(['index', 'update']);
-                Route::resource('user/contact', Nabre\Http\Controllers\User\ContactController::class, ['key' => 'data'])->only(['index', 'update']);
-                Route::resource('user/settings', Nabre\Http\Controllers\User\SettingsController::class, ['key' => 'data'])->only(['index', 'store']);
+
+                Route::name("profile.")->group(function () {
+                    Route::resource('user/profile/account', Nabre\Http\Controllers\User\Profile\AccountController::class, ['key' => 'data'])->only(['index', 'update']);
+                    Route::resource('user/profile/contact', Nabre\Http\Controllers\User\Profile\ContactController::class, ['key' => 'data'])->only(['index', 'update']);
+                    Route::resource('user/profile/settings', Nabre\Http\Controllers\User\Profile\SettingsController::class, ['key' => 'data'])->only(['index', 'store']);
+                });
             });
 
             Route::middleware(['role:manage'])->name("manage.")->group(function () {
@@ -65,7 +68,7 @@ Route::group(['middleware' => ['web']], function () {
 
                 Route::name("collections.")->group(function () {
                     Route::resource('admin/builder/collections/fields', Nabre\Http\Controllers\Builder\Collections\FieldsController::class, ['key' => 'data'])->only(['index', 'create', 'edit']);
-                    Route::resource('admin/builder/collections/relations', Nabre\Http\Controllers\Builder\Collections\RelationsController::class, ['key' => 'data'])->only(['index', 'create', 'edit','destroy']);
+                    Route::resource('admin/builder/collections/relations', Nabre\Http\Controllers\Builder\Collections\RelationsController::class, ['key' => 'data'])->only(['index', 'create', 'edit', 'destroy']);
                     Route::resource('admin/builder/collections/demo-console', Nabre\Http\Controllers\Builder\Collections\DemoController::class, ['key' => 'data'])->only(['index']);
                 });
 

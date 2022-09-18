@@ -1,10 +1,9 @@
 <?php
 
-namespace Nabre\Http\Controllers\User;
+namespace Nabre\Http\Controllers\User\Profile;
 
 use App\Models\User as Model;
-use Illuminate\Http\Request;
-use Nabre\Forms\User\UserForm as Form;
+use Nabre\Forms\User\Profile\UserForm as Form;
 use Nabre\Http\Controllers\Controller;
 use Nabre\Repositories\Form\Build;
 use Nabre\Repositories\Form\Validator;
@@ -12,7 +11,7 @@ use Nabre\Repositories\Form\Validator;
 class AccountController extends Controller
 {
 
-    protected $routeRoot = 'nabre.user.account';
+    protected $routeRoot = 'nabre.user.profile.account';
 
     function __construct()
     {
