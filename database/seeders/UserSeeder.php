@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Nabre\Models\Role;
 use Nabre\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Validation\Rules\Exists;
 
 class UserSeeder extends Seeder
 {
@@ -21,8 +20,9 @@ class UserSeeder extends Seeder
         if (!$exists) {
             $node=User::create();
             $data=[
+                'name'=>'Admin account',
                 'email'=>'admin@'.request()->getHttpHost(),
-                'password'=>'admin',
+                'password'=>'password',
                 "email_verified_at"=> Carbon::now(),
                 'roles'=>[
                     data_get(Role::where('priority',$minPri)->first(),'id'),
