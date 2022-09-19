@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             SettingGroupSeeder::class,
             PageSeeder::class,
             MenuSeeder::class,
+            UserSeeder::class,
         ]);
     }
 }
