@@ -40,7 +40,12 @@ $app->singleton(
 
 return $app;
 ```
-## MongoDB
+## Database MongoDB
+
+### Seeders
+```bash
+php artisan db:seed --class=Nabre\Database\Seeders\DatabaseSeeder 
+```
 ## NPM
 ```bash
 npm install fortawesome/fontawesome-free
