@@ -4,7 +4,7 @@ namespace Nabre\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class DatabaseBuildSeeder extends Seeder
+class DatabaseSeeder extends Seeder
 {
     function run()
     {
