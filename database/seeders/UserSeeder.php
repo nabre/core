@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
         if (!$exists) {
             $node=User::create();
             $data=[
-                'email'=>'demo@admin.com',
+                'email'=>'admin@'.request()->getHttpHost(),
                 'password'=>'admin',
                 'roles'=>[
                     data_get(Role::where('priority',$minPri)->first(),'id'),
