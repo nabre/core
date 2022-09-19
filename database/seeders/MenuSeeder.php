@@ -25,10 +25,11 @@ class MenuSeeder extends Seeder
         });
 
         #customMenu
-
         collect([
             [
                 'string' => 'mainmenu',
+                'text'=>false,
+                'icon'=>true,
                 'items' => [
                     ['page' => data_get(Page::where(['uri' => 'user'])->first(), 'id')],
                     ['page' => data_get(Page::where(['uri' => 'manage'])->first(), 'id')],
