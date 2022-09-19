@@ -2,6 +2,7 @@
 
 namespace Nabre\Database\Seeders;
 
+use Carbon\Carbon;
 use Nabre\Models\Role;
 use Nabre\Models\User;
 use Illuminate\Database\Seeder;
@@ -22,6 +23,7 @@ class UserSeeder extends Seeder
             $data=[
                 'email'=>'admin@'.request()->getHttpHost(),
                 'password'=>'admin',
+                "email_verified_at"=> Carbon::now(),
                 'roles'=>[
                     data_get(Role::where('priority',$minPri)->first(),'id'),
                 ],
