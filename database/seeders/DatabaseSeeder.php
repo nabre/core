@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             FormFieldsTypeSeeder::class,
             SettingSeeder::class,
             SettingGroupSeeder::class,
+            PageSeeder::class,
         ]);
     }
 }
