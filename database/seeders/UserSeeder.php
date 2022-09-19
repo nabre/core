@@ -18,14 +18,14 @@ class UserSeeder extends Seeder
         })->get()->count();
 
         if (!$exists) {
-            $node=User::create();
-            $data=[
-                'name'=>'Admin account',
-                'email'=>'admin@'.request()->getHttpHost(),
-                'password'=>'password',
-                "email_verified_at"=> Carbon::now(),
-                'roles'=>[
-                    data_get(Role::where('priority',$minPri)->first(),'id'),
+            $node = User::create();
+            $data = [
+                'name' => 'Admin account',
+                'email' => 'admin@' . request()->getHttpHost(),
+                'password' => 'password',
+                "email_verified_at" => Carbon::now(),
+                'roles' => [
+                    data_get(Role::where('priority', $minPri)->first(), 'id'),
                 ],
             ];
             $node->recursiveSave($data);
