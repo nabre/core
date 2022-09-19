@@ -12,10 +12,10 @@ class FormFieldType extends Model
         'name',
         'key'
     ];
-
+/*
     protected $attributes = [
         'type' => Field::TEXT,
-    ];
+    ];*/
 
     protected $casts = [
         'name' => LocalCast::class,

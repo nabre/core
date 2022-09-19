@@ -9,7 +9,7 @@ class FormFieldTypeForm extends Structure
 {
     function build()
     {
-        $this->add('key', Field::STATIC);
+        $this->add(config('setting.database.key'), Field::STATIC);
         $this->add('name')->request('max:255');
     }
 }
