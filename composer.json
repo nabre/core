@@ -16,7 +16,8 @@
         "mpdf/mpdf": "^8.0",
         "laravel-lang/attributes": "^2.0",
         "laravel-lang/lang": "^12.0",
-        "laravel-lang/publisher": "^14.0"
+        "laravel-lang/publisher": "^14.0",
+        "spatie/icalendar-generator": "^2.4"
     },
     "autoload": {
         "psr-4": {
