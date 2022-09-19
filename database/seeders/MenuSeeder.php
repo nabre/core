@@ -30,12 +30,12 @@ class MenuSeeder extends Seeder
             [
                 'string' => 'mainmenu',
                 'items' => [
-                    ['page' => data_get(Page::find(['uri' => 'user']), 'id')],
-                    ['page' => data_get(Page::find(['uri' => 'manage']), 'id')],
-                    ['page' => data_get(Page::find(['uri' => 'admin']), 'id')],
-                    ['page' => data_get(Page::find(['uri' => 'login']), 'id')],
-                    ['page' => data_get(Page::find(['uri' => 'register']), 'id')],
-                    ['page' => data_get(Page::find(['uri' => 'logout']), 'id')],
+                    ['page' => data_get(Page::where(['uri' => 'user'])->first(), 'id')],
+                    ['page' => data_get(Page::where(['uri' => 'manage'])->first(), 'id')],
+                    ['page' => data_get(Page::where(['uri' => 'admin'])->first(), 'id')],
+                    ['page' => data_get(Page::where(['uri' => 'login'])->first(), 'id')],
+                    ['page' => data_get(Page::where(['uri' => 'register'])->first(), 'id')],
+                    ['page' => data_get(Page::where(['uri' => 'logout'])->first(), 'id')],
                 ]
             ]
         ])->each(function ($data) {
