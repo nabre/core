@@ -2,9 +2,10 @@
 Il pacchetto è ancora in fase di elaborazione!
 # ***WORK IN PROGRESS***
 ## Indice dei contenuti
-1.  [Introduzione](#1-introduzione)
-2.  [Installazione](#2-installazione)
-    1. [Modifica file Laravel](#21-modifica-file-laravel)   
+
+* 1\.  [Introduzione](#1-introduzione)
+* 2\.  [Installazione](#2-installazione)
+* 2.1\. [Modifica file Laravel](#21-modifica-file-laravel)   
 3.  [Pannello di controllo](#3-pannello-di-controllo)
 4.  [Funzionalità](#4-funzionalità)
 5.  [Artisan](#5-artisan)
