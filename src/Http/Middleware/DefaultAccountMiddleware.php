@@ -12,7 +12,7 @@ class DefaultAccountMiddleware
     public function handle(Request $request, Closure $next): mixed
     {
         $redirect='/user/profile';
-        if(get_data(auth()->user(),'email')==config('auth.adminaccountdefault.email') && $redirect!=url()->current()){
+        if(get_data(auth()->user(),'email')==config('auth.adminaccountdefault.email') && $redirect!=request()->path()){
             return redirect($redirect);
         }
         return $next($request);
