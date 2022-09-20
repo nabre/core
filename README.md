@@ -129,19 +129,30 @@ mix.js('vendor/nabre/core/resources/js/app.js', 'public/js')
 ```bash
 npm run dev
 ```
-# 3 Funzionalità
-## 3.1 Account
-Quando si utilizza la procedura descritta al §2.2.2 viene genrato un account predefinito con la possibilità di accesso ad ogni parte dell'applicazione con le seguenti credenziali:
-| **Nome utente:**   | admin@admin.test |
-| --- | --- |
-| **Password:**      | password         |
-## 3.2 Route
-## 3.3 Breadcrumbs
-## 3.4 Form
-## 3.5 Table
-## 3.6 Template
+# 3 Pannello di controllo
+Il pacchetto prevede tre ambienti di base con predefinte alcune funzionalità di gestione.
 
-# 4 Artisan
+| Uri principale    | Descrizione                                                                           |
+| ---               | ---                                                                                   |
+| *user*            | percorso dove si ritrova la gestione del proprio profilo dopo l'esecuzione del login. |
+| *manage*          | Definite le pagine per la gestione delle funzionalità operative dell'applicazione.    |
+| *admin*           | Pannello amministrativo dell'applicazione.                                            |
+| *admin/builder*   | Pagine dedicate alla costruzione di alcune parti generali dell'applicazione.          |
+
+# 4 Funzionalità
+## 4.1 Account
+Quando si utilizza la procedura descritta al §2.2.2 viene genrato un account predefinito con la possibilità di accesso ad ogni parte dell'applicazione con le seguenti credenziali:
+| **Nome utente:**  | admin@admin.test |
+| ---               | ---              |
+| **Password:**     | password         |
+## 4.2 Route
+## 4.3 Menu
+## 4.4 Breadcrumbs
+## 4.5 Form
+## 4.6 Table
+## 4.7 Template
+
+# 5 Artisan
 Il presente pacchetto prevede alcuni comandi artisan aggiuntivi per facilitare alcune oprazioni di gestione dell'applicazione.
 
 | Comando           | Descrizione                                                |
