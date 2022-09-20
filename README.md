@@ -132,6 +132,8 @@ npm run dev
 # 3 Funzionalità
 ## 3.1 Account
 Quando si utilizza la procedura descritta al §2.2.2 viene genrato un account predefinito con la possibilità di accesso ad ogni parte dell'applicazione con le seguenti credenziali:
+| | |
+| --- | --- |
 | **Nome utente:**   | admin@admin.test |
 | **Password:**      | password         |
 ## 3.2 Route
