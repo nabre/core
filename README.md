@@ -146,8 +146,19 @@ Quando si utilizza la procedura descritta al §2.2.2 viene genrato un account pr
 | ---               | ---              |
 | **Password:**     | password         |
 ## 4.2 Route
-## 4.3 Menu
-## 4.4 Breadcrumbs
+## 4.3 Breadcrumbs
+L'applicazione genera i *breadcrumbs* basandosi sul percorso di chiamata impostato.
+## 4.4 Menu
+### 4.4.1 Formato
+#### 4.4.1.1 Automatico
+L'appicazione di basa sul percorso di chiamata iniziale per caricare tutti i percorsi "figli", secondo le regole di *breadcrumbs*.
+#### 4.4.1.2 Manuale
+È possibile aggiungere manualmente le pagine per creare il proprio menu personalizzato ad un livello.
+### 4.4.3 Impostazioni
+| Parametro | Descrizione |
+| --- | --- |
+| icona | visualizza (sì/no) l'icona della pagina
+| Testo | visualizza (sì/no) il titolo della pagina
 ## 4.5 Form
 ## 4.6 Table
 ## 4.7 Template
