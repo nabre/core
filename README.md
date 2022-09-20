@@ -9,7 +9,7 @@ Installa il presente pacchetto:
 ```bash
 composer require nabre/core
 ```
-Procedere con la modifica dei file di Laravel elencati nel capitolo successivo.
+Successivamente procedere con la modifica dei file e l'esecuzione di alcuni comandi per completare l'installazione come previsto nei segunti sottocapitoli.
 ## 2.1 Modifica file Laravel
 Editare i seguenti file di seguito elencati:
 ***bootstap/app.php***
@@ -73,7 +73,7 @@ npm run dev
 ## 3.5 Template
 
 # 4 Artisan
-Comandi aggiuntivi:
+Il presente pacchetto prevede alcuni comandi artisan aggiuntivi per facilitare alcune oprazioni di gestione dell'applicazione.
 
 | Comando           | Descrizione                                                |
 | -------------     | -------------                                              |
