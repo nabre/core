@@ -145,31 +145,38 @@ Quando si utilizza la procedura descritta al §2.2.2 viene genrato un account pr
 | **Nome utente:**  | admin@admin.test |
 | ---               | ---              |
 | **Password:**     | password         |
-### 4.1.1 Ruoli
-L'appicazione prevede un sistema di ruoli per poter accedere alle pagine gerarchico in funzione di una priorità definita, dove chi ha un valore minore può accedere a ruoli con priorità di valore maggiore.
+## 4.2 Ruoli & permessi
+L'applicazione si basa sul pacchetto *mostafamaklad/laravel-permission-mongodb* per gestire i ruoli e permessi.
+Consultare la guida per comprendere come integrarlo nella propia applicazione.
+Nella presente applicazione è stato integrato un un sistema di ruoli gerarchico in funzione di una priorità definita, dove chi ha un valore minore può accedere a ruoli con priorità di valore maggiore.
 In modo predefinito l'applicazione i seguenti ruoli con le rispettive priorità:
 | Priorità | Ruolo     |
 | ---:     | ---       |
 | 1]       | *builder* |
 | 2]       | *admin*   |
 | 3]       | *manage*  |
-## 4.2 Route
-## 4.3 Breadcrumbs
+
+Per aggiornare i ruoli e permessi adottati nei middleware delle route utilizzare il seguente comando:
+```bash
+php artisan roles:update
+```
+## 4.3 Route
+## 4.4 Breadcrumbs
 L'applicazione genera i *breadcrumbs* basandosi sul percorso di chiamata impostato.
-## 4.4 Menu
-### 4.4.1 Formato
-#### 4.4.1.1 Automatico
+## 4.5 Menu
+### 4.5.1 Formato
+#### 4.5.1.1 Automatico
 L'appicazione di basa sul percorso di chiamata iniziale per caricare tutti i percorsi "figli", secondo le regole di *breadcrumbs*.
-#### 4.4.1.2 Manuale
+#### 4.5.1.2 Manuale
 È possibile aggiungere manualmente le pagine per creare il proprio menu personalizzato ad un livello.
-### 4.4.3 Impostazioni
+### 4.5.3 Impostazioni
 | Parametro | Descrizione |
 | --- | --- |
 | icona | visualizza (sì/no) l'icona della pagina
 | Testo | visualizza (sì/no) il titolo della pagina
-## 4.5 Form
-## 4.6 Table
-## 4.7 Template
+## 4.6 Form
+## 4.7 Table
+## 4.8 Template
 
 # 5 Artisan
 Il presente pacchetto prevede alcuni comandi artisan aggiuntivi per facilitare alcune oprazioni di gestione dell'applicazione.

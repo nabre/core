@@ -16,6 +16,7 @@ use Nabre\Console\Commands\MongoDB\DumpCommand as MongoDBDumpCommand;
 use Nabre\Console\Commands\MongoDB\RestoreCommand as MOngoDBRestoreCommand;
 use Nabre\Console\Commands\Nabrecore\InstallCommand as NabrecoreInstallCommand;
 use Nabre\Console\Commands\Page\InstallCommand as PageInstallCommand;
+use Nabre\Console\Commands\Roles\UpdateCommand as RolesUpdateCommand ;
 
 class AppServiceProvider extends Sp
 {
@@ -91,6 +92,7 @@ class AppServiceProvider extends Sp
                 MongoDBRestoreCommand::class,
                 NabrecoreInstallCommand::class,
                 PageInstallCommand::class,
+                RolesUpdateCommand::class,
             ]);
         }
 
