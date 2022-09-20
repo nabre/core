@@ -74,6 +74,7 @@ npm run dev
 
 # 4 Artisan
 Comandi aggiuntivi:
+| :---          | :---                                                      |
 | Comando       | Descrizione                                               |
 | ------------- | -------------                                             |
 | page:install  | Vengono aggiunte le pagine presenti nell'applicazione.    |
