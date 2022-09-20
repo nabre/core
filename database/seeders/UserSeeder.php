@@ -6,11 +6,13 @@ use Carbon\Carbon;
 use Nabre\Models\Role;
 use Nabre\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 
 class UserSeeder extends Seeder
 {
     function run()
     {
+        Artisan::call('optimize');
         $minPri = Role::whereNotNull("priority")->get()->min("priority");
 
         $exists = (bool)User::whereHas('roles', function ($q) use ($minPri) {
