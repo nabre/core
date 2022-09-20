@@ -19,15 +19,12 @@ class UserSeeder extends Seeder
 
         if (!$exists) {
             $node = User::create();
-            $data = [
-                'name' => 'Admin account',
-                'email' => 'admin@account.test',
-                'password' => 'password',
-                "email_verified_at" => Carbon::now(),
-                'roles' => [
-                    data_get(Role::where('priority', $minPri)->first(), 'id'),
-                ],
-            ];
+            $data = config('auth.adminaccountdefault');
+            data_set($data, "email_verified_at", Carbon::now());
+            data_set($data, 'roles', [
+                data_get(Role::where('priority', $minPri)->first(), 'id'),
+            ]);
+
             $node->recursiveSave($data);
         }
     }

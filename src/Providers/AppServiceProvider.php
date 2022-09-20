@@ -16,7 +16,8 @@ use Nabre\Console\Commands\MongoDB\DumpCommand as MongoDBDumpCommand;
 use Nabre\Console\Commands\MongoDB\RestoreCommand as MOngoDBRestoreCommand;
 use Nabre\Console\Commands\Nabrecore\InstallCommand as NabrecoreInstallCommand;
 use Nabre\Console\Commands\Page\InstallCommand as PageInstallCommand;
-use Nabre\Console\Commands\Roles\UpdateCommand as RolesUpdateCommand ;
+use Nabre\Console\Commands\Roles\UpdateCommand as RolesUpdateCommand;
+use Nabre\Http\Middleware\DefaultAccountMiddleware;
 
 class AppServiceProvider extends Sp
 {
@@ -48,8 +49,10 @@ class AppServiceProvider extends Sp
             return $app['setting.manager']->driver();
         });
 
-        $this->mergeConfigFrom(__DIR__ . '/../../config/setting.php', 'setting');
+        //Config
+        $this->mergeConfigFrom(__DIR__ . '/../../config/auth.php', 'auth');
         $this->mergeConfigFrom(__DIR__ . '/../../config/breadcrumbs.php', 'breadcrumbs');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/setting.php', 'setting');
     }
 
     public function boot(\Illuminate\Routing\Router $router, \Illuminate\Contracts\Http\Kernel $kernel)
@@ -62,7 +65,7 @@ class AppServiceProvider extends Sp
         $router->pushMiddlewareToGroup('web', LocalizationMiddleware::class);
         $kernel->pushMiddleware(StartSession::class);
         $kernel->pushMiddleware(ImpersonateMiddleware::class);
-
+        $kernel->pushMiddleware(DefaultAccountMiddleware::class);
         $kernel->pushMiddleware(SettingOverrideMiddleware::class);
 
         //disk
