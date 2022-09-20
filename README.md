@@ -2,8 +2,8 @@
 Il pacchetto è ancora in fase di elaborazione!
 # ***WORK IN PROGRESS***
 ## Indice dei contenuti
-* (#1-introduzione)
-* (#2-installazione)
+* [1 Introduzione](#1-introduzione)
+* [2 Installazione](#2-installazione)
 
 # 1 Introduzione
 Il presente pacchetto viene impiegato per impostare alcune funzionalità di background per lo sviluppo di applicazioni basate sul framework Laravel.
