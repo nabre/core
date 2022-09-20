@@ -1,16 +1,16 @@
 
 Il pacchetto è ancora in fase di elaborazione!
 # ***WORK IN PROGRESS***
-# Introduzione
+# 1 Introduzione
 Il presente pacchetto viene impiegato per impostare alcune funzionalità di background per lo sviluppo di applicazioni basate sul framework Laravel.
-# Installazione
+# 2 Installazione
 Installazione del framework Laravel secondo la [guida](https://laravel.com/docs).
 Installa il presente pacchetto:
 ```bash
 composer require nabre/core
 ```
 Procedere con la modifica dei file di Laravel elencati nel capitolo successivo.
-## Modifica file Laravel
+## 2.1 Modifica file Laravel
 Editare i seguenti file di seguito elencati:
 ***bootstap/app.php***
 ```php
@@ -40,13 +40,13 @@ $app->singleton(
 
 return $app;
 ```
-## Database MongoDB
+## 2.2 Database MongoDB
 
-### Seeders
+### 2.2.1 Seeders
 ```bash
 php artisan db:seed --class=Nabre\Database\Seeders\DatabaseSeeder 
 ```
-## NPM
+## 2.3 NPM
 ```bash
 npm install fortawesome/fontawesome-free
 npm install flag-icons
@@ -65,12 +65,14 @@ mix.js('vendor/nabre/core/resources/js/app.js', 'public/js')
 ```bash
 npm run dev
 ```
-# Funzionalità
-## Route
-## Breadcrumbs
-## Form
-## Table
-## Template
+# 3 Funzionalità
+## 3.1 Route
+## 3.2 Breadcrumbs
+## 3.3 Form
+## 3.4 Table
+## 3.5 Template
 
-# Artisan
+# 4 Artisan
 Comandi aggiuntivi:
+| Comando | Descrizione   |
+| page:install | Vengono aggiunte le pagine presenti nell'applicazione.  |
