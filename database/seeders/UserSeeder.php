@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
             $node = User::create();
             $data = [
                 'name' => 'Admin account',
-                'email' => 'admin@admin.test',
+                'email' => 'admin@account.test',
                 'password' => 'password',
                 "email_verified_at" => Carbon::now(),
                 'roles' => [
