@@ -148,11 +148,11 @@ Quando si utilizza la procedura descritta al §2.2.2 viene genrato un account pr
 ### 4.1.1 Ruoli
 L'appicazione prevede un sistema di ruoli per poter accedere alle pagine gerarchico in funzione di una priorità definita, dove chi ha un valore minore può accedere a ruoli con priorità di valore maggiore.
 In modo predefinito l'applicazione i seguenti ruoli con le rispettive priorità:
-| Priorità | Ruolo |
-| ---               | ---              |
-| 1]    | *builder*         |
-| 2]    | *admin*         |
-| 3]    | *manage*         |
+| Priorità | Ruolo     |
+| ---:     | ---       |
+| 1]       | *builder* |
+| 2]       | *admin*   |
+| 3]       | *manage*  |
 ## 4.2 Route
 ## 4.3 Breadcrumbs
 L'applicazione genera i *breadcrumbs* basandosi sul percorso di chiamata impostato.
