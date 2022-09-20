@@ -106,6 +106,7 @@ class UserContact extends Original
 
 ```
 ### 2.2.2 Seeders
+Per aggiungere gli elementi mini nel database per poter inizare ad utilizzare il pacchetto richiamare il seguente comando:
 ```bash
 php artisan db:seed --class=Nabre\Database\Seeders\DatabaseSeeder 
 ```
@@ -129,11 +130,15 @@ mix.js('vendor/nabre/core/resources/js/app.js', 'public/js')
 npm run dev
 ```
 # 3 Funzionalità
-## 3.1 Route
-## 3.2 Breadcrumbs
-## 3.3 Form
-## 3.4 Table
-## 3.5 Template
+## 3.1 Account
+Quando si utilizza la procedura descritta al §2.2.2 viene genrato un account predefinito con la possibilità di accesso ad ogni parte dell'applicazione con le seguenti credenziali:
+| **Nome utente:**   | admin@admin.test |
+| **Password:**      | password         |
+## 3.2 Route
+## 3.3 Breadcrumbs
+## 3.4 Form
+## 3.5 Table
+## 3.6 Template
 
 # 4 Artisan
 Il presente pacchetto prevede alcuni comandi artisan aggiuntivi per facilitare alcune oprazioni di gestione dell'applicazione.
