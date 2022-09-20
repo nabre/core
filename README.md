@@ -74,7 +74,10 @@ npm run dev
 
 # 4 Artisan
 Comandi aggiuntivi:
-| :---          | :---                                                      |
-| Comando       | Descrizione                                               |
-| ------------- | -------------                                             |
-| page:install  | Vengono aggiunte le pagine presenti nell'applicazione.    |
+
+| Comando           | Descrizione                                                |
+| -------------     | -------------                                              |
+| mongodb:dump      | Crea un fil di backup del database MongoDB impostato.      |
+| mongodb:restore   | Ripristina l'ultimo file di backup presente nel DB MongoDB |
+| nabrecore:install | Installa le impostazioni del presente pacchetto.           |
+| page:install      | Vengono aggiunte le pagine presenti nell'applicazione.     |
