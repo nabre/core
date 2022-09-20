@@ -42,8 +42,14 @@ return $app;
 ```
 ## 2.2 Database
 Il presente pacchetto prevede l'impiego di una database ***MongoDB***.
+
+### 2.2.0 Installazione
+Il presente pacchetto si supporta del pacchetto ***jenssegers/laravel-mongodb***.
+Seguire la guida per l'installazione e l'utilizzo delle sue funzionalità.
+
 ### 2.2.1 Aggiungere file Model
 È necessario aggiungere i seguenti file Model nel percorso ***App\Models***:
+
 ***Permission.php***
 ```php
 <?php
@@ -57,6 +63,7 @@ class Permission extends Original
 }
 
 ```
+
 ***Role.php***
 ```php
 <?php
@@ -70,6 +77,7 @@ class Role extends Original
 }
 
 ```
+
 ***User.php***
 ```php
 <?php
@@ -83,6 +91,7 @@ class User extends Original
 }
 
 ```
+
 ***UserContact.php***
 ```php
 <?php
