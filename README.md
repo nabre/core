@@ -40,9 +40,63 @@ $app->singleton(
 
 return $app;
 ```
-## 2.2 Database MongoDB
+## 2.2 Database
+Il presente pacchetto prevede l'impiego di una database ***MongoDB***.
+### 2.2.1 Aggiungere file Model
+È necessario aggiungere i seguenti file Model nel percorso ***App\Models***:
+***Permission.php***
+```php
+<?php
 
-### 2.2.1 Seeders
+namespace App\Models;
+
+use Nabre\Models\Permission as Original;
+
+class Permission extends Original
+{
+}
+
+```
+***Role.php***
+```php
+<?php
+
+namespace App\Models;
+
+use Nabre\Models\Role as Original;
+
+class Role extends Original
+{
+}
+
+```
+***User.php***
+```php
+<?php
+
+namespace App\Models;
+
+use Nabre\Models\User as Original;
+
+class User extends Original
+{
+}
+
+```
+***UserContact.php***
+```php
+<?php
+
+namespace App\Models;
+
+use Nabre\Models\UserContact as Original;
+
+class UserContact extends Original
+{
+}
+
+```
+### 2.2.2 Seeders
 ```bash
 php artisan db:seed --class=Nabre\Database\Seeders\DatabaseSeeder 
 ```
