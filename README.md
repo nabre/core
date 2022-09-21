@@ -4,7 +4,7 @@ Il pacchetto è ancora in fase di elaborazione!
 ## Indice dei contenuti
 
 | § | Argomento |
-| ---: | --- |
+| :--- | :--- |
 |1\.  |[Introduzione](#1-introduzione) |
 |2\.  |[Installazione](#2-installazione)|
 |2\.1.| [Modifica file Laravel](#21-modifica-file-laravel)|
