@@ -106,15 +106,13 @@ class AppServiceProvider extends Sp
             return new Facade();
         });
 
-        //Breadcrumbs
-        $this->publishes([
-            __DIR__ . '/../../config/breadcrumbs.php' => config_path('breadcrumbs.php'),
-        ], 'setting');
+
+        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
 
         //Setting
         $this->publishes([
+            __DIR__ . '/../../config/breadcrumbs.php' => config_path('breadcrumbs.php'),
             __DIR__ . '/../../config/setting.php' => config_path('setting.php'),
-            __DIR__ . '/../../migrations/2017_08_24_000000_create_settings_table.php' => database_path('migrations/2017_08_24_000000_create_settings_table.php'),
         ], 'setting');
 
         if (config('setting.auto_save')) {
