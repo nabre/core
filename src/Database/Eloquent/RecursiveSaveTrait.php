@@ -60,14 +60,14 @@ trait RecursiveSaveTrait
         $model = $this;
         #carica model contronto getKeyName()
         $keyName = $model->getKeyName();
-        if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
-            $class = get_class($model);
-            $model = $class::find($data[$keyName]);
-
-            if (is_null($model)) {
-                $model = $class::make();
-            }
+        $ID = data_get($data, $keyName);
+        //  if ((data_get($model,$keyName) ?? null) != ($ID ?? null) && !is_null($ID ?? null)) {
+        $class = get_class($model);
+        $model = $class::find($ID);
+        if (is_null($model)) {
+            $model = $class::make();
         }
+        //  }
 
         $data = collect(array_undot($data));
 
@@ -184,7 +184,6 @@ trait RecursiveSaveTrait
         } else {
             $model->save();
         }
-
 
         return $model;
     }
