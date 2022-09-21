@@ -3,8 +3,8 @@
 namespace Nabre\Database\Seeders;
 
 use Carbon\Carbon;
-use Nabre\Models\Role;
-use Nabre\Models\User;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 
