@@ -47,6 +47,7 @@ class AppServiceProvider extends Sp
         //Config
         $this->mergeConfigFrom(__DIR__ . '/../../config/auth.php', 'auth');
         $this->mergeConfigFrom(__DIR__ . '/../../config/breadcrumbs.php', 'breadcrumbs');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/database.php', 'database');
         $this->mergeConfigFrom(__DIR__ . '/../../config/pages.php', 'pages');
         $this->mergeConfigFrom(__DIR__ . '/../../config/setting.php', 'setting');
     }
