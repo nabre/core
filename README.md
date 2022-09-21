@@ -60,8 +60,25 @@ return $app;
 Il presente pacchetto prevede l'impiego di una database ***MongoDB***.
 
 ### 2.2.1 Installazione
-Il presente pacchetto si supporta del pacchetto [***jenssegers/laravel-mongodb***](https://github.com/jenssegers/laravel-mongodb). <br>
+Il presente pacchetto si supporta del pacchetto [***jenssegers/laravel-mongodb***](https://github.com/jenssegers/laravel-mongodb).
 Seguire la guida per l'installazione e l'utilizzo delle sue funzionalità.
+<br>
+Modificare il file ***config/database.php***, aggiungendo nelle *connections* il seguente codice.
+
+
+```php
+        'mongodb' => [
+            'driver' => 'mongodb',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', 27017),
+            'database' => env('DB_DATABASE', 'homestead'),
+            'username' => env('DB_USERNAME', 'homestead'),
+            'password' => env('DB_PASSWORD', 'secret'),
+            'options' => [
+                'database' => env('DB_AUTHENTICATION_DATABASE', 'admin'), // required with Mongo 3+
+            ],
+        ],
+```
 
 ### 2.2.2 Aggiungere file Model
 È necessario aggiungere i seguenti file Model nel percorso ***App\Models***:
