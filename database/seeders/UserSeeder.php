@@ -26,9 +26,9 @@ class UserSeeder extends Seeder
                 data_get(Role::where('priority', $minPri)->first(), 'id'),
             ]);
 
-            dd($data);
             if (!is_null(data_get($data, 'email')) && !is_null(data_get($data, 'password'))) {
                 $node = User::create();
+                $node->dd=true;
                 $node->recursiveSave($data);
             }
         }
