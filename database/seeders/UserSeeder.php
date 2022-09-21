@@ -20,11 +20,19 @@ class UserSeeder extends Seeder
         })->get()->count();
 
         if (!$exists) {
-            $data = config('auth.adminaccountdefault') ?? [];
+           /* $data = config('auth.adminaccountdefault') ?? [];
             data_set($data, "email_verified_at", Carbon::now());
             data_set($data, 'roles', [
                 data_get(Role::where('priority', $minPri)->first(), 'id'),
-            ]);
+            ]);*/
+            $data=[
+                'name'=>'Account admin',
+                'email'=>'admin@account.test',
+                "email_verified_at"=> Carbon::now(),
+                'roles'=> [
+                    data_get(Role::where('priority', $minPri)->first(), 'id'),
+                ]
+            ];
 
             if (!is_null(data_get($data, 'email')) && !is_null(data_get($data, 'password'))) {
                 $node = User::create();
