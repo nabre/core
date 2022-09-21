@@ -135,14 +135,14 @@ composer require nabre/core
 ```
 
 ## 2.5 Seeders
-Per aggiungere gli elementi mini nel database per poter inizare ad utilizzare il pacchetto richiamare il seguente comando:
+Per aggiungere gli elementi minimi nel database per poter inizare ad utilizzare il pacchetto richiamare il seguente comando:
 ```bash
 php artisan db:seed --class=Nabre\Database\Seeders\DatabaseSeeder 
 ```
 
-### 2.2.1 Installazione
-
-## 2.3 NPM
+## 2.6 NPM
+Il pacchetto prevede l'utilizzo di alcuni pacchetti [NPM(Node Package Manager)](https://docs.npmjs.com/).<br>
+Installa i seguenti pacchetti:
 ```bash
 npm install fortawesome/fontawesome-free
 npm install flag-icons
