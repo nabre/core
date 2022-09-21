@@ -9,7 +9,8 @@ Il pacchetto è ancora in fase di elaborazione!
 
 
 # 1 Introduzione
-Il presente pacchetto viene impiegato per impostare alcune funzionalità di per lo sviluppo di applicazioni basate sul framework Laravel.<br>
+Il presente pacchetto viene impiegato per impostare alcune funzionalità di per lo sviluppo di applicazioni basate sul framework Laravel.
+
 Si prevede l'impiego di un database MongoDB.
 # 2 Installazione
 ## 2.1 Framework Laravel
@@ -112,17 +113,17 @@ Modifica il file ***config/database.php***:
 aggiungi nelle *connections* il seguente codice.
 
 ```php
-        'mongodb' => [
-            'driver' => 'mongodb',
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', 27017),
-            'database' => env('DB_DATABASE', 'homestead'),
-            'username' => env('DB_USERNAME', 'homestead'),
-            'password' => env('DB_PASSWORD', 'secret'),
-            'options' => [
-                'database' => env('DB_AUTHENTICATION_DATABASE', 'admin'), // required with Mongo 3+
-            ],
-        ],
+'mongodb' => [
+    'driver' => 'mongodb',
+    'host' => env('DB_HOST', '127.0.0.1'),
+    'port' => env('DB_PORT', 27017),
+    'database' => env('DB_DATABASE', 'homestead'),
+    'username' => env('DB_USERNAME', 'homestead'),
+    'password' => env('DB_PASSWORD', 'secret'),
+    'options' => [
+        'database' => env('DB_AUTHENTICATION_DATABASE', 'admin'), // required with Mongo 3+
+    ],
+],
 ```
 modifica il file ***.env*** aggiungendo e compilando i seguenti parametri:
 ```
@@ -155,6 +156,7 @@ npm install livewire-sortable
 ```
 Creare/modificare il seguente file:
 ***/webpack.mix.js***
+
 ```js
 const mix = require('laravel-mix');
 
@@ -179,15 +181,18 @@ Il sistema di gestione prevede i seguenti ambienti di base con predefinte alcune
 | *admin/builder/*   | Pagine dedicate alla costruzione di alcune parti generali dell'applicazione.          |
 
 ## 3.2 Account
-Quando si utilizza la procedura descritta al §2.2.2 viene genrato un account predefinito con la possibilità di accesso ad ogni parte dell'applicazione con le seguenti credenziali:
-| **Nome utente:**  | admin@admin.test |
-| ---               | ---              |
-| **Password:**     | password         |
+L'account predefinito, dopo aver popolato per la prima volta (cfr [§2.5](#25-seeders)), prevedere le seguenti credenziali:
+
+| **Nome utente:**  | admin@account.test    |
+| ---               | ---                   |
+| **Password:**     | password              |
 
 ## 3.3 Ruoli & permessi
-L'applicazione si basa sul pacchetto [***mostafamaklad/laravel-permission-mongodb***](https://guthub.com/mostafamaklad/laravel-permission-mongodb) per gestire i ruoli e permessi.
+L'applicazione si basa sul pacchetto [***mostafamaklad/laravel-permission-mongodb***](https://guthub.com/mostafamaklad/laravel-permission-mongodb) per gestire i ruoli e permessi.<br>
 Consultare la guida per comprendere come integrarlo nella propia applicazione.
+
 Nella presente applicazione è stato integrato un un sistema di ruoli gerarchico in funzione di una priorità definita, dove chi ha un valore minore può accedere a ruoli con priorità di valore maggiore.
+
 In modo predefinito l'applicazione i seguenti ruoli con le rispettive priorità:
 | Priorità | Ruolo     | Descrizione |
 | ---:     | :---       | :--- |
@@ -195,11 +200,14 @@ In modo predefinito l'applicazione i seguenti ruoli con le rispettive priorità:
 | 2]       | *admin*   | Utilizzato nelle `Route` |
 | 3]       | *manage*  | Utilizzato nelle `Route` |
 
-Per aggiornare i ruoli e permessi adottati nei middleware delle route utilizzare il seguente comando:
+Qualora nelle `Route::middleware()` vengono aggiunti ruoli o permessi, questi possono essere aggiornati automaticamente nel database utilizzando il seguente comando:
 ```bash
 php artisan roles:update
 ```
 ## 3.4 Route
+Il comando `Route::resource()` è stato modificato nel seguente aggiungendo pagine da generare automaticamente.
+
+È stato implementato un sistema delle funzioni `only()` & `exept()`.
 ## 3.5 Breadcrumbs
 L'applicazione genera i *breadcrumbs* basandosi sul percorso di chiamata impostato.
 Vengono riconosciute le pagine con suffisso **.index** come pagine generate dalla funzione `Route::resource()` e quindi nidifica conseguentemente i suffissi complementari della funzione resource; **.edit**, **.view**, **.create**.
