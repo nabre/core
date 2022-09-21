@@ -32,4 +32,12 @@ class AutoSync
     {
         return $this->eloquent->all();
     }
+
+    function exists(){
+        return collect([]);
+    }
+
+    function put($data){
+        return  $this->model::create();
+    }
 }

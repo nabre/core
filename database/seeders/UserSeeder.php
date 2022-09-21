@@ -29,7 +29,6 @@ class UserSeeder extends Seeder
             if (!is_null(data_get($data, 'email')) && !is_null(data_get($data, 'password'))) {
                 $node = User::create();
                 $node->recursiveSave($data);
-
             }
         }
     }
