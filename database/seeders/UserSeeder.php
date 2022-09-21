@@ -3,8 +3,8 @@
 namespace Nabre\Database\Seeders;
 
 use Carbon\Carbon;
-use App\Models\Role;
-use App\Models\User;
+use Nabre\Models\Role;
+use Nabre\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 
@@ -27,8 +27,9 @@ class UserSeeder extends Seeder
             ]);
 
             if (!is_null(data_get($data, 'email')) && !is_null(data_get($data, 'password'))) {
-                $node = User::create($data);
+                $node = User::create();
                 $node->recursiveSave($data);
+
             }
         }
     }
