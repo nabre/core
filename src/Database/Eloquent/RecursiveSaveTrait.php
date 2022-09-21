@@ -58,17 +58,15 @@ trait RecursiveSaveTrait
     function recursiveSave(array $data, $btmSync = true, $saveQuietly = false)
     {
         $model = $this;
-        #carica model confronto getKeyName()
+        #carica model contronto getKeyName()
         $keyName = $model->getKeyName();
-        $ID = data_get($data, $keyName);
-        $idThis = data_get($model, $keyName);
-        if (!is_null($ID) && $idThis != $ID) {
-      //      $class = get_class($model);
-      //      $model = $class::find($ID);
-        }
+        if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
+            $class = get_class($model);
+            $model = $class::find($data[$keyName]);
 
-        if (is_null($model)) {
-      //      $model = $class::make();
+            if (is_null($model)) {
+                $model = $class::make();
+            }
         }
 
         $data = collect(array_undot($data));
@@ -186,6 +184,7 @@ trait RecursiveSaveTrait
         } else {
             $model->save();
         }
+
 
         return $model;
     }
