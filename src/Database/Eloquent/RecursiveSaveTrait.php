@@ -71,6 +71,33 @@ trait RecursiveSaveTrait
 
         $data = collect(array_undot($data));
 
+        #salva variabili
+        $find = $model->getFillable();
+        $casts = $model->casts;
+        $dataSave = collect($this->findData($data, $find))->map(function ($val, $key) use ($casts) {
+            $type = $casts[$key] ?? null;
+            switch ($type) {
+                case "array":
+                    $val = array_values((array)$val);
+                    break;
+                case "boolean":
+                    $val = (bool)$val;
+                    break;
+                case "integer":
+                    $val = (int)$val;
+                    break;
+                case "object":
+                    $val = (object)$val;
+                    break;
+                case "string":
+                    $val = (string)$val;
+                    break;
+            }
+            return $val;
+        })->toArray();
+
+        $model->fill($dataSave, ['upsert' => true]);
+
         #salva relazioni
         $find = $model->definedRelations()->pluck('name')->toArray();
         $dataSave = $this->findData($data, $find);
@@ -152,32 +179,6 @@ trait RecursiveSaveTrait
             }
         }
 
-        #salva variabili
-        $find = $model->getFillable();
-        $casts = $model->casts;
-        $dataSave = collect($this->findData($data, $find))->map(function ($val, $key) use ($casts) {
-            $type = $casts[$key] ?? null;
-            switch ($type) {
-                case "array":
-                    $val = array_values(array_filter((array)$val, 'strlen'));
-                    break;
-                case "boolean":
-                    $val = (bool)$val;
-                    break;
-                case "integer":
-                    $val = (int)$val;
-                    break;
-                case "object":
-                    $val = (object)$val;
-                    break;
-                case "string":
-                    $val = (string)$val;
-                    break;
-            }
-            return $val;
-        })->toArray();
-
-        $model->fill($dataSave, ['upsert' => true]);
 
         if ($saveQuietly) {
             $model->saveQuietly();
