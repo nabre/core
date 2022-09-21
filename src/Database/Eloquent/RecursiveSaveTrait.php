@@ -154,7 +154,8 @@ trait RecursiveSaveTrait
         }
 
         #salva variabili
-        $find = $model->getFillable();
+        //$find = $model->getFillable();
+        $find=array_diff($data->key(),$find);
         $casts = $model->casts;
         $dataSave = collect($this->findData($data, $find))->map(function ($val, $key) use ($casts) {
             $type = $casts[$key] ?? null;
