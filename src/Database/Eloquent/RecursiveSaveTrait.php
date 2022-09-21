@@ -63,12 +63,12 @@ trait RecursiveSaveTrait
         $ID = data_get($data, $keyName);
         $idThis = data_get($model, $keyName);
         if (!is_null($ID) && $idThis != $ID) {
-            $class = get_class($model);
-            $model = $class::find($ID);
+      //      $class = get_class($model);
+      //      $model = $class::find($ID);
         }
 
         if (is_null($model)) {
-            $model = $class::make();
+      //      $model = $class::make();
         }
 
         $data = collect(array_undot($data));
