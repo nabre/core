@@ -27,12 +27,6 @@ class AppServiceProvider extends Sp
 
     public function register()
     {
-        //Config
-        $this->mergeConfigFrom(__DIR__ . '/../../config/auth.php', 'auth');
-        $this->mergeConfigFrom(__DIR__ . '/../../config/breadcrumbs.php', 'breadcrumbs');
-        $this->mergeConfigFrom(__DIR__ . '/../../config/pages.php', 'pages');
-        $this->mergeConfigFrom(__DIR__ . '/../../config/setting.php', 'setting');
-
         $this->app->register(GlobalFunctionsServiceProvider::class);
         $this->app->register(MacroServiceProvider::class);
         $this->app->register(AuthServiceProvider::class);
@@ -49,6 +43,12 @@ class AppServiceProvider extends Sp
         $this->app->singleton('setting', function ($app) {
             return $app['setting.manager']->driver();
         });
+
+        //Config
+        $this->mergeConfigFrom(__DIR__ . '/../../config/auth.php', 'auth');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/breadcrumbs.php', 'breadcrumbs');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/pages.php', 'pages');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/setting.php', 'setting');
     }
 
     public function boot(\Illuminate\Routing\Router $router, \Illuminate\Contracts\Http\Kernel $kernel)
