@@ -77,9 +77,6 @@ trait RecursiveSaveTrait
         $find = $model->definedRelations()->pluck('name')->toArray();
         $dataSave = $this->findData($data, $find);
 
-        if(($this->dd??false)===true){
-            dd(get_defined_vars());
-        }
 
         foreach ($dataSave as $name => $value) {
             $rel = $model->reletionshipFind($name);
@@ -163,7 +160,8 @@ trait RecursiveSaveTrait
         $find=array_diff(array_keys($data->toArray()),$find);
         $casts = $model->casts;
         $dataSave = collect($this->findData($data, $find))->map(function ($val, $key) use ($casts) {
-            $type = $casts[$key] ?? null;
+
+        $type = $casts[$key] ?? null;
             switch ($type) {
                 case "array":
                     $val = array_values(array_filter((array)$val, 'strlen'));
@@ -183,6 +181,10 @@ trait RecursiveSaveTrait
             }
             return $val;
         })->toArray();
+
+        if(($this->dd??false)===true){
+            dd(get_defined_vars());
+        }
 
         $model->fill($dataSave, ['upsert' => true]);
 
