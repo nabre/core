@@ -3,7 +3,7 @@ Il pacchetto è ancora in fase di elaborazione!
 # ***WORK IN PROGRESS***
 ## Indice dei contenuti
 
-| Capitolo | Argomento |
+| § | Argomento |
 | ---: | --- |
 |1\.  |[Introduzione](#1-introduzione) |
 |2\.  |[Installazione](#2-installazione)|
