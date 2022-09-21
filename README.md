@@ -4,14 +4,14 @@ Il pacchetto è ancora in fase di elaborazione!
 ## Indice dei contenuti
 
 | Capitolo | Argomento |
-| --- | --- |
+| ---: | --- |
 |1\.  |[Introduzione](#1-introduzione) |
 |2\.  |[Installazione](#2-installazione)|
 |2\.1.| [Modifica file Laravel](#21-modifica-file-laravel)|
 |2\.2.| [Database](#22-database)|
 |3\.  |[Pannello di controllo](#3-pannello-di-controllo)|
 |4\.  |[Funzionalità](#4-funzionalità)|
-75\.  |[Artisan](#5-artisan)|
+|5\.  |[Artisan](#5-artisan)|
 
 # 1 Introduzione
 Il presente pacchetto viene impiegato per impostare alcune funzionalità di background per lo sviluppo di applicazioni basate sul framework Laravel.
