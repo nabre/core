@@ -60,23 +60,20 @@ trait RecursiveSaveTrait
         $model = $this;
         #carica model contronto getKeyName()
         $keyName = $model->getKeyName();
-     /*  if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
+        if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
             $class = get_class($model);
             $model = $class::find($data[$keyName]);
 
             if (is_null($model)) {
                 $model = $class::make();
             }
-        }*/
+        }
 
         $data = collect(array_undot($data));
 
-
-     //   dd(get_defined_vars());
         #salva relazioni
         $find = $model->definedRelations()->pluck('name')->toArray();
         $dataSave = $this->findData($data, $find);
-
 
         foreach ($dataSave as $name => $value) {
             $rel = $model->reletionshipFind($name);
@@ -156,12 +153,10 @@ trait RecursiveSaveTrait
         }
 
         #salva variabili
-        //$find = $model->getFillable();
-        $find=array_diff(array_keys($data->toArray()),$find);
+        $find = $model->getFillable();
         $casts = $model->casts;
         $dataSave = collect($this->findData($data, $find))->map(function ($val, $key) use ($casts) {
-
-        $type = $casts[$key] ?? null;
+            $type = $casts[$key] ?? null;
             switch ($type) {
                 case "array":
                     $val = array_values(array_filter((array)$val, 'strlen'));
@@ -182,10 +177,6 @@ trait RecursiveSaveTrait
             return $val;
         })->toArray();
 
-      /*  if(($this->dd??false)===true){
-            dd(compact('dataSave','model'));
-        }*/
-
         $model->fill($dataSave, ['upsert' => true]);
 
         if ($saveQuietly) {
@@ -193,6 +184,7 @@ trait RecursiveSaveTrait
         } else {
             $model->save();
         }
+
 
         return $model;
     }
