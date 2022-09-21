@@ -1,27 +1,31 @@
 
-Il pacchetto è ancora in fase di elaborazione!
 # ***WORK IN PROGRESS***
-## Indice dei contenuti
-
+Il pacchetto è ancora in fase di elaborazione!
+# Indice dei contenuti
 | § | Argomento |
 | :--- | :--- |
-|1\.  |[Introduzione](#1-introduzione) |
-|2\.  |[Installazione](#2-installazione)|
-|2\.1.| [Modifica file Laravel](#21-modifica-file-laravel)|
-|2\.2.| [Database](#22-database)|
-|3\.  |[Pannello di controllo](#3-pannello-di-controllo)|
-|4\.  |[Funzionalità](#4-funzionalità)|
-|5\.  |[Artisan](#5-artisan)|
+|1.  |[Introduzione](#1-introduzione) |
+|2.  |[Installazione](#2-installazione)|
+|2.1.| [Modifica file Laravel](#21-modifica-file-laravel)|
+|2.2.| [Database](#22-database)|
+|2.2.1| [Installazione](#221-installazione)|
+|2.2.2| [Aggiungere files Model](#222-aggiungere-file-model)|
+|2.2.3| [Seeders](#223-seeders)|
+|3.  |[Pannello di controllo](#3-pannello-di-controllo)|
+|3.1| [Ambienti predefinti](#31-ambienti-predefiniti)|
+|3.2| [Pagine: Route e "folder"](#32-pagine-route-e-folder)|
+|4.  |[Funzionalità](#4-funzionalità)|
+|5.  |[Artisan](#5-artisan)|
 
 # 1 Introduzione
 Il presente pacchetto viene impiegato per impostare alcune funzionalità di background per lo sviluppo di applicazioni basate sul framework Laravel.
 # 2 Installazione
-Installazione del framework Laravel secondo la [guida](https://laravel.com/docs).
-Installa il presente pacchetto:
+* Installazione del framework Laravel secondo la [guida](https://laravel.com/docs).
+* Installa il presente pacchetto:
 ```bash
 composer require nabre/core
 ```
-Successivamente procedere con la modifica dei file e l'esecuzione di alcuni comandi per completare l'installazione come previsto nei segunti sottocapitoli.
+* Successivamente, procedere con quanto indicato nei sottocapitoli per installare e impostare il progetto per utilizzare le funzionalità del pacchetto.
 ## 2.1 Modifica file Laravel
 Editare i seguenti file di seguito elencati:
 ***bootstap/app.php***
@@ -55,11 +59,11 @@ return $app;
 ## 2.2 Database
 Il presente pacchetto prevede l'impiego di una database ***MongoDB***.
 
-### 2.2.0 Installazione
-Il presente pacchetto si supporta del pacchetto ***jenssegers/laravel-mongodb***.
+### 2.2.1 Installazione
+Il presente pacchetto si supporta del pacchetto [***jenssegers/laravel-mongodb***](https://github.com/jenssegers/laravel-mongodb). <br>
 Seguire la guida per l'installazione e l'utilizzo delle sue funzionalità.
 
-### 2.2.1 Aggiungere file Model
+### 2.2.2 Aggiungere file Model
 È necessario aggiungere i seguenti file Model nel percorso ***App\Models***:
 
 ***Permission.php***
@@ -117,7 +121,7 @@ class UserContact extends Original
 }
 
 ```
-### 2.2.2 Seeders
+### 2.2.3 Seeders
 Per aggiungere gli elementi mini nel database per poter inizare ad utilizzare il pacchetto richiamare il seguente comando:
 ```bash
 php artisan db:seed --class=Nabre\Database\Seeders\DatabaseSeeder 
@@ -142,6 +146,7 @@ mix.js('vendor/nabre/core/resources/js/app.js', 'public/js')
 npm run dev
 ```
 # 3 Pannello di controllo
+## 3.1 Ambienti predefiniti
 Il pacchetto prevede i seguenti ambienti di base con predefinte alcune funzionalità di gestione.
 
 | Uri principale    | Descrizione                                                                           |
@@ -150,7 +155,9 @@ Il pacchetto prevede i seguenti ambienti di base con predefinte alcune funzional
 | *manage*          | Definite le pagine per la gestione delle funzionalità operative dell'applicazione.    |
 | *admin*           | Pannello amministrativo dell'applicazione.                                            |
 | *admin/builder*   | Pagine dedicate alla costruzione di alcune parti generali dell'applicazione.          |
-
+## 3.2 Pagine: Route e "folder"
+Il pacchetto prevede una gerarchia automatizzata dei files secondo il percorso uri definito nella funzione Route.<br>
+Questo semplifica la gestione delle Breadcrumbs (cfr. [§4.4](#44-breadcrumbs)) e vengono preimpostate alcune pagine per la gestione dell'applicazione.
 # 4 Funzionalità
 ## 4.1 Account
 Quando si utilizza la procedura descritta al §2.2.2 viene genrato un account predefinito con la possibilità di accesso ad ogni parte dell'applicazione con le seguenti credenziali:
@@ -158,15 +165,15 @@ Quando si utilizza la procedura descritta al §2.2.2 viene genrato un account pr
 | ---               | ---              |
 | **Password:**     | password         |
 ## 4.2 Ruoli & permessi
-L'applicazione si basa sul pacchetto *mostafamaklad/laravel-permission-mongodb* per gestire i ruoli e permessi.
+L'applicazione si basa sul pacchetto [***mostafamaklad/laravel-permission-mongodb***](https://guthub.com/mostafamaklad/laravel-permission-mongodb) per gestire i ruoli e permessi.
 Consultare la guida per comprendere come integrarlo nella propia applicazione.
 Nella presente applicazione è stato integrato un un sistema di ruoli gerarchico in funzione di una priorità definita, dove chi ha un valore minore può accedere a ruoli con priorità di valore maggiore.
 In modo predefinito l'applicazione i seguenti ruoli con le rispettive priorità:
-| Priorità | Ruolo     |
-| ---:     | ---       |
-| 1]       | *builder* |
-| 2]       | *admin*   |
-| 3]       | *manage*  |
+| Priorità | Ruolo     | Descrizione |
+| ---:     | ---       | --- |
+| 1]       | *builder* | Vincolante, l'applicazione cerca il presente ruolo per poter definire l'accessibilità a tutti gli ambienti possibili |
+| 2]       | *admin*   | Utilizzato nelle `Route` del pacchetto |
+| 3]       | *manage*  | Utilizzato nelle `Route` del pacchetto |
 
 Per aggiornare i ruoli e permessi adottati nei middleware delle route utilizzare il seguente comando:
 ```bash
@@ -175,6 +182,7 @@ php artisan roles:update
 ## 4.3 Route
 ## 4.4 Breadcrumbs
 L'applicazione genera i *breadcrumbs* basandosi sul percorso di chiamata impostato.
+Vengono riconosciute le pagine con suffisso **.index** come pagine generate dalla funzione `Route::resource()` e quindi nidifica conseguentemente i suffissi complementare della funzione resource; **.edit**, **.view**, **.create**.
 ## 4.5 Menu
 ### 4.5.1 Formato
 #### 4.5.1.1 Automatico
@@ -187,15 +195,23 @@ L'appicazione di basa sul percorso di chiamata iniziale per caricare tutti i per
 | icona | visualizza (sì/no) l'icona della pagina
 | Testo | visualizza (sì/no) il titolo della pagina
 ## 4.6 Form
+### 4.6.1 Impostazioni base
+### 4.6.2 Tipi di input
+### 4.6.3 Request
+### 4.6.4 Relazioni; EmbedsOne & EmbedsMany
 ## 4.7 Table
+### 4.7.1 Impostazioni base
+### 4.7.2 Policy
+### 4.7.3 Colonne personalizzate
 ## 4.8 Template
 
 # 5 Artisan
 Il presente pacchetto prevede alcuni comandi artisan aggiuntivi per facilitare alcune oprazioni di gestione dell'applicazione.
 
-| Comando           | Descrizione                                                |
-| -------------     | -------------                                              |
-| mongodb:dump      | Crea un fil di backup del database MongoDB impostato.      |
-| mongodb:restore   | Ripristina l'ultimo file di backup presente nel DB MongoDB |
-| nabrecore:install | Installa le impostazioni del presente pacchetto.           |
-| page:install      | Vengono aggiunte le pagine presenti nell'applicazione.     |
+| Comando           | Descrizione                                                       |
+| -------------     | -------------                                                     |
+| mongodb:dump      | Crea un fil di backup del database MongoDB impostato.             |
+| mongodb:restore   | Ripristina l'ultimo file di backup presente nel DB MongoDB        |
+| nabrecore:install | Installa le impostazioni del presente pacchetto.                  |
+| page:install      | Vengono aggiunte le pagine presenti nell'applicazione.            |
+| roles:update      | Aggiorna ruoli e permessi utilizzati nel middleware delle route   |
