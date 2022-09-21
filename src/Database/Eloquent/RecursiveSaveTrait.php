@@ -183,7 +183,7 @@ trait RecursiveSaveTrait
         })->toArray();
 
         if(($this->dd??false)===true){
-            dd(get_defined_vars());
+            dd(compact('dataSave','model'));
         }
 
         $model->fill($dataSave, ['upsert' => true]);
