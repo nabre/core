@@ -6,27 +6,14 @@ Il pacchetto è ancora in fase di elaborazione!
 | :--- | :--- |
 |1.  |[Introduzione](#1-introduzione) |
 |2.  |[Installazione](#2-installazione)|
-|2.1.| [Modifica file Laravel](#21-modifica-file-laravel)|
-|2.2.| [Database](#22-database)|
-|2.2.1| [Installazione](#221-installazione)|
-|2.2.2| [Aggiungere files Model](#222-aggiungere-file-model)|
-|2.2.3| [Seeders](#223-seeders)|
-|3.  |[Pannello di controllo](#3-pannello-di-controllo)|
-|3.1| [Ambienti predefinti](#31-ambienti-predefiniti)|
-|3.2| [Pagine: Route e "folder"](#32-pagine-route-e-folder)|
-|4.  |[Funzionalità](#4-funzionalità)|
-|5.  |[Artisan](#5-artisan)|
+
 
 # 1 Introduzione
 Il presente pacchetto viene impiegato per impostare alcune funzionalità di background per lo sviluppo di applicazioni basate sul framework Laravel.
 # 2 Installazione
-* Installazione del framework Laravel secondo la [guida](https://laravel.com/docs).
-* Installa il presente pacchetto:
-```bash
-composer require nabre/core
-```
-* Successivamente, procedere con quanto indicato nei sottocapitoli per installare e impostare il progetto per utilizzare le funzionalità del pacchetto.
-## 2.1 Modifica file Laravel
+## 2.1 Framework Laravel
+Installazione del framework secondo la [guida](https://laravel.com/docs).
+## 2.2 Modifica file
 Editare i seguenti file di seguito elencati:
 ***bootstap/app.php***
 ```php
@@ -56,31 +43,7 @@ $app->singleton(
 
 return $app;
 ```
-## 2.2 Database
-Il presente pacchetto prevede l'impiego di una database ***MongoDB***.
-
-### 2.2.1 Installazione
-Il presente pacchetto si supporta del pacchetto [***jenssegers/laravel-mongodb***](https://github.com/jenssegers/laravel-mongodb).
-Seguire la guida per l'installazione e l'utilizzo delle sue funzionalità.
-<br>
-Modificare il file ***config/database.php***, aggiungendo nelle *connections* il seguente codice.
-
-
-```php
-        'mongodb' => [
-            'driver' => 'mongodb',
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', 27017),
-            'database' => env('DB_DATABASE', 'homestead'),
-            'username' => env('DB_USERNAME', 'homestead'),
-            'password' => env('DB_PASSWORD', 'secret'),
-            'options' => [
-                'database' => env('DB_AUTHENTICATION_DATABASE', 'admin'), // required with Mongo 3+
-            ],
-        ],
-```
-
-### 2.2.2 Aggiungere file Model
+## 2.3 Aggiungere file Model
 È necessario aggiungere i seguenti file Model nel percorso ***App\Models***:
 
 ***Permission.php***
@@ -138,11 +101,47 @@ class UserContact extends Original
 }
 
 ```
-### 2.2.3 Seeders
+## 2.2 Database
+Il presente pacchetto prevede l'impiego di una database ***MongoDB*** facendo riferimento al pacchetto [***jenssegers/laravel-mongodb***](https://github.com/jenssegers/laravel-mongodb).
+
+Modifica il file ***config/database.php***:
+aggiungi nelle *connections* il seguente codice.
+
+```php
+        'mongodb' => [
+            'driver' => 'mongodb',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', 27017),
+            'database' => env('DB_DATABASE', 'homestead'),
+            'username' => env('DB_USERNAME', 'homestead'),
+            'password' => env('DB_PASSWORD', 'secret'),
+            'options' => [
+                'database' => env('DB_AUTHENTICATION_DATABASE', 'admin'), // required with Mongo 3+
+            ],
+        ],
+```
+modifica il file ***.env***:
+```
+DB_CONNECTION=mongodb
+DB_HOST= 
+DB_DATABASE= 
+DB_USERNAME= 
+DB_PASSWORD=
+```
+
+## 2.4 Installa il presente pacchetto:
+```bash
+composer require nabre/core
+```
+
+## 2.5 Seeders
 Per aggiungere gli elementi mini nel database per poter inizare ad utilizzare il pacchetto richiamare il seguente comando:
 ```bash
 php artisan db:seed --class=Nabre\Database\Seeders\DatabaseSeeder 
 ```
+
+### 2.2.1 Installazione
+
 ## 2.3 NPM
 ```bash
 npm install fortawesome/fontawesome-free
