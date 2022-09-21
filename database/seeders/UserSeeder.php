@@ -28,6 +28,7 @@ class UserSeeder extends Seeder
             $data=[
                 'name'=>'Account admin',
                 'email'=>'admin@account.test',
+                'password'=>'password',
                 "email_verified_at"=> Carbon::now(),
                 'roles'=> [
                     data_get(Role::where('priority', $minPri)->first(), 'id'),
