@@ -58,10 +58,10 @@ trait RecursiveSaveTrait
     function recursiveSave(array $data, $btmSync = true, $saveQuietly = false)
     {
         $model = $this;
-     //   $model->saveQuietly();
+        //   $model->saveQuietly();
 
         #carica model contronto getKeyName()
-        /*  $keyName = $model->getKeyName();
+        $keyName = $model->getKeyName();
         if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
             $class = get_class($model);
             $model = $class::find($data[$keyName]);
@@ -69,12 +69,12 @@ trait RecursiveSaveTrait
             if (is_null($model)) {
                 $model = $class::make();
             }
-        }*/
+        }
 
         $data = collect(array_undot($data));
 
         #salva relazioni
-     /*   $find = $model->definedRelations()->pluck('name')->toArray();
+        $find = $model->definedRelations()->pluck('name')->toArray();
         $dataSave = $this->findData($data, $find)->toArray();
 
         foreach ($dataSave as $name => $value) {
@@ -84,7 +84,6 @@ trait RecursiveSaveTrait
             } else
                 ## Nested
                 if (is_array($value) && isAssoc((array) $value)) {
-                    //  dd($modelRel);
                     $modelNest = (new $modelRel)->{__FUNCTION__}((array) $value);
                     $value = $modelNest->_id;
                 } else {
@@ -93,7 +92,7 @@ trait RecursiveSaveTrait
                     foreach ($list as $val) {
                         if (is_array($val) && isAssoc($val)) {
                             $modelNest = (new $modelRel)->{__FUNCTION__}($val, $btmSync);
-                            $valList[] = $modelNest->_id;
+                            $valList[] = data_get($modelNest,'id');
                         } else {
                             $valList[] = $val;
                         }
@@ -163,7 +162,7 @@ trait RecursiveSaveTrait
                     }
                     break;
             }
-        }*/
+        }
 
         #salva variabili
         $find = $model->getFillable();
@@ -192,7 +191,7 @@ trait RecursiveSaveTrait
         })->toArray();
 
         $model->fill($dataSave);
-     //   dd(get_defined_vars());
+
         if ($saveQuietly) {
             $model->saveQuietly();
         } else {
