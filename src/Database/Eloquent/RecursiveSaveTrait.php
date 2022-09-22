@@ -59,16 +59,13 @@ trait RecursiveSaveTrait
     {
         $model = $this;
 
-
+        $model->update($data);
+/*
         #carica model contronto getKeyName()
         $keyName = $model->getKeyName();
         if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
             $class = get_class($model);
-            $model = $class::find($data[$keyName]);
-
-            if (is_null($model)) {
-                $model = $class::make();
-            }
+            $model = $class::firstOrNew($data[$keyName]);
         }
 
         if(is_null(data_get($model,'id'))){
@@ -200,7 +197,7 @@ trait RecursiveSaveTrait
             $model->saveQuietly();
         } else {
             $model->save();
-        }
+        }*/
 
         return $model;
     }
