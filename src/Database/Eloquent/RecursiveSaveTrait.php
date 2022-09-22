@@ -58,7 +58,7 @@ trait RecursiveSaveTrait
     function recursiveSave(array $data, $btmSync = true, $saveQuietly = false)
     {
         $model = $this;
-        $model->saveQuietly();
+     //   $model->saveQuietly();
 
         #carica model contronto getKeyName()
         /*  $keyName = $model->getKeyName();
