@@ -58,7 +58,7 @@ trait RecursiveSaveTrait
     function recursiveSave(array $data, $btmSync = true, $saveQuietly = false)
     {
         $model = $this;
-        //   $model->saveQuietly();
+
 
         #carica model contronto getKeyName()
         $keyName = $model->getKeyName();
@@ -69,6 +69,10 @@ trait RecursiveSaveTrait
             if (is_null($model)) {
                 $model = $class::make();
             }
+        }
+
+        if(is_null(data_get($model,'id'))){
+            $model->saveQuietly();
         }
 
         $data = collect(array_undot($data));
@@ -165,8 +169,8 @@ trait RecursiveSaveTrait
         }
 
         #salva variabili
-        $find = $model->getFillable();
-        //     $find = array_diff(array_keys($data->toArray()), $find);
+        //$find = $model->getFillable();
+        $find = array_diff(array_keys($data->toArray()), $find);
         $casts = $model->casts;
         $dataSave = $this->findData($data, $find)->map(function ($val, $key) use ($casts) {
             $type = $casts[$key] ?? null;
