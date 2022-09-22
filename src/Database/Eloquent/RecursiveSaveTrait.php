@@ -58,7 +58,7 @@ trait RecursiveSaveTrait
     function recursiveSave(array $data, $btmSync = true, $saveQuietly = false)
     {
         $model = $this;
-        #carica model contronto getKeyName()
+        #carica model confronto getKeyName()
         $keyName = $model->getKeyName();
         if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
             $class = get_class($model);
@@ -70,33 +70,6 @@ trait RecursiveSaveTrait
         }
 
         $data = collect(array_undot($data));
-
-        #salva variabili
-        $find = $model->getFillable();
-        $casts = $model->casts;
-        $dataSave = collect($this->findData($data, $find))->map(function ($val, $key) use ($casts) {
-            $type = $casts[$key] ?? null;
-            switch ($type) {
-                case "array":
-                    $val = array_values((array)$val);
-                    break;
-                case "boolean":
-                    $val = (bool)$val;
-                    break;
-                case "integer":
-                    $val = (int)$val;
-                    break;
-                case "object":
-                    $val = (object)$val;
-                    break;
-                case "string":
-                    $val = (string)$val;
-                    break;
-            }
-            return $val;
-        })->toArray();
-
-        $model->fill($dataSave, ['upsert' => true]);
 
         #salva relazioni
         $find = $model->definedRelations()->pluck('name')->toArray();
@@ -110,7 +83,7 @@ trait RecursiveSaveTrait
                 ## Nested
                 if (is_array($value) && isAssoc((array) $value)) {
                     //  dd($modelRel);
-                    $modelNest = (new $modelRel)->{__FUNCTION__}((array) $value);
+                    $modelNest = (new $modelRel)->{__FUNCTION__}((array) $value, $btmSync);
                     $value = $modelNest->_id;
                 } else {
                     $list = (array) $value;
@@ -159,6 +132,17 @@ trait RecursiveSaveTrait
                     $asso->sync($instance->modelKeys(), $syncBool);
                     break;
                 case "EmbedsMany":
+                    if (is_null($value)) {
+                        $model->unset($name);
+                    } else {
+                        $dbItem = $asso;
+                        if (is_null($dbItem)) {
+                            $dbItem = $asso->create();
+                        }
+                        $dbItem->recursiveSave((array)$value);
+                    }
+                    break;
+                case "EmbedsMany":
                     if (is_null($value) || !count($value)) {
                         $model->unset($name);
                     } else {
@@ -179,13 +163,38 @@ trait RecursiveSaveTrait
             }
         }
 
+        #salva variabili
+        $find = $model->getFillable();
+        $casts = $model->casts;
+        $dataSave = collect($this->findData($data, $find))->map(function ($val, $key) use ($casts) {
+            $type = $casts[$key] ?? null;
+            switch ($type) {
+                case "array":
+                    $val = array_values((array)$val);
+                    break;
+                case "boolean":
+                    $val = (bool)$val;
+                    break;
+                case "integer":
+                    $val = (int)$val;
+                    break;
+                case "object":
+                    $val = (object)$val;
+                    break;
+                case "string":
+                    $val = (string)$val;
+                    break;
+            }
+            return $val;
+        })->toArray();
+
+        $model->fill($dataSave, ['upsert' => true]);
 
         if ($saveQuietly) {
             $model->saveQuietly();
         } else {
             $model->save();
         }
-
 
         return $model;
     }
