@@ -58,11 +58,12 @@ trait RecursiveSaveTrait
     function recursiveSave(array $data, $btmSync = true, $saveQuietly = false)
     {
         $model = $this;
-        #carica model confronto getKeyName()
+        #carica model contronto getKeyName()
         $keyName = $model->getKeyName();
-        $class = get_class($model);
         if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
+            $class = get_class($model);
             $model = $class::find($data[$keyName]);
+
             if (is_null($model)) {
                 $model = $class::make();
             }
@@ -70,12 +71,7 @@ trait RecursiveSaveTrait
 
         $data = collect(array_undot($data));
 
-        if ($saveQuietly) {
-            $model->saveQuietly();
-        } else {
-            $model->save();
-        }
-
+        //   dd(get_defined_vars());
         #salva relazioni
         $find = $model->definedRelations()->pluck('name')->toArray();
         $dataSave = $this->findData($data, $find);
@@ -88,7 +84,7 @@ trait RecursiveSaveTrait
                 ## Nested
                 if (is_array($value) && isAssoc((array) $value)) {
                     //  dd($modelRel);
-                    $modelNest = (new $modelRel)->{__FUNCTION__}((array) $value, $btmSync);
+                    $modelNest = (new $modelRel)->{__FUNCTION__}((array) $value);
                     $value = $modelNest->_id;
                 } else {
                     $list = (array) $value;
@@ -169,13 +165,14 @@ trait RecursiveSaveTrait
         }
 
         #salva variabili
-        $find = $model->getFillable();
+        //$find = $model->getFillable();
+        $find = array_diff(array_keys($data->toArray()), $find);
         $casts = $model->casts;
         $dataSave = collect($this->findData($data, $find))->map(function ($val, $key) use ($casts) {
             $type = $casts[$key] ?? null;
             switch ($type) {
                 case "array":
-                    $val = array_values((array)$val);
+                    $val = array_values(array_filter((array)$val, 'strlen'));
                     break;
                 case "boolean":
                     $val = (bool)$val;
@@ -200,6 +197,7 @@ trait RecursiveSaveTrait
         } else {
             $model->save();
         }
+
 
         return $model;
     }
