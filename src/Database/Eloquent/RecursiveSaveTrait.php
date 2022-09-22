@@ -78,9 +78,9 @@ trait RecursiveSaveTrait
 
         if (count($dataSave)) {
             if ($saveQuietly) {
-                $model=$model->saveQuietly();
+                $model->saveQuietly();
             } else {
-                $model=$model->save();
+                $model->save();
             }
         }
 
