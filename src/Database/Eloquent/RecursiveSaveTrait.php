@@ -72,7 +72,7 @@ trait RecursiveSaveTrait
         }*/
 
         $data = collect(array_undot($data));
-
+dd(get_defined_vars());
         #salva relazioni
      /*   $find = $model->definedRelations()->pluck('name')->toArray();
         $dataSave = $this->findData($data, $find)->toArray();
