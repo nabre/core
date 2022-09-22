@@ -68,10 +68,6 @@ trait RecursiveSaveTrait
             }
         }
 
-        if (is_null(($model->$keyName ?? null) )) {
-            $model = $class::make();
-        }
-
         $data = collect(array_undot($data));
 
         #salva relazioni
