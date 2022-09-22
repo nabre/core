@@ -16,18 +16,9 @@ class Model extends JModel
     use RelationshipsTrait;
     use RecursiveSaveTrait;
     use HasEvents;
-    /*  use CascadeTrait;
-    use CopyTrait;
-    use TableName;
-    use ModelDataTrait;
-    use CastsTrait;*/
 
     protected $guard_name = 'web';
     protected $dates = ['created_at', 'updated_at'];
     protected $casts = ['created_at' => 'datetime:Y-m-d H:i:s', 'updated_at' => 'datetime:Y-m-d H:i:s'];
     protected $guarded = ['_id'];
-
-    var $defaultAttributes;
-    var $frontVariables = [];
-    protected $relationships;
 }
