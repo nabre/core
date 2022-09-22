@@ -70,6 +70,12 @@ trait RecursiveSaveTrait
 
         $data = collect(array_undot($data));
 
+        if ($saveQuietly) {
+            $model->saveQuietly();
+        } else {
+            $model->save();
+        }
+
         #salva relazioni
         $find = $model->definedRelations()->pluck('name')->toArray();
         $dataSave = $this->findData($data, $find);
