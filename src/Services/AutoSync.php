@@ -22,7 +22,7 @@ class AutoSync
         $this->exists()->each(function ($data) use (&$notRemove) {
             $item = $this->put($data);
             $item = $item->recursiveSave($data);
-            $notRemove = $notRemove->push($item->{$this->keyName});
+            $notRemove = $notRemove->push($item->{$this->keyName})->unique()->sort()->values();
         });
 
         $this->current()->whereNotIn($this->keyName, $notRemove->toArray())->delete();
