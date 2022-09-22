@@ -61,15 +61,18 @@ trait RecursiveSaveTrait
         #carica model confronto getKeyName()
         $keyName = $model->getKeyName();
         $class = get_class($model);
-        if (is_null($model->$keyName ?? null)) {
-            $model = null;
-        }
         if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
+
             $model = $class::find($data[$keyName]);
+            if (is_null($model)) {
+
+            }
         }
-        if (is_null($model)) {
-            $model = $class::make();
+
+        if(is_null(($model->$keyName ?? null))){
+            $model = $class::create();
         }
+
         $data = collect(array_undot($data));
 
         #salva relazioni
