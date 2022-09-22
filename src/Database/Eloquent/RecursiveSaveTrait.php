@@ -132,7 +132,7 @@ trait RecursiveSaveTrait
                     $syncBool = $btmSync;
                     $asso->sync($instance->modelKeys(), $syncBool);
                     break;
-                case "EmbedsMany":
+                case "EmbedsOne":
                     if (is_null($value)) {
                         $model->unset($name);
                     } else {
