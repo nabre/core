@@ -60,8 +60,8 @@ trait RecursiveSaveTrait
         $model = $this;
         #carica model confronto getKeyName()
         $keyName = $model->getKeyName();
+        $class = get_class($model);
         if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
-            $class = get_class($model);
             $model = $class::find($data[$keyName]);
             if (is_null($model)) {
                 $model = $class::make();
