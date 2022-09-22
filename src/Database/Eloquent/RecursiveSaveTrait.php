@@ -59,7 +59,7 @@ trait RecursiveSaveTrait
     {
         $model = $this;
         #carica model contronto getKeyName()
-        $keyName = $model->getKeyName();
+        /*  $keyName = $model->getKeyName();
         if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
             $class = get_class($model);
             $model = $class::find($data[$keyName]);
@@ -67,7 +67,7 @@ trait RecursiveSaveTrait
             if (is_null($model)) {
                 $model = $class::make();
             }
-        }
+        }*/
 
         $data = collect(array_undot($data));
 
@@ -75,6 +75,14 @@ trait RecursiveSaveTrait
         #salva relazioni
         $find = $model->definedRelations()->pluck('name')->toArray();
         $dataSave = $this->findData($data, $find);
+
+        if (count($dataSave)) {
+            if ($saveQuietly) {
+                $model=$model->saveQuietly();
+            } else {
+                $model=$model->save();
+            }
+        }
 
         foreach ($dataSave as $name => $value) {
             $rel = $model->reletionshipFind($name);
