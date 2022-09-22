@@ -74,7 +74,7 @@ trait RecursiveSaveTrait
         $data = collect(array_undot($data));
 
         #salva relazioni
-        $find = $model->definedRelations()->pluck('name')->toArray();
+     /*   $find = $model->definedRelations()->pluck('name')->toArray();
         $dataSave = $this->findData($data, $find)->toArray();
 
         foreach ($dataSave as $name => $value) {
@@ -163,7 +163,7 @@ trait RecursiveSaveTrait
                     }
                     break;
             }
-        }
+        }*/
 
         #salva variabili
         $find = $model->getFillable();
