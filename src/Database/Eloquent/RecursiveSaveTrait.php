@@ -58,6 +58,8 @@ trait RecursiveSaveTrait
     function recursiveSave(array $data, $btmSync = true, $saveQuietly = false)
     {
         $model = $this;
+        $model->saveQuietly();
+
         #carica model contronto getKeyName()
         /*  $keyName = $model->getKeyName();
         if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
@@ -71,12 +73,9 @@ trait RecursiveSaveTrait
 
         $data = collect(array_undot($data));
 
-        //   dd(get_defined_vars());
         #salva relazioni
         $find = $model->definedRelations()->pluck('name')->toArray();
-        $dataSave = $this->findData($data, $find);
-
-        $model->saveQuietly();
+        $dataSave = $this->findData($data, $find)->toArray();
 
         foreach ($dataSave as $name => $value) {
             $rel = $model->reletionshipFind($name);
@@ -170,7 +169,7 @@ trait RecursiveSaveTrait
         $find = $model->getFillable();
         //     $find = array_diff(array_keys($data->toArray()), $find);
         $casts = $model->casts;
-        $dataSave = collect($this->findData($data, $find))->map(function ($val, $key) use ($casts) {
+        $dataSave = $this->findData($data, $find)->map(function ($val, $key) use ($casts) {
             $type = $casts[$key] ?? null;
             switch ($type) {
                 case "array":
@@ -192,6 +191,7 @@ trait RecursiveSaveTrait
             return $val;
         })->toArray();
 
+        dd($dataSave);
         $model->fill($dataSave);
 
         if ($saveQuietly) {
@@ -208,6 +208,6 @@ trait RecursiveSaveTrait
         $varName = array_intersect(array_keys($data->toArray()), $find);
         return  $data->filter(function ($val, $key) use ($varName) {
             return in_array($key, $varName);
-        })->toArray();
+        });
     }
 }
