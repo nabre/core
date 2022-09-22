@@ -64,8 +64,12 @@ trait RecursiveSaveTrait
             $class = get_class($model);
             $model = $class::find($data[$keyName]);
             if (is_null($model)) {
-                $model = $class::create();
+                $model = $class::make();
             }
+        }
+
+        if (is_null(($model->$keyName ?? null) )) {
+            $model = $class::make();
         }
 
         $data = collect(array_undot($data));
