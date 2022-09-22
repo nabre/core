@@ -58,9 +58,8 @@ trait RecursiveSaveTrait
     function recursiveSave(array $data, $btmSync = true, $saveQuietly = false)
     {
         $model = $this;
-        $model->fill($data, ['upsert' => true]);
-        $model->save();
-/*
+
+
         #carica model contronto getKeyName()
         $keyName = $model->getKeyName();
         if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
@@ -73,7 +72,7 @@ trait RecursiveSaveTrait
         }
 
         $data = collect(array_undot($data));
-
+/*
         #salva relazioni
         $find = $model->definedRelations()->pluck('name')->toArray();
         $dataSave = $this->findData($data, $find)->toArray();
@@ -163,7 +162,7 @@ trait RecursiveSaveTrait
                     }
                     break;
             }
-        }
+        }*/
 
         #salva variabili
         //$find = $model->getFillable();
@@ -197,7 +196,7 @@ trait RecursiveSaveTrait
             $model->saveQuietly();
         } else {
             $model->save();
-        }*/
+        }
 
         return $model;
     }
