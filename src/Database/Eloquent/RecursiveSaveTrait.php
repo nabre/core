@@ -58,8 +58,6 @@ trait RecursiveSaveTrait
     function recursiveSave(array $data, $btmSync = true, $saveQuietly = false)
     {
         $model = $this;
-
-        dd(get_defined_vars());
         $model->fill($data, ['upsert' => true]);
         $model->save();
 /*
