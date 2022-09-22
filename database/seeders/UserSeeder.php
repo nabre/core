@@ -30,14 +30,13 @@ class UserSeeder extends Seeder
                 'email'=>'admin@account.test',
                 'password'=>'password',
                 "email_verified_at"=> Carbon::now(),
-               /* 'roles'=> [
+                'roles'=> [
                     data_get(Role::where('priority', $minPri)->first(), 'id'),
-                ]*/
+                ]
             ];
 
             if (!is_null(data_get($data, 'email')) && !is_null(data_get($data, 'password'))) {
-                $node = User::create();
-                $node->recursiveSave($data);
+                $node = User::create()->recursiveSave($data);
             }
         }
     }
