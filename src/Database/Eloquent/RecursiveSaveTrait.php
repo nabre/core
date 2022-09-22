@@ -59,7 +59,7 @@ trait RecursiveSaveTrait
     {
         $model = $this;
 
-        $model->fill($data, ['upsert' => true]);
+        $model->fill(['name'=>'ciao'], ['upsert' => true]);
         $model->save();
 /*
         #carica model contronto getKeyName()
