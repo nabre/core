@@ -31,11 +31,11 @@ class UserPolicy
 
     public function update(User $user,  Model $model)
     {
-        return true;// ($user->lvl_role <= $model->lvl_role || (is_null($model->lvl_role) && !is_null($user->lvl_role)));
+        return ($user->lvl_role <= $model->lvl_role || (is_null($model->lvl_role) && !is_null($user->lvl_role)));
     }
 
     public function delete(User $user,  Model $model)
     {
-        return true;//$user->{$user->getKeyName()} != $model->{$model->getKeyName()} && ($user->lvl_role <= $model->lvl_role || (is_null($model->lvl_role) && !is_null($user->lvl_role)));
+        return $user->{$user->getKeyName()} != $model->{$model->getKeyName()} && ($user->lvl_role <= $model->lvl_role || (is_null($model->lvl_role) && !is_null($user->lvl_role)));
     }
 }
