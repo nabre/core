@@ -189,7 +189,7 @@ trait RecursiveSaveTrait
             return $val;
         })->toArray();
 
-        $model->fill($dataSave, ['upsert' => true]);
+        $model->fill($dataSave);
 
         if ($saveQuietly) {
             $model->saveQuietly();
