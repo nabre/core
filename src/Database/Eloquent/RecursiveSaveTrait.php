@@ -67,14 +67,14 @@ trait RecursiveSaveTrait
         }
 
         if(is_null(data_get($model,'id'))){
-            $model->saveQuietly();
+        //    $model->saveQuietly();
         }
 
         $data = collect(array_undot($data));
 
         #salva relazioni
         $find = $model->definedRelations()->pluck('name')->toArray();
-/*        $dataSave = $this->findData($data, $find)->toArray();
+        $dataSave = $this->findData($data, $find)->toArray();
 
         foreach ($dataSave as $name => $value) {
             $rel = $model->reletionshipFind($name);
@@ -161,7 +161,7 @@ trait RecursiveSaveTrait
                     }
                     break;
             }
-        }*/
+        }
 
         #salva variabili
         //$find = $model->getFillable();
@@ -189,7 +189,7 @@ trait RecursiveSaveTrait
             return $val;
         })->toArray();
 
-        $model->update($dataSave);
+        $model->fill($dataSave);
 
         if ($saveQuietly) {
             $model->saveQuietly();
