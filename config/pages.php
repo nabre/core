@@ -24,7 +24,7 @@ return [
     'nabre_builder_navigation_pages_index' => ['i' => 'fa-solid fa-file', 't' => ['it' => 'Pagine']],
     'nabre_builder_settings_form-field-type_index' => ['i' => 'fa-solid fa-hashtag'],
     'nabre_builder_settings_variables_index' => ['i' => 'fa-solid fa-tags'],
-    'nabre_manage_contact_index' => ['i' => 'fa-solid fa-user-pen'],
+    'nabre_manage_contact_index' => ['i' => 'fa-solid fa-user-pen','t'=>['it'=>'Gestione']],
     'nabre_manage_dashboard_index' => ['i' => 'fa-solid fa-gauge'],
     'nabre_user_dashboard_index' => ['i' => 'fa-solid fa-gauge'],
     'nabre_user_profile_account_index' => ['i' => 'fa-solid fa-key'],
