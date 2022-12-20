@@ -124,9 +124,6 @@ class AppServiceProvider extends Sp
             return "<?php echo setting($expression); ?>";
         });
 
-        //publish
-        $this->publishes([
-            __DIR__.'/../../files/' => app_path()
-        ], 'app-files');
+
     }
 }

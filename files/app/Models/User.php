@@ -1,8 +1,9 @@
 <?php
+
 namespace App\Models;
 
-use Nabre\Models\User as ModelsUser;
+use Nabre\Models\User as Original;
 
-class User extends ModelsUser
+class User extends Original
 {
 }
