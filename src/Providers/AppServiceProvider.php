@@ -123,5 +123,10 @@ class AppServiceProvider extends Sp
         Blade::directive('setting', function ($expression) {
             return "<?php echo setting($expression); ?>";
         });
+
+        //publish
+        $this->publishes([
+            __DIR__.'/../../files/' => app_path()
+        ], 'app-files');
     }
 }
