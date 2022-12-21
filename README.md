@@ -18,7 +18,8 @@ Installazione del framework secondo la [guida](https://laravel.com/docs).
 ```
 composer create-project laravel/laravel example-app
 ```
-## 2.2 Modifica file
+## 2.2 Preparazione dei file 
+## Modifica file
 Editare il file
 ***bootstap/app.php***
 ```php
@@ -48,7 +49,7 @@ $app->singleton(
 
 return $app;
 ```
-## 2.3 Aggiungere file Model
+## Aggiungere file Model
 È necessario aggiungere i seguenti file Model nel percorso ***App\Models***:
 
 ***Permission.php***
@@ -106,7 +107,7 @@ class UserContact extends Original
 }
 
 ```
-## 2.2 Database
+## Database
 Si utilizza un database ***MongoDB*** in riferimento al pacchetto [***jenssegers/laravel-mongodb***](https://github.com/jenssegers/laravel-mongodb).
 
 Modifica il file ***config/database.php***:
@@ -135,18 +136,18 @@ DB_PASSWORD=
 DB_AUTHENTICATION_DATABASE=admin
 ```
 
-## 2.4 Installa il presente pacchetto:
+## 2.3 Installa il presente pacchetto:
 ```bash
 composer require nabre/core
 ```
 
-## 2.5 Seeders
+## 2.4 Seeders
 Popolare il databse con *collections* e *documents* necessari richiamare il seguente comando:
 ```bash
 php artisan db:seed --class=Nabre\Database\Seeders\DatabaseSeeder 
 ```
 
-## 2.6 NPM
+## 2.5 NPM
 Si utilizzano i seguenti pacchetti [NPM(Node Package Manager)](https://docs.npmjs.com/) da installare:
 ```bash
 npm install @fortawesome/fontawesome-free
@@ -163,7 +164,7 @@ Controllare il metodo definito e installare nel caso.
 npm install laravel-mix --save-dev
 ```
 modicare ***/package.json***
-```js
+```json
 "scripts": {
     "dev": "npm run development",
     "development": "mix",
