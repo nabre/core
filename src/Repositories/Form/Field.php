@@ -126,6 +126,9 @@ class Field
                 }
 
                 self::name($name);
+                if(!count((array)$value) || is_null($value)){
+                    $value=$list->first()->key;
+                }
                 $html = Form::select($name, $list, $value, $options);
                 break;
                 ###
