@@ -107,6 +107,14 @@ class UserContact extends Original
 }
 
 ```
+## Modifica file /routes/web.php
+```php
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+```
+Verifficare che la chiamata "/" non sia definita.
 ## Database
 Si utilizza un database ***MongoDB*** in riferimento al pacchetto [***jenssegers/laravel-mongodb***](https://github.com/jenssegers/laravel-mongodb).
 
