@@ -115,6 +115,31 @@ use Illuminate\Support\Facades\Route;
 
 ```
 Verifficare che la chiamata "/" non sia definita.
+
+## Modifica il file ***config/permission.php***
+```php
+<?php
+
+return [
+
+    'models' => [
+        'permission' => App\Models\Permission::class,
+        'role' => App\Models\Role::class,
+    ],
+
+    'collection_names' => [
+        'roles' => 'roles',
+        'permissions' => 'permissions',
+    ],
+
+    'cache_expiration_time' => 60 * 24,
+
+    'log_registration_exception' => true,
+
+    'display_permission_in_exception' => false,
+];
+
+```
 ## Database
 Si utilizza un database ***MongoDB*** in riferimento al pacchetto [***jenssegers/laravel-mongodb***](https://github.com/jenssegers/laravel-mongodb).
 
