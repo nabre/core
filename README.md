@@ -150,22 +150,29 @@ php artisan db:seed --class=Nabre\Database\Seeders\DatabaseSeeder
 Si utilizzano i seguenti pacchetti [NPM(Node Package Manager)](https://docs.npmjs.com/) da installare:
 ```bash
 npm install @fortawesome/fontawesome-free
+npm install bootstrap
 npm install flag-icons
 npm install jquery
+npm install jquery-ui
 npm install livewire-sortable
+
 ```
-Compilarote npm con mix
+Compilatore npm con mix<br>
+Controllare il metodo definito e installare nel caso.
+```bash
+npm install laravel-mix --save-dev
+```
 modicare ***/package.json***
 ```js
-    "scripts": {
-        "dev": "npm run development",
-        "development": "mix",
-        "watch": "mix watch",
-        "watch-poll": "mix watch -- --watch-options-poll=1000",
-        "hot": "mix watch --hot",
-        "prod": "npm run production",
-        "production": "mix --production"
-    }
+"scripts": {
+    "dev": "npm run development",
+    "development": "mix",
+    "watch": "mix watch",
+    "watch-poll": "mix watch -- --watch-options-poll=1000",
+    "hot": "mix watch --hot",
+    "prod": "npm run production",
+    "production": "mix --production"
+}
 ```
 Creare/modificare il seguente file:
 ***/webpack.mix.js***
