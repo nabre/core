@@ -138,8 +138,14 @@ return [
 
     'display_permission_in_exception' => false,
 ];
-
 ```
+
+## Modifica il file ***config/app.php***
+Aggiungi le lingue dell'applicazione selezionabili.
+```php
+    'available_locales' => [/*'English' => 'en', 'Deutsch' => 'de', 'Français' => 'fr',*/ 'Italiano' => 'it'],
+```
+
 ## Database
 Si utilizza un database ***MongoDB*** in riferimento al pacchetto [***jenssegers/laravel-mongodb***](https://github.com/jenssegers/laravel-mongodb).
 
