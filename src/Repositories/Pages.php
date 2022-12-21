@@ -3,7 +3,9 @@
 namespace Nabre\Repositories;
 
 use Nabre\Models\Page;
+use Nabre\Repositories\Form\Field;
 use Nabre\Services\SettingService;
+use Nabre\Repositories\LocalizationRepositorie;
 
 class Pages
 {
@@ -28,7 +30,12 @@ class Pages
     }
 
     static function userSettingCompile(){
-        return SettingService::user_setList()->count();
+        return SettingService::user_setList()->get()->filter(function($i){
+            if((new LocalizationRepositorie)->aviableLang()->count()<=1 && data_get($i->getRawOriginal(),'type')==Field::LANG_SELECT){
+                return false;
+            }
+            return true;
+        })->count();
     }
 
     static function convertName($name)
