@@ -125,10 +125,12 @@ class Field
                     $list = $list->prepend($empty);
                 }
 
-                self::name($name);
                 if(!count((array)$value) || is_null($value)){
-                    $value=$list->first()->key;
+                    $value=(array)$list->keys()->first();
                 }
+
+                self::name($name);
+
                 $html = Form::select($name, $list, $value, $options);
                 break;
                 ###
