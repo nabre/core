@@ -10,9 +10,7 @@ use Nabre\Http\Controllers\Auth\RegisteredUserController;
 use Nabre\Http\Controllers\Auth\VerifyEmailController;
 
 Route::group(['middleware' => ['web']], function () {
-    Route::get('/', function () {
-        return view("Nabre::welcome");
-    })->name('welcome');
+    Route::get('/', [\Nabre\Http\Controllers\PagesController::class,'welcome'])->name('welcome');
 
     Route::get('/change-language/{locale}', function ($locale) {
         $array = array_unique(array_merge(array_values((array) config('app.available_locales')), (array)  config('app.locale'), (array) config('app.fallback_locale')));
