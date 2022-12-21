@@ -14,7 +14,6 @@ use Nabre\Setting\Manager;
 use Blade;
 use Nabre\Console\Commands\MongoDB\DumpCommand as MongoDBDumpCommand;
 use Nabre\Console\Commands\MongoDB\RestoreCommand as MOngoDBRestoreCommand;
-use Nabre\Console\Commands\Nabrecore\InstallCommand as NabrecoreInstallCommand;
 use Nabre\Console\Commands\Page\InstallCommand as PageInstallCommand;
 use Nabre\Console\Commands\Roles\UpdateCommand as RolesUpdateCommand;
 use Nabre\Http\Middleware\DefaultAccountMiddleware;
@@ -90,7 +89,6 @@ class AppServiceProvider extends Sp
             $this->commands([
                 MongoDBDumpCommand::class,
                 MongoDBRestoreCommand::class,
-                NabrecoreInstallCommand::class,
                 PageInstallCommand::class,
                 RolesUpdateCommand::class,
             ]);

@@ -142,7 +142,7 @@ composer require nabre/core
 ```
 
 ## 2.4 Seeders
-Popolare il databse con *collections* e *documents* necessari richiamare il seguente comando:
+Popolare il databse con *collections* e *documents* di base richiamare il seguente comando:
 ```bash
 php artisan db:seed --class=Nabre\Database\Seeders\DatabaseSeeder 
 ```
@@ -202,7 +202,7 @@ Il sistema di gestione prevede i seguenti ambienti di base con predefinte alcune
 | *admin/builder/*   | Pagine dedicate alla costruzione di alcune parti generali dell'applicazione.          |
 
 ## 3.2 Account
-L'account predefinito, dopo aver popolato per la prima volta (cfr [§2.5](#25-seeders)), prevedere le seguenti credenziali:
+L'account predefinito, dopo aver popolato per la prima volta il database (funzione artisan db:seed specifico), prevedere le seguenti credenziali:
 
 | **Nome utente:**  | admin@account.test    |
 | ---               | ---                   |
@@ -261,6 +261,5 @@ Il presente pacchetto prevede alcuni comandi artisan aggiuntivi per facilitare a
 | -------------     | -------------                                                     |
 | mongodb:dump      | Crea un fil di backup del database MongoDB impostato.             |
 | mongodb:restore   | Ripristina l'ultimo file di backup presente nel DB MongoDB        |
-| nabrecore:install | Installa le impostazioni del presente pacchetto.                  |
 | page:install      | Vengono aggiunte le pagine presenti nell'applicazione.            |
 | roles:update      | Aggiorna ruoli e permessi utilizzati nel middleware delle route   |
