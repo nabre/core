@@ -38,7 +38,7 @@ Route::group(['middleware' => ['web']], function () {
                 Route::name("profile.")->group(function () {
                     Route::resource('user/profile/account', Nabre\Http\Controllers\User\Profile\AccountController::class, ['key' => 'data'])->only(['index', 'update']);
                     Route::resource('user/profile/contact', Nabre\Http\Controllers\User\Profile\ContactController::class, ['key' => 'data'])->only(['index', 'update']);
-                    Route::resource('user/profile/settings', Nabre\Http\Controllers\User\Profile\SettingsController::class, ['key' => 'data'])->only(['index', 'store']);
+                    Route::middleware(['usersettingcompile'])->resource('user/profile/settings', Nabre\Http\Controllers\User\Profile\SettingsController::class, ['key' => 'data'])->only(['index', 'store']);
                 });
             });
 

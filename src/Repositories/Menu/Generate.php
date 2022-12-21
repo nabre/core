@@ -4,6 +4,7 @@ namespace Nabre\Repositories\Menu;
 
 use Nabre\Models\Menu;
 use Nabre\Models\Page;
+use Nabre\Repositories\Pages;
 
 class Generate
 {
@@ -109,6 +110,11 @@ class Generate
                     break;
                 case "registration":
 
+                    break;
+                case "usersettingcompile":
+                    if (!Pages::userSettingCompile()) {
+                        return false;
+                    }
                     break;
                 case "abort":
                     if (!in_array($name, [401, 403, 200])) {

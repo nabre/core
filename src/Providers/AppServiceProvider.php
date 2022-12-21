@@ -57,6 +57,7 @@ class AppServiceProvider extends Sp
         $router->aliasMiddleware('role', \Maklad\Permission\Middlewares\RoleMiddleware::class);
         $router->aliasMiddleware('permission', \Maklad\Permission\Middlewares\PermissionMiddleware::class);
         $router->aliasMiddleware('registration', \Nabre\Http\Middleware\RegisterPagesMiddleware::class);
+        $router->aliasMiddleware('usersettingcompile', \Nabre\Http\Middleware\UserSettingCompileMiddleware::class);
         $router->pushMiddlewareToGroup('web', DisabledPagesMiddleware::class);
         $router->pushMiddlewareToGroup('web', LocalizationMiddleware::class);
         $kernel->pushMiddleware(StartSession::class);

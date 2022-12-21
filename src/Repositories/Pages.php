@@ -3,6 +3,7 @@
 namespace Nabre\Repositories;
 
 use Nabre\Models\Page;
+use Nabre\Services\SettingService;
 
 class Pages
 {
@@ -24,6 +25,10 @@ class Pages
             $value = $value[$part] ?? null;
         }
         return $value;
+    }
+
+    static function userSettingCompile(){
+        return SettingService::user_setList()->count();
     }
 
     static function convertName($name)
