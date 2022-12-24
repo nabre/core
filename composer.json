@@ -13,7 +13,7 @@
         "laravie/html": "~7",
         "diglactic/laravel-breadcrumbs": "~7",
         "spatie/db-dumper": "~3",
-        "mpdf/mpdf": "^8.0",
+        "mpdf/mpdf": "~8",
         "laravel-lang/attributes": "^2.0",
         "laravel-lang/lang": "^12.0",
         "laravel-lang/publisher": "^14.0",
