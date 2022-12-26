@@ -14,7 +14,7 @@ class Field
     // Simple fields
     const TEXT = 'text';
     const TEXTAREA = 'textarea';
-    const TEXTAREA_CKEDITOR ='ckeditor';
+    const TEXTAREA_CKEDITOR = 'ckeditor';
     const SELECT = 'select';
     const SELECT_MULTI = 'select-multiple';
     //  const CHOICE = 'choice'; //
@@ -129,8 +129,8 @@ class Field
                     $list = $list->prepend($empty);
                 }
 
-                if(!count((array)$value) || is_null($value)){
-                    $value=(array)$list->keys()->first();
+                if (!count((array)$value) || is_null($value)) {
+                    $value = (array)$list->keys()->first();
                 }
 
                 self::name($name);
