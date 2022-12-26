@@ -62,8 +62,8 @@ class Field
 
     static function classAdd(&$class, $edit)
     {
-        $class = explode(' ', implode('', (array)($class ?? null)));
-        $edit = explode(' ', implode('', (array)($edit ?? null)));
+        $class = explode(' ', implode(' ', (array)($class ?? null)));
+        $edit = explode(' ', implode(' ', (array)($edit ?? null)));
         $class = array_values(array_unique(array_merge($class, $edit)));
     }
     static function name(&$name)
@@ -112,6 +112,9 @@ class Field
                 ###
             case self::TEXTAREA_CKEDITOR:
                 self::classAdd($options['class'], 'ckeditor');
+                self::name($name);
+                $html = Form::textarea($name, $value, $options);
+                break;
             case self::TEXTAREA:
                 self::classAdd($options['class'], "form-control");
                 self::name($name);
