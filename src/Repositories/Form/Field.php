@@ -112,9 +112,6 @@ class Field
                 ###
             case self::TEXTAREA_CKEDITOR:
                 self::classAdd($options['class'], 'ckeditor');
-                self::name($name);
-                $html = Form::textarea($name, $value, $options);
-                break;
             case self::TEXTAREA:
                 self::classAdd($options['class'], "form-control");
                 self::name($name);

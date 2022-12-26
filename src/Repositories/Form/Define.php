@@ -30,7 +30,7 @@ class Define
                         $enabled = Field::BOOLEAN;
                         break;
                     default:
-                        $enabled = [Field::TEXT, Field::TEXTAREA, Field::HIDDEN];
+                        $enabled = [Field::TEXT, Field::TEXTAREA,Field::TEXTAREA_CKEDITOR, Field::HIDDEN];
                         collect(self::$requestOutput)->each(function ($en) use (&$enabled) {
                             $enabled = array_unique(array_merge((array)$en, (array)$enabled));
                         });
