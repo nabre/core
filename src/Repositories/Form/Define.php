@@ -2,6 +2,7 @@
 
 namespace Nabre\Repositories\Form;
 
+use Nabre\Casts\CkeditorCast;
 use Nabre\Casts\LocalCast;
 use Nabre\Casts\SettingTypeCast;
 use Nabre\Repositories\Form\Field;
@@ -23,11 +24,14 @@ class Define
                     case LocalCast::class:
                         $enabled = Field::TEXT_LANG;
                         break;
-                    case SettingTypeCast::class;
+                    case SettingTypeCast::class:
                         $enabled = Field::FIELD_TYPE_LIST;
                         break;
                     case "boolean":
                         $enabled = Field::BOOLEAN;
+                        break;
+                    case CkeditorCast::class:
+                        $enabled=Field::TEXTAREA_CKEDITOR;
                         break;
                     default:
                         $enabled = [Field::TEXT, Field::TEXTAREA,Field::TEXTAREA_CKEDITOR, Field::HIDDEN];
