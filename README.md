@@ -195,6 +195,7 @@ npm install flag-icons
 npm install jquery
 npm install jquery-ui
 npm install livewire-sortable
+npm install @popperjs/core
 
 ```
 Compilatore npm con mix<br>
