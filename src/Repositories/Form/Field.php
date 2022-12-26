@@ -14,6 +14,7 @@ class Field
     // Simple fields
     const TEXT = 'text';
     const TEXTAREA = 'textarea';
+    const TEXTAREA_CKEDITOR ='ckeditor';
     const SELECT = 'select';
     const SELECT_MULTI = 'select-multiple';
     //  const CHOICE = 'choice'; //
@@ -109,12 +110,15 @@ class Field
                 $html .= Form::input($output, $name, $value, $options);
                 break;
                 ###
+            case self::TEXTAREA_CKEDITOR:
+                self::classAdd($options['class'], "textarea-WYSIWYG");
             case self::TEXTAREA:
                 self::classAdd($options['class'], "form-control");
                 self::name($name);
                 $html = Form::textarea($name, $value, $options);
                 break;
                 ###
+
             case self::SELECT_MULTI:
                 $options[] = 'multiple';
                 $name .= '[]';

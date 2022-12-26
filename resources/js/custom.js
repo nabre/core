@@ -10,4 +10,6 @@ $(document).ready(function () {
     $('.toggle-content .handle').on('click', function () {
         $(this).closest('.toggle-content').find('> *').toggle();
     });
+
+    $('.ckeditor').ckeditor();
 });
