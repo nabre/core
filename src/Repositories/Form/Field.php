@@ -111,7 +111,7 @@ class Field
                 break;
                 ###
             case self::TEXTAREA_CKEDITOR:
-                self::classAdd($options['class'], "textarea-WYSIWYG");
+                self::classAdd($options['class'], 'ckeditor');
             case self::TEXTAREA:
                 self::classAdd($options['class'], "form-control");
                 self::name($name);
