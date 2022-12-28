@@ -76,6 +76,14 @@ trait RecursiveSaveTrait
         $find = $model->definedRelations()->pluck('name')->toArray();
         $dataSave = $this->findData($data, $find)->toArray();
 
+        if(count($dataSave)){
+            if ($saveQuietly) {
+                $model->saveQuietly();
+            } else {
+                $model->save();
+            }
+        }
+        
         foreach ($dataSave as $name => $value) {
             $rel = $model->reletionshipFind($name);
             $modelRel = $rel->model;
