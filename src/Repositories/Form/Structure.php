@@ -78,6 +78,12 @@ class Structure
         return $this;
     }
 
+    function addValue($variable,$value=null){
+        $output=Field::HIDDEN;
+        $this->insert()->item($variable, $output, null, true);
+        return $this;
+    }
+
     private function insert()
     {
         if (!is_null($this->item ?? null)) {

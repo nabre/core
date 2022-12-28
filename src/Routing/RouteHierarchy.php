@@ -47,6 +47,7 @@ class RouteHierarchy
         $uri = implode("/", request()->segments());
 
         $redirect=Generate::redirect($uri);
+
         $redirect = $redirect ?? $this->ruoteUri()->sort()->values()->filter(function ($str) use ($uri) {
             $pos = strpos($str, $uri);
             return $pos !== false && $pos == 0;
