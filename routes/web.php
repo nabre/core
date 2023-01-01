@@ -13,7 +13,7 @@ use Nabre\Models\Image;
 Route::group(['middleware' => ['web']], function () {
     Route::get('/', [\Nabre\Http\Controllers\PagesController::class,'welcome'])->name('welcome');
 
-    Route::get('image/{data}', function (Image $data) {
+    Route::get('image/{data}.png', function (Image $data) {
         return data_get($data,'image');
     })->name('image');
 
