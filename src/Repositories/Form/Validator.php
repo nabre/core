@@ -26,6 +26,7 @@ class Validator{
 
         $vars=$request->validate( $requestValidateParam );
         */
+        
 
         $vars=$request->all();
 
