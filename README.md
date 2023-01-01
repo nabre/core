@@ -107,6 +107,19 @@ class UserContact extends Original
 }
 
 ```
+***Image.php***
+```php
+<?php
+
+namespace App\Models;
+
+use Nabre\Models\Image as Original;
+
+class Image extends Original
+{
+}
+
+```
 ## Modifica file /routes/web.php
 ```php
 <?php
