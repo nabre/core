@@ -16,7 +16,7 @@ class CkeditorCast implements CastsAttributes
 
     public function set($model, $key, $value, $attributes)
     {
-        $value =  preg_replace("/<script.*?\/script>/s", "", $value) ? : $value;
+        $value =  preg_replace("/<script.*?\/script>/s", "", $value) ?: $value;
 
         $content = $value;
 
@@ -26,12 +26,13 @@ class CkeditorCast implements CastsAttributes
 
         foreach ($imageFile as $item => $image) {
             $src = $image->getAttribute('src');
-            if(file_exists($src)){
+            if (file_exists($src)) {
                 $code = file_get_contents($src);
-                $type=\File::mimeType($src);
-                $picture=Image::create(compact('code','type'));
+                $type = \File::mimeType($src);
+                $picture = Image::create(compact('code', 'type'));
                 $image->removeAttribute('src');
-                $image->setAttribute('src', route('image',$picture));
+                $src = str_replace(request()->getSchemeAndHttpHost(), '', route('image', $picture));
+                $image->setAttribute('src', $src);
             }
         }
 
