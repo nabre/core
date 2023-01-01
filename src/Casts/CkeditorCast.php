@@ -31,7 +31,7 @@ class CkeditorCast implements CastsAttributes
                 $type = \File::mimeType($src);
                 $picture = Image::create(compact('code', 'type'));
                 $image->removeAttribute('src');
-                $src = route('image', $picture);//str_replace(request()->getSchemeAndHttpHost(), '', route('image', $picture));
+                $src = str_replace(request()->getSchemeAndHttpHost(), '', route('image', $picture));
                 $image->setAttribute('src', $src);
             }
         }
