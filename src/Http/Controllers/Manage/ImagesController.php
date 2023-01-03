@@ -2,14 +2,12 @@
 
 namespace Nabre\Http\Controllers\Manage;
 
-use App\Models\User;
 use App\Models\Image as Model;
-use Nabre\Forms\Manage\ContactForm as Form;
+use Nabre\Forms\Manage\ImageForm as Form;
 use Nabre\Tables\Manage\ImageTable as Table;
 use Nabre\Http\Controllers\Controller;
 use Nabre\Repositories\Form\Build;
 use Nabre\Repositories\Form\Validator;
-use Nabre\Services\UserContactService;
 
 class ImagesController extends Controller
 {
@@ -46,12 +44,6 @@ class ImagesController extends Controller
     function update(Validator $validate, Model $data)
     {
         $validate->structure(new Form($data))->saveIn($data);
-        return redirect()->route($this->getRoute('index'));
-    }
-
-    function userGenerate(Model $data)
-    {
-        UserContactService::generateUser($data);
         return redirect()->route($this->getRoute('index'));
     }
 
