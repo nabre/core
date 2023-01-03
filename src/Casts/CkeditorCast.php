@@ -38,9 +38,8 @@ class CkeditorCast implements CastsAttributes
                 $code = file_get_contents($src);
                 $type = \File::mimeType($src);
                 $name=time().".".pathinfo($src, PATHINFO_EXTENSION);
-                $src = asset($folder.$name);//str_replace(request()->getSchemeAndHttpHost(), '', route('image', $picture));
-
-                $picture = Image::create(compact('code', 'type','name','path','src'));
+                $src = asset($folder.$name);
+                $picture = Image::create(compact('code', 'type','name','src'));
                 $disk->put($name, $code);
                 $image->removeAttribute('src');
                 $image->setAttribute('src', $src);

@@ -13,10 +13,6 @@ use Nabre\Models\Image;
 Route::group(['middleware' => ['web']], function () {
     Route::get('/', [\Nabre\Http\Controllers\PagesController::class,'welcome'])->name('welcome');
 
-    Route::get('image/{data}.png', function (Image $data) {
-        return data_get($data,'image');
-    })->name('image');
-
     Route::get('/change-language/{locale}', function ($locale) {
         $array = array_unique(array_merge(array_values((array) config('app.available_locales')), (array)  config('app.locale'), (array) config('app.fallback_locale')));
         if (!in_array($locale, $array)) {
