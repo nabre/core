@@ -20,10 +20,10 @@ class CkeditorCast implements CastsAttributes
 
         $content = $value;
 
-
+        $folder="images/uploaded/";
         $disk = Storage::build([
             'driver' => 'local',
-            'root' => public_path('images'),
+            'root' => public_path($folder),
         ]);
 
         $path=$disk->path('');
@@ -38,7 +38,7 @@ class CkeditorCast implements CastsAttributes
                 $code = file_get_contents($src);
                 $type = \File::mimeType($src);
                 $name=time().".".pathinfo($src, PATHINFO_EXTENSION);
-                $src = asset('images/'.$name);//str_replace(request()->getSchemeAndHttpHost(), '', route('image', $picture));
+                $src = asset($folder.$name);//str_replace(request()->getSchemeAndHttpHost(), '', route('image', $picture));
 
                 $picture = Image::create(compact('code', 'type','name','path','src'));
                 $disk->put($name, $code);
