@@ -14,20 +14,14 @@ class ImageTable extends Structure
 
     function columns()
     {
-        return ['name'];
+        return ['name','preview'];
     }
 
-    function colPermissions()
+    function colPreview()
     {
-        $list = $this->col->map(function ($i) {
-            $html = Html::tag(
-                'li',
-                $i->eti,
-                ['class' => 'list-group-item p-1']
-            );
-            return compact('html');
-        })->implode('html');
-        return Html::tag('ul', $list, ['class' => 'list-group']);
+        $src='data:'.data_get($this->row,'type').';base64,'.data_get($this->row->getRawOriginal(),'code');
+        $style='max-width:300px;max-height:300px';
+        return Html::tag('img', null, get_defined_vars());
     }
 
     function actions()
