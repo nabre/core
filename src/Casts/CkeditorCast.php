@@ -2,8 +2,8 @@
 
 namespace Nabre\Casts;
 
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Support\Facades\Storage;
 use Nabre\Models\Image;
 
 class CkeditorCast implements CastsAttributes
@@ -20,6 +20,12 @@ class CkeditorCast implements CastsAttributes
 
         $content = $value;
 
+
+        $disk = Storage::build([
+            'driver' => 'local',
+            'root' => public_path('images'),
+        ]);
+
         $dom = new \DomDocument();
         $dom->loadHtml(trim($content), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $imageFile = $dom->getElementsByTagName('img');
@@ -29,9 +35,13 @@ class CkeditorCast implements CastsAttributes
             if (file_exists($src)) {
                 $code = file_get_contents($src);
                 $type = \File::mimeType($src);
+                $filename=time().".".pathinfo($src, PATHINFO_EXTENSION);
                 $picture = Image::create(compact('code', 'type'));
+
+                $disk->put($filename, $code);
+
                 $image->removeAttribute('src');
-                $src = str_replace(request()->getSchemeAndHttpHost(), '', route('image', $picture));
+                $src = asset('images/'.$filename);//str_replace(request()->getSchemeAndHttpHost(), '', route('image', $picture));
                 $image->setAttribute('src', $src);
             }
         }
