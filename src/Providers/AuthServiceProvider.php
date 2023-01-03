@@ -2,6 +2,7 @@
 
 namespace Nabre\Providers;
 
+use App\Models\Image;
 use Nabre\Models\Page;
 use App\Models\Permission;
 use App\Models\Role;
@@ -17,6 +18,7 @@ use Nabre\Models\Setting;
 use Nabre\Policies\CollectionPolicy;
 use Nabre\Policies\CollectionRelationPolicy;
 use Nabre\Policies\FormFieldTypePolicy;
+use Nabre\Policies\ImagePolicy;
 use Nabre\Policies\MenuPolicy;
 use Nabre\Policies\PagePolicy;
 use Nabre\Policies\PermissionPolicy;
@@ -43,6 +45,7 @@ class AuthServiceProvider extends ServiceProvider
         Collection::class => CollectionPolicy::class,
         CollectionRelation::class=>CollectionRelationPolicy::class,
         UserContact::class=>UserContactPolicy::class,
+        Image::class=>ImagePolicy::class,
     ];
 
     /**
