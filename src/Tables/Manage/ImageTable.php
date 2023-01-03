@@ -19,12 +19,8 @@ class ImageTable extends Structure
 
     function colPreview()
     {
-        $style = 'max-width:300px;max-height:300px';
-        return Html::image(
-            'data:' . data_get($this->row, 'type') . ';base64,' . base64_encode(data_get($this->row, 'code')),
-            null,
-            get_defined_vars()
-        );
+        $src = 'data:' . data_get($this->item, 'type') . ';base64,' . data_get($this->item->getRawOriginal(), 'code');
+        return '<img src="' . $src . '" style="max-width:200px;max-height:200px" />';
     }
 
     function actions()
