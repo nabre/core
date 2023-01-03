@@ -19,7 +19,7 @@ class ImageTable extends Structure
 
     function colPreview()
     {
-        $src='data:'.data_get($this->row,'type').';base64,'.data_get($this->row->getRawOriginal(),'code');
+        $src='data:'.data_get($this->row,'type').';base64,'.base64_encode(data_get($this->row,'code'));
         $style='max-width:300px;max-height:300px';
         return Html::tag('img', null, get_defined_vars());
     }
