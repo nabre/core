@@ -45,7 +45,7 @@ Route::group(['middleware' => ['web']], function () {
                 Route::resource('dashboard', Nabre\Http\Controllers\Manage\DashController::class, ['key' => 'data'])->only(['index']);
                 Route::resource('contact', Nabre\Http\Controllers\Manage\ContactController::class, ['key' => 'data'])->only(['index', 'create', 'edit', 'destroy']);
                 Route::post('contact/{data}/user-generate', [Nabre\Http\Controllers\Manage\ContactController::class, 'userGenerate'])->name('contat.userGenerate');
-             //   Route::resource('dashboard', Nabre\Http\Controllers\Manage\DashController::class, ['key' => 'data'])->only(['index']);
+                Route::resource('images', Nabre\Http\Controllers\Manage\DashController::class, ['key' => 'data'])->only(['index', 'create', 'edit', 'destroy']);
             });
 
             Route::middleware(['role:admin'])->name("admin.")->prefix('admin')->group(function () {
