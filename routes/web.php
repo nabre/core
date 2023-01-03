@@ -31,57 +31,58 @@ Route::group(['middleware' => ['web']], function () {
 
     Route::name("nabre.")->group(function () {
         Route::middleware(['auth', 'verified'])->group(function () {
-            Route::name("user.")->group(function () {
-                Route::resource('user/dashboard', Nabre\Http\Controllers\User\DashController::class, ['key' => 'data'])->only(['index']);
+            Route::name("user.")->prefix('user')->group(function () {
+                Route::resource('dashboard', Nabre\Http\Controllers\User\DashController::class, ['key' => 'data'])->only(['index']);
 
                 Route::name("profile.")->group(function () {
-                    Route::resource('user/profile/account', Nabre\Http\Controllers\User\Profile\AccountController::class, ['key' => 'data'])->only(['index', 'update']);
-                    Route::resource('user/profile/contact', Nabre\Http\Controllers\User\Profile\ContactController::class, ['key' => 'data'])->only(['index', 'update']);
-                    Route::middleware(['usersettingcompile'])->resource('user/profile/settings', Nabre\Http\Controllers\User\Profile\SettingsController::class, ['key' => 'data'])->only(['index', 'store']);
+                    Route::resource('profile/account', Nabre\Http\Controllers\User\Profile\AccountController::class, ['key' => 'data'])->only(['index', 'update']);
+                    Route::resource('profile/contact', Nabre\Http\Controllers\User\Profile\ContactController::class, ['key' => 'data'])->only(['index', 'update']);
+                    Route::middleware(['usersettingcompile'])->resource('profile/settings', Nabre\Http\Controllers\User\Profile\SettingsController::class, ['key' => 'data'])->only(['index', 'store']);
                 });
             });
 
-            Route::middleware(['role:manage'])->name("manage.")->group(function () {
-                Route::resource('manage/dashboard', Nabre\Http\Controllers\Manage\DashController::class, ['key' => 'data'])->only(['index']);
-                Route::resource('manage/contact', Nabre\Http\Controllers\Manage\ContactController::class, ['key' => 'data'])->only(['index', 'create', 'edit', 'destroy']);
-                Route::post('manage/contact/{data}/user-generate', [Nabre\Http\Controllers\Manage\ContactController::class, 'userGenerate'])->name('contat.userGenerate');
+            Route::middleware(['role:manage'])->name("manage.")->prefix('manage')->group(function () {
+                Route::resource('dashboard', Nabre\Http\Controllers\Manage\DashController::class, ['key' => 'data'])->only(['index']);
+                Route::resource('contact', Nabre\Http\Controllers\Manage\ContactController::class, ['key' => 'data'])->only(['index', 'create', 'edit', 'destroy']);
+                Route::post('contact/{data}/user-generate', [Nabre\Http\Controllers\Manage\ContactController::class, 'userGenerate'])->name('contat.userGenerate');
+             //   Route::resource('dashboard', Nabre\Http\Controllers\Manage\DashController::class, ['key' => 'data'])->only(['index']);
             });
 
-            Route::middleware(['role:admin'])->name("admin.")->group(function () {
+            Route::middleware(['role:admin'])->name("admin.")->prefix('admin')->group(function () {
                 Route::resource('admin/settings', Nabre\Http\Controllers\Admin\SettingsController::class, ['key' => 'data'])->only(['index', 'store']);
 
-                Route::name("users.")->group(function () {
-                    Route::resource('admin/users/list', Nabre\Http\Controllers\Admin\Users\ListController::class, ['key' => 'data'])->only(['index', 'edit', 'create', 'destroy']);
-                    Route::resource('admin/users/impersonate', Nabre\Http\Controllers\Admin\Users\ImpersonateController::class, ['key' => 'data'])->only(['index', 'edit'])->except('update');
+                Route::name("users.")->prefix('users')->group(function () {
+                    Route::resource('list', Nabre\Http\Controllers\Admin\Users\ListController::class, ['key' => 'data'])->only(['index', 'edit', 'create', 'destroy']);
+                    Route::resource('impersonate', Nabre\Http\Controllers\Admin\Users\ImpersonateController::class, ['key' => 'data'])->only(['index', 'edit'])->except('update');
                     Route::middleware(['role:builder'])->group(function () {
-                        Route::resource('admin/users/permission', Nabre\Http\Controllers\Admin\Users\PermissionController::class, ['key' => 'data'])->only(['index', 'edit', 'create', 'destroy']);
-                        Route::resource('admin/users/role', Nabre\Http\Controllers\Admin\Users\RoleController::class, ['key' => 'data'])->only(['index', 'edit']);
+                        Route::resource('permission', Nabre\Http\Controllers\Admin\Users\PermissionController::class, ['key' => 'data'])->only(['index', 'edit', 'create', 'destroy']);
+                        Route::resource('role', Nabre\Http\Controllers\Admin\Users\RoleController::class, ['key' => 'data'])->only(['index', 'edit']);
                     });
                 });
             });
 
             Route::name('admin.users')->resource('admin/users/impersonate', Nabre\Http\Controllers\Admin\Users\ImpersonateController::class, ['key' => 'data'])->only(['create'])->except('store');
 
-            Route::middleware(['role:builder'])->name("builder.")->group(function () {
-                Route::resource('admin/builder/database', Nabre\Http\Controllers\Builder\DatabaseController::class, ['key' => 'data'])->only(['index', 'store']);
+            Route::middleware(['role:builder'])->name("builder.")->prefix('admin/builder')->group(function () {
+                Route::resource('database', Nabre\Http\Controllers\Builder\DatabaseController::class, ['key' => 'data'])->only(['index', 'store']);
 
-                Route::name("collections.")->group(function () {
-                    Route::resource('admin/builder/collections/fields', Nabre\Http\Controllers\Builder\Collections\FieldsController::class, ['key' => 'data'])->only(['index', 'create', 'edit']);
-                    Route::resource('admin/builder/collections/relations', Nabre\Http\Controllers\Builder\Collections\RelationsController::class, ['key' => 'data'])->only(['index', 'create', 'edit', 'destroy']);
-                    Route::resource('admin/builder/collections/demo-console', Nabre\Http\Controllers\Builder\Collections\DemoController::class, ['key' => 'data'])->only(['index']);
+                Route::name("collections.")->prefix('collections')->group(function () {
+                    Route::resource('fields', Nabre\Http\Controllers\Builder\Collections\FieldsController::class, ['key' => 'data'])->only(['index', 'create', 'edit']);
+                    Route::resource('relations', Nabre\Http\Controllers\Builder\Collections\RelationsController::class, ['key' => 'data'])->only(['index', 'create', 'edit', 'destroy']);
+                    Route::resource('demo-console', Nabre\Http\Controllers\Builder\Collections\DemoController::class, ['key' => 'data'])->only(['index']);
                 });
 
-                Route::name("navigation.")->group(function () {
-                    Route::resource('admin/builder/navigation/pages', Nabre\Http\Controllers\Builder\Navigation\PageController::class, ['key' => 'data'])->only(['index', 'edit', 'destroy']);
-                    Route::name("menu.")->group(function () {
-                        Route::resource('admin/builder/navigation/menu/auto', Nabre\Http\Controllers\Builder\Navigation\Menu\AutoController::class, ['key' => 'data'])->only(['index', 'edit', 'create', 'destroy']);
-                        Route::resource('admin/builder/navigation/menu/custom', Nabre\Http\Controllers\Builder\Navigation\Menu\CustomController::class, ['key' => 'data'])->only(['index', 'edit', 'create', 'destroy']);
+                Route::name("navigation.")->prefix('navigation')->group(function () {
+                    Route::resource('pages', Nabre\Http\Controllers\Builder\Navigation\PageController::class, ['key' => 'data'])->only(['index', 'edit', 'destroy']);
+                    Route::name("menu.")->prefix('menu')->group(function () {
+                        Route::resource('auto', Nabre\Http\Controllers\Builder\Navigation\Menu\AutoController::class, ['key' => 'data'])->only(['index', 'edit', 'create', 'destroy']);
+                        Route::resource('custom', Nabre\Http\Controllers\Builder\Navigation\Menu\CustomController::class, ['key' => 'data'])->only(['index', 'edit', 'create', 'destroy']);
                     });
                 });
 
-                Route::name("settings.")->group(function () {
-                    Route::resource('admin/builder/settings/variables', Nabre\Http\Controllers\Builder\Settings\VariablesController::class, ['key' => 'data'])->only(['index', 'edit']);
-                    Route::resource('admin/builder/settings/form-field-type', Nabre\Http\Controllers\Builder\Settings\FormFieldTypeController::class, ['key' => 'data'])->only(['index', 'edit']);
+                Route::name("settings.")->prefix('settings')->group(function () {
+                    Route::resource('variables', Nabre\Http\Controllers\Builder\Settings\VariablesController::class, ['key' => 'data'])->only(['index', 'edit']);
+                    Route::resource('form-field-type', Nabre\Http\Controllers\Builder\Settings\FormFieldTypeController::class, ['key' => 'data'])->only(['index', 'edit']);
                 });
             });
         });
