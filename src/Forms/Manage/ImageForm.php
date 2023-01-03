@@ -9,6 +9,6 @@ class ImageForm extends Structure
 {
     function build()
     {
-        $this->add('src',null,'Percorso file','fake')->requestRequired();
+        $this->add('src',Field::TEXT,'Percorso file','fake')->requestRequired();
     }
 }
