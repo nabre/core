@@ -14,14 +14,17 @@ class ImageTable extends Structure
 
     function columns()
     {
-        return ['name','preview'];
+        return ['name', 'preview'];
     }
 
     function colPreview()
     {
-        $src='data:'.data_get($this->row,'type').';base64,'.base64_encode(data_get($this->row,'code'));
-        $style='max-width:300px;max-height:300px';
-        return Html::tag('img', null, get_defined_vars());
+        $style = 'max-width:300px;max-height:300px';
+        return Html::image(
+            'data:' . data_get($this->row, 'type') . ';base64,' . base64_encode(data_get($this->row, 'code')),
+            null,
+            get_defined_vars()
+        );
     }
 
     function actions()
