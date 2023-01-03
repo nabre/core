@@ -9,7 +9,7 @@ class Image extends Model
 {
     protected $guard_name = 'web';
     protected $collection = 'Images'; //nome collection
-    protected $fillable = ['code','type']; //campi editabili
+    protected $fillable = ['code','type','name','path','url']; //campi editabili
     //  protected $attributes = ['¨slug'=>null,'title'=>null]; //Valori di default
     protected $casts = ['code'=> ImageCodeCast::class]; //tipo di dato
     protected $foreignCascade = false;

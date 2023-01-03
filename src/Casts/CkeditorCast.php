@@ -26,6 +26,8 @@ class CkeditorCast implements CastsAttributes
             'root' => public_path('images'),
         ]);
 
+        $path=$disk->path('');
+
         $dom = new \DomDocument();
         $dom->loadHtml(trim($content), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $imageFile = $dom->getElementsByTagName('img');
@@ -35,13 +37,12 @@ class CkeditorCast implements CastsAttributes
             if (file_exists($src)) {
                 $code = file_get_contents($src);
                 $type = \File::mimeType($src);
-                $filename=time().".".pathinfo($src, PATHINFO_EXTENSION);
-                $picture = Image::create(compact('code', 'type'));
+                $name=time().".".pathinfo($src, PATHINFO_EXTENSION);
+                $src = asset('images/'.$name);//str_replace(request()->getSchemeAndHttpHost(), '', route('image', $picture));
 
-                $disk->put($filename, $code);
-
+                $picture = Image::create(compact('code', 'type','name','path','src'));
+                $disk->put($name, $code);
                 $image->removeAttribute('src');
-                $src = asset('images/'.$filename);//str_replace(request()->getSchemeAndHttpHost(), '', route('image', $picture));
                 $image->setAttribute('src', $src);
             }
         }
