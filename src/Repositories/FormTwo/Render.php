@@ -4,7 +4,6 @@ namespace Nabre\Repositories\FormTwo;
 
 use Collective\Html\HtmlFacade as Html;
 use Collective\Html\FormFacade as Form;
-use Illuminate\Http\Request;
 
 trait Render
 {
@@ -19,6 +18,7 @@ trait Render
         $html = '';
         $class = 'container';
         $method = $this->method;
+      //  $html.=var_export(request());
         $html .= Form::open(compact(['url', 'method', 'class'])) . "\r\n";
         $html .= $this->buttonBack() . "\r\n";
 
@@ -28,8 +28,9 @@ trait Render
         $html .= Form::close();
 
         if ($this->card) {
-            $titlebar = (is_null($this->title ?? null) ? null : '<div class="card-header">' . $this->title . '</div>');
-            return '<div class="card">' . $titlebar . '<div class="card-body">' . $html . '</div></div>';
+            $title = (is_null($this->title ?? null) ? null : Html::div($this->title, ['class' => 'card-header']));
+            $body = Html::div($html, ['class' => 'card-body']);
+            return Html::div($title . $body, ['class' => 'card']);
         }
 
         return $html;
@@ -42,48 +43,57 @@ trait Render
 
     private function fieldItem($i)
     {
-        if (optional(data_get($i, 'errors'))->count()) {
-            return $this->itemHtml($i);
+        $this->item = $i;
+        if (optional($this->getItemData('errors'))->count()) {
+            return $this->itemHtml();
         }
 
-        switch (data_get($i, 'output')) {
+        switch ($this->getItemData('output')) {
             case Field::HIDDEN:
             case Field::MSG:
             case Field::HTML:
                 $this->firstItem = true;
-                return $this->fieldGenerate($i) . "\r\n";
+                return $this->fieldGenerate() . "\r\n";
                 break;
             default:
-                return $this->itemHtml($i);
+                return $this->itemHtml();
                 break;
         }
     }
 
     protected $firstItem = true;
 
-    private function itemHtml($i)
+    private function itemHtml()
     {
-        $info = $this->info($i);
-        $field = $this->fieldGenerate($i);
+        $info = $this->infoField();
+        $field = $this->fieldGenerate();
         $first = $this->firstItem;
         if ($this->firstItem) {
             $this->firstItem = false;
         }
-        return '<div class="row mb-3 ' . ($first ? '' : 'border-top') . '">
-        <div class="col-md-1 pt-1">' . data_get($i, 'label') . ':</div>
-        <div class="col pt-1">' . $field . '</div>
-        <div class="col-md-3 pt-1">' . $info . '</div>
-        </div>' . "\r\n";
+
+        $html = Html::div($this->getItemData('label') . ":", ['class' => 'col-md-1 pt-1']);
+        $html .= Html::div($field, ['class' => 'col pt-1']);
+        $html .= Html::div($info, ['class' => 'col-md-3 pt-1']);
+
+        return (string) Html::div($html, ['class' => 'row mb-3 ' . ($first ? '' : 'border-top')]);
     }
 
-    private function fieldGenerate($i)
+    private function fieldGenerate()
     {
-        return Field::generate($i);
+        return Field::generate($this->item);
     }
 
-    private function info($i)
+    private function infoField()
     {
-        return 'info_text';
+        $html = '';
+
+        if ($this->isRequired()) {
+            $html .= Html::div('<i class="fa-solid fa-asterisk"></i>', ['class' => 'badge bg-danger', 'title' => __('validation.required', ['attribute' => '"' . $this->getItemData('label') . '"'])]);
+        }
+
+        $html .= $this->getItemData('set.info', collect([]))->map(fn ($i) => (string) Html::div(data_get($i, 'text'), ['class' => 'alert m-0 p-1 alert-' . data_get($i, 'theme')]))->implode('');
+        return $html;
     }
 
     private function checkUrl(&$url)
@@ -99,13 +109,13 @@ trait Render
         if (!$this->back) {
             return;
         }
-        return '<a href="javascript:history.back()" class="btn btn-secondary"><i class="fa-solid fa-angles-left"></i></a><hr>';
+        return Html::a('<i class="fa-solid fa-angles-left"></i>', ['class' => 'btn btn-secondary', 'href' => 'javascript:history.back()']) . '<hr>';
     }
 
     private function buttonSubmit()
     {
         if ($this->submitError) {
-            return '<hr><div class="alert alert-danger">Il form non può essere inviato a causa di un errore di elaboraizone dei campi. Contattare l\'amministratore.</div>';
+            return '<hr>' . Html::div('Il form non può essere inviato a causa di un errore di elaboraizone dei campi. Contattare l\'amministratore.', ['class' => "alert alert-danger"]);
         }
 
         if (!$this->submit) {

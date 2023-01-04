@@ -2,12 +2,19 @@
 
 namespace Nabre\Repositories\FormTwo;
 
+use Illuminate\Contracts\Validation\Validator;
+
 trait Storage
 {
-    private function storage(){
-        $validate=$this->elements->pluck('set.request.'.$this->method,'variable');
-        $enabledVars=$validate->keys()->toArray();
-        $vars=collect($this->request)->filter(fn($v,$k)=>in_array($k,$enabledVars))->toArray();
+    private function storage()
+    {
+        $rules = $this->elements->pluck('set.request.' . $this->method, 'variable');
+        //$enabledVars = $rules->keys()->toArray();
+
+        $vars=$this->request->validate($rules->toArray());
+        //$vars=$this->request->only($enabledVars);
+
+
         $this->data->recursiveSave($vars);
         return $this;
     }

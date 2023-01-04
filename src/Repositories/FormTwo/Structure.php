@@ -53,6 +53,16 @@ trait Structure
         return $this;
     }
 
+    function info($text = null, $theme = 'secondary')
+    {
+        if (!is_null($text)) {
+            $array = $this->getItemData('set.info', collect([]))->push(get_defined_vars());
+            $this->setItemData('set.info', $array, true);
+        }
+
+        return $this;
+    }
+
     function fake()
     {
         $this->push(['type' => 'fake'], true);
@@ -70,12 +80,13 @@ trait Structure
 
     private function setItemData($key, $value, $overwrite = false)
     {
-        $this->setData($this->item,$key,$value,$overwrite);
+        $this->setData($this->item, $key, $value, $overwrite);
 
         return $this;
     }
 
-    private function setData(&$target,$key,$value,$overwrite = false){
+    private function setData(&$target, $key, $value, $overwrite = false)
+    {
         $var = collect(explode('.', $key))->reverse()->take(1)->implode('.');
         $find = collect(explode('.', $key))->reverse()->skip(1)->reverse()->implode('.');
         if (empty($find)) {
@@ -86,7 +97,7 @@ trait Structure
             data_set($set, $var, $value, $overwrite);
         }
 
-        return data_set( $target , $find, $set, true);
+        return data_set($target, $find, $set, true);
     }
 
     private function getItemData($key, $default = null)
@@ -109,6 +120,8 @@ trait Structure
 
         $this->errors();
         $this->checkSubmitAviable();
+
+        return $this;
     }
 
     private function insert()
@@ -147,8 +160,8 @@ trait Structure
         if (method_exists($this, $fn)) {
             $items = $this->$fn();
         } else {
-            $model = $this->getItemData('set.rel.model');
-            $items = $model::get();
+            $model = $this->queryGetModel();
+            $items = $model->get();
         }
 
         $this->listLabel();
@@ -160,10 +173,16 @@ trait Structure
         if (!$this->getItemData('set.list.sort')) {
             $fnSort .= 'Desc';
         }
-        $items = $items->pluck($label, 'id')->$fnSort($label);
+        $items = $items->pluck($label, $model->getKeyName())->$fnSort($label);
         $this->setItemData('set.list.items', $items);
 
         return $this;
+    }
+
+    function queryGetModel()
+    {
+        $model = $this->getItemData('set.rel.model');
+        return new $model;
     }
 
     #Controllo della variabile
@@ -178,14 +197,13 @@ trait Structure
 
         $newVariable = [];
 
-
         if ($type === true) {
             collect(explode(".", $variable))->each(function ($v) use (&$model, &$type, &$newVariable, &$str, &$cast, &$setrel) {
                 if ($type === true || $type == 'relation') {
                     $newVariable[] = $str = $v;
 
                     if (!is_null($model ?? null)) {
-                        $rel=null;
+                        $rel = null;
                         if ($this->isRelation($v, $model, $rel)) {
                             $type = 'relation';
                             $setrel = $rel;
@@ -251,7 +269,7 @@ trait Structure
     }
 
     #Output
-    static $requestOutput = ['email' => Field::TEXT];
+    //static $requestOutput = ['email' => Field::TEXT];
 
     private function output()
     {
@@ -361,7 +379,7 @@ trait Structure
             }
 
             if ($errors->count()) {
-                data_set($i, 'errors', $errors);
+                $this->setData($i, 'errors', $errors);
             }
             return $i;
         })->values();

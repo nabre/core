@@ -48,13 +48,23 @@ trait StructureRequest
 
     private function methodForm()
     {
-        if (is_null(data_get($this->data, 'id'))) {
+        if (is_null(data_get($this->data, $this->data->getKeyName()))) {
             $this->method = self::$create;
         } else {
             $this->method = self::$update;
         }
 
         return $this;
+    }
+
+    private function isRequired()
+    {
+        return in_array('required', $this->requests()) ;
+    }
+
+    private function requests()
+    {
+        return $this->getItemData('set.request.'.$this->method,[]);
     }
 
 }

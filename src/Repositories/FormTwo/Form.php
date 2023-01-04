@@ -15,6 +15,10 @@ class Form
     private $data = null;
     private $collection;
     private $request;
+    private $view = false;
+
+    private $prefix = null;
+    private $wire = false;
 
     function __construct($data = null)
     {
@@ -42,11 +46,42 @@ class Form
         return $this;
     }
 
-    public function generate(?string $submit = null, bool $view = false)
+    public function embedMode($prefix = null, bool $wire = false)
     {
+        $this->check();
+        $this->prefix = $prefix;
+        $this->wire = $wire;
+        $this->back = false;
+        $this->submit = false;
+
+        $this->elements = $this->elements->map(function ($i) {
+            if ($this->wire !== false) {
+                $this->setData($i, 'set.options.wire:model', $this->wire, true);
+            }
+
+            if (!is_null($this->prefix)) {
+                $variable = collect(explode('.', $this->prefix))->merge(collect(explode('.', data_get($i, 'variable'))))->implode('.');
+                $this->setData($i, 'variable', $variable, true);
+            }
+
+            return $i;
+        });
+
+        return $this;
+    }
+
+    public function viewMode()
+    {
+        $this->view = true;
+        return $this;
+    }
+
+    public function generate(?string $submit = null)
+    {
+        $this->check();
         $this->valueAssign();
 
-        if ($view) {
+        if ($this->view) {
             $this->elements = $this->elements->map(function ($i) {
                 data_set($i, 'output_original', data_get($i, 'output'), true);
                 data_set($i, 'output', Field::STATIC, true);
@@ -59,7 +94,8 @@ class Form
 
     public function save(?array $request = null)
     {
-        $this->request = $request ?? request()->all();
+        $this->check();
+        $this->request = $request ?? request();
 
         $this->elements = $this->elements->filter(function ($i) {
             $type = data_get($i, 'type');
@@ -119,8 +155,8 @@ class Form
                             break;
                     }
                 }
-                $overwrite= !is_null($value);
-                $this->setData($i,'value',$value,$overwrite);
+                $overwrite = !is_null($value);
+                $this->setData($i, 'value', $value, $overwrite);
             }
 
             return $i;
