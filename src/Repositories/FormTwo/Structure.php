@@ -38,12 +38,28 @@ trait Structure
         return $this;
     }
 
+    function addHtml($html){
+        $this->add(null,Field::HTML)->push(['value'=>get_defined_vars()],true)->fake();
+        return $this;
+    }
+
+    function addMsg($text,$theme='secondary'){
+        $this->add(null,Field::MSG)->push(['value'=>get_defined_vars()],true)->fake();
+        return $this;
+    }
+
+    function fake(){
+        $this->push(['type'=>'fake'],true);
+        return$this;
+    }
+
     private function push(array $array, $overwrite = false)
     {
         $this->item = (array)$this->item;
         collect($array)->each(function ($value, $key) use ($overwrite) {
             $this->setItemData($key, $value, $overwrite);
         });
+        return $this;
     }
 
     private function setItemData($key, $value, $overwrite = false)

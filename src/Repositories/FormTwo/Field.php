@@ -79,8 +79,14 @@ class Field
             return $str;
         })->implode('');
     }
+
     static function generate($it)
     {
+        if(optional(data_get($it,'errors'))->count()){
+            return "Errore nel campo";
+        }
+
+
         $html = '';
         $name = $it['variable'];
         $value = old($name, $it['value'] ?? null);

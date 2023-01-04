@@ -47,7 +47,7 @@ trait Render
                 return $field . "\r\n";
                 break;
             default:
-                $info = 'testo';
+                $info = $this->info($i);
                 return '<div class="row mb-3 ' . ($first ? '' : 'border-top') . '">
                 ' . data_get($i, 'label') . '
                 <div class="col pt-1">' . $field . '</div>
@@ -55,6 +55,10 @@ trait Render
                 </div>'."\r\n";
                 break;
         }
+    }
+
+    private function info($i){
+        return 'info_text';
     }
 
     private function buttonBack()

@@ -41,7 +41,7 @@ class Form
         return $this;
     }
 
-    public function generate($submit=null,$view=false)
+    public function generate(?string $submit=null,bool $view=false)
     {
         if($view){
             $this->elements=$this->elements->map(function($i){
@@ -53,7 +53,7 @@ class Form
         return $this->render($submit);
     }
 
-    public function save($request=null)
+    public function save(?array $request=null)
     {
         $this->request = $request??request()->all();
 
