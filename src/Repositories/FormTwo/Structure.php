@@ -11,10 +11,6 @@ trait Structure
     static $create = 'post';
     static $update = 'put';
 
-    function build()
-    {
-    }
-
     function label($label = null, $overwrite = false)
     {
         $this->push(compact(__FUNCTION__), $overwrite);

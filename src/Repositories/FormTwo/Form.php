@@ -4,7 +4,7 @@ namespace Nabre\Repositories\FormTwo;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Form
+class Form implements FormInterface
 {
     use Render;
     use Storage;
@@ -43,6 +43,8 @@ class Form
 
     public function generate(?string $submit=null,bool $view=false)
     {
+        $this->valueAssign();
+
         if($view){
             $this->elements=$this->elements->map(function($i){
                 data_set($i,'output_original',data_get($i,'output'),true);
@@ -50,6 +52,7 @@ class Form
                 return $i;
             });
         }
+
         return $this->render($submit);
     }
 
@@ -98,5 +101,9 @@ class Form
         $this->structure();
 
         return $this;
+    }
+
+    private function valueAssign(){
+
     }
 }
