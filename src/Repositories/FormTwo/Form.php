@@ -19,9 +19,9 @@ class Form
     function __construct($data = null)
     {
         if (!is_null($data)) {
-            if(is_string($data)){
+            if (is_string($data)) {
                 $this->model($data);
-            }else{
+            } else {
                 $this->data($data);
             }
         }
@@ -42,14 +42,14 @@ class Form
         return $this;
     }
 
-    public function generate(?string $submit=null,bool $view=false)
+    public function generate(?string $submit = null, bool $view = false)
     {
         $this->valueAssign();
 
-        if($view){
-            $this->elements=$this->elements->map(function($i){
-                data_set($i,'output_original',data_get($i,'output'),true);
-                data_set($i,'output',Field::STATIC,true);
+        if ($view) {
+            $this->elements = $this->elements->map(function ($i) {
+                data_set($i, 'output_original', data_get($i, 'output'), true);
+                data_set($i, 'output', Field::STATIC, true);
                 return $i;
             });
         }
@@ -57,13 +57,13 @@ class Form
         return $this->render($submit);
     }
 
-    public function save(?array $request=null)
+    public function save(?array $request = null)
     {
-        $this->request = $request??request()->all();
+        $this->request = $request ?? request()->all();
 
-        $this->elements=$this->elements->filter(function($i){
-            $type=data_get($i,'type');
-            return $type && $type!='fake';
+        $this->elements = $this->elements->filter(function ($i) {
+            $type = data_get($i, 'type');
+            return $type && $type != 'fake';
         });
 
         return $this->storage();
@@ -81,7 +81,7 @@ class Form
         }
 
         #controllo collection
-        if(is_null($this->collection)){
+        if (is_null($this->collection)) {
             if (class_exists($this->model) && (new $this->model instanceof Model)) {
                 $this->collection = new $this->model;
             } else {
@@ -104,7 +104,26 @@ class Form
         return $this;
     }
 
-    private function valueAssign(){
+    private function valueAssign()
+    {
+        $this->elements = $this->elements->map(function ($i) {
+            $type = data_get($i, 'type');
+            if ($type && $type != 'fake') {
+                $value = $this->data->readValue(data_get($i, 'variable'));
+                if ($type == 'relation') {
+                    switch (data_get($i, 'set.rel.type')) {
+                        case "EmbedsMany":
+                        case "EmbedsOne":
+                            $this->setData($i, 'set.embeds.modelKey', $this->data->{$this->data->getKeyName()} ?? null);
+                            $this->setData($i, 'set.embeds.variable', data_get($i, 'variable'));
+                            break;
+                    }
+                }
+                $overwrite= !is_null($value);
+                $this->setData($i,'value',$value,$overwrite);
+            }
 
+            return $i;
+        });
     }
 }

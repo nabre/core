@@ -70,7 +70,7 @@ trait Render
             $this->firstItem = false;
         }
         return '<div class="row mb-3 ' . ($first ? '' : 'border-top') . '">
-        <div class="col-md-1 pt-1">' . data_get($i, 'label') . '</div>
+        <div class="col-md-1 pt-1">' . data_get($i, 'label') . ':</div>
         <div class="col pt-1">' . $field . '</div>
         <div class="col-md-3 pt-1">' . $info . '</div>
         </div>' . "\r\n";

@@ -70,6 +70,12 @@ trait Structure
 
     private function setItemData($key, $value, $overwrite = false)
     {
+        $this->setData($this->item,$key,$value,$overwrite);
+
+        return $this;
+    }
+
+    private function setData(&$target,$key,$value,$overwrite = false){
         $var = collect(explode('.', $key))->reverse()->take(1)->implode('.');
         $find = collect(explode('.', $key))->reverse()->skip(1)->reverse()->implode('.');
         if (empty($find)) {
@@ -80,9 +86,7 @@ trait Structure
             data_set($set, $var, $value, $overwrite);
         }
 
-        data_set($this->item, $find, $set, true);
-
-        return $this;
+        return data_set( $target , $find, $set, true);
     }
 
     private function getItemData($key, $default = null)
