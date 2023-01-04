@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Form
 {
+    use Render;
+    use Storage;
     use Structure;
 
     private $model = null;
     private $data = null;
     private $collection;
+    private $request;
 
     function __construct($data = null)
     {
@@ -38,7 +41,7 @@ class Form
         return $this;
     }
 
-    public function generate($view=false)
+    public function generate($submit=null,$view=false)
     {
         if($view){
             $this->elements=$this->elements->map(function($i){
@@ -46,11 +49,19 @@ class Form
                 return $i;
             });
         }
-        return $this;
+        return $this->render($submit);
     }
 
-    public function save()
+    public function save($request=null)
     {
+        $this->request = $request??request()->all();
+
+        $this->elements=$this->elements->filter(function($i){
+            $type=data_get($i,'type');
+            return $type && $type!='fake';
+        });
+
+        return $this->storage();
     }
 
     private function check()

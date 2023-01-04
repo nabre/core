@@ -5,10 +5,11 @@ namespace Nabre\Repositories\FormTwo;
 trait Structure
 {
     private $elements = null;
+    private $method = null;
     private $item;
 
-    static $create = 'POST';
-    static $update = 'PUT';
+    static $create = 'post';
+    static $update = 'put';
 
     function build()
     {
@@ -77,6 +78,9 @@ trait Structure
         $this->elements = collect([]);
         $this->build();
         $this->insert();
+
+        $this->methodForm();
+
         $this->errors();
     }
 
@@ -225,6 +229,17 @@ trait Structure
         $method = array_intersect([self::$update, self::$create], (array) $method);
     }
 
+    private function methodForm()
+    {
+        if(is_null(data_get($this->data,'id'))){
+            $this->method=self::$create;
+        }else{
+            $this->method=self::$update;
+        }
+
+        return $this;
+    }
+
     #Output
     static $requestOutput = ['email' => Field::TEXT];
 
@@ -298,7 +313,8 @@ trait Structure
 
     private function errors()
     {
-        $mode = strtolower(env('APP_ENV', 'production'));
+        $mode ="local"; strtolower(env('APP_ENV', 'production'));
+
         switch ($mode) {
             case "local":
                 break;
