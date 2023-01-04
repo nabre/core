@@ -5,11 +5,7 @@ namespace Nabre\Repositories\FormTwo;
 trait Structure
 {
     private $elements = null;
-    private $method = null;
     private $item;
-
-    static $create = 'post';
-    static $update = 'put';
 
     function build()
     {
@@ -24,6 +20,12 @@ trait Structure
     function listLabel($label = null, $overwrite = false)
     {
         $this->push(['set.list.label' => $label ?? 'id'], $overwrite);
+        return $this;
+    }
+
+    function listSort(bool $asc = true, $overwrite = false)
+    {
+        $this->push(['set.list.sort' => $asc], $overwrite);
         return $this;
     }
 
@@ -102,6 +104,7 @@ trait Structure
         $this->methodForm();
 
         $this->errors();
+        $this->checkSubmitAviable();
     }
 
     private function insert()
@@ -144,8 +147,17 @@ trait Structure
             $items = $model::get();
         }
 
-        $this->setItemData('set.list.items', $items);
         $this->listLabel();
+        $this->listSort();
+
+        $label = $this->getItemData('set.list.label');
+
+        $fnSort = 'sortBy';
+        if (!$this->getItemData('set.list.sort')) {
+            $fnSort .= 'Desc';
+        }
+        $items = $items->pluck($label, 'id')->$fnSort($label);
+        $this->setItemData('set.list.items', $items);
 
         return $this;
     }
@@ -169,6 +181,7 @@ trait Structure
                     $newVariable[] = $str = $v;
 
                     if (!is_null($model ?? null)) {
+                        $rel=null;
                         if ($this->isRelation($v, $model, $rel)) {
                             $type = 'relation';
                             $setrel = $rel;
@@ -201,6 +214,10 @@ trait Structure
 
     private function isFillable($v, $model)
     {
+        if (is_string($model)) {
+            $model = new $model;
+        }
+
         return in_array($v, $model->getFillable());
     }
 
@@ -225,37 +242,6 @@ trait Structure
     {
         $label = $this->getItemData('variable');
         $this->label($label);
-
-        return $this;
-    }
-
-    #request & method
-    function request($string, $method = null)
-    {
-        $this->checkMethods($method);
-        $string = explode("|", implode("|", (array)$string));
-        collect($method)->each(function ($method) use ($string) {
-            $value = collect((array)  $this->getItemData('set.request.' . $method))->merge($string)->unique()->filter()->values()->toArray();
-            $this->setItemData('set.request.' . $method, $value);
-        });
-        return $this;
-    }
-
-    protected function checkMethods(&$method)
-    {
-        if (is_null($method)) {
-            $method = [self::$update, self::$create];
-        }
-        $method = array_intersect([self::$update, self::$create], (array) $method);
-    }
-
-    private function methodForm()
-    {
-        if (is_null(data_get($this->data, 'id'))) {
-            $this->method = self::$create;
-        } else {
-            $this->method = self::$update;
-        }
 
         return $this;
     }
@@ -323,7 +309,7 @@ trait Structure
 
             $enabled = $enabled->push(Field::STATIC)->push(Field::HIDDEN)->unique()->values();
 
-            if (!$enabled->filter(fn ($str) => $str == $output)->count()) {
+            if (!$enabled->filter(fn ($str) => $str == $output)->count() && $enabled->count()) {
                 $output = $enabled->first();
             }
         }
@@ -333,21 +319,17 @@ trait Structure
 
     private function errors()
     {
-        $mode = "local";
-        strtolower(env('APP_ENV', 'production'));
+        $mode = strtolower(env('APP_ENV', 'production'));
 
         switch ($mode) {
             case "local":
                 break;
             default:
-                $this->elements = $this->elements->filter(function ($i) {
-                    return data_get($i, 'type', false);
-                })->values();
+                $this->elements = (new QueryElements($this->elements))->removeInexistents()->results();
                 break;
         }
 
         $this->elements = $this->elements->map(function ($i) {
-            //return data_get($i,'type',false);
             $errors = collect([]);
             $type = data_get($i, 'type', false);
 
@@ -367,7 +349,8 @@ trait Structure
                         $errors = $errors->push('Campo etichetta lista non definito.');
                     }
 
-                    if (!($this->isAttribute($label, $this->collection) || $this->isFillable($label, $this->collection))) {
+                    $model = data_get($i, 'set.rel.model');
+                    if (!($this->isAttribute($label, $model) || $this->isFillable($label, $model))) {
                         $errors = $errors->push('Campo etichetta non valido.');
                     }
                 }
@@ -378,5 +361,14 @@ trait Structure
             }
             return $i;
         })->values();
+    }
+
+    private function checkSubmitAviable()
+    {
+        if ((new QueryElements($this->elements))->removeInexistents()->withErrors()->results()->count()) {
+            $this->submit = false;
+            $this->submitError = true;
+        }
+        return $this;
     }
 }

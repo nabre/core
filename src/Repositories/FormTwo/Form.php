@@ -9,6 +9,7 @@ class Form
     use Render;
     use Storage;
     use Structure;
+    use StructureRequest;
 
     private $model = null;
     private $data = null;

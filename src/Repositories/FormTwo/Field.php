@@ -61,8 +61,9 @@ class Field
     //const BUTTON_BUTTON = 'button'; //
 
 
-    static function fieldsListRequired(){
-        return [self::SELECT,self::SELECT_MULTI,self::CHECKBOX];
+    static function fieldsListRequired()
+    {
+        return [self::SELECT, self::SELECT_MULTI, self::CHECKBOX];
     }
     static function classAdd(&$class, $edit)
     {
@@ -82,10 +83,19 @@ class Field
 
     static function generate($it)
     {
-        if(optional(data_get($it,'errors'))->count()){
-            return "Errore nel campo";
-        }
 
+        if (optional(data_get($it, 'errors'))->count()) {
+            switch (strtolower(env('APP_ENV', 'production'))) {
+                case "local":
+                    $msg= data_get($it, 'errors')->implode('<br>');
+                    break;
+                default:
+                    $msg= "Configurazione non corretta.";
+                    break;
+            }
+
+            return '<div class="alert alert-danger m-0 p-1">'.$msg.'</div>';
+        }
 
         $html = '';
         $name = $it['variable'];
