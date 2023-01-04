@@ -45,6 +45,7 @@ class Form
     {
         if($view){
             $this->elements=$this->elements->map(function($i){
+                data_set($i,'output_original',data_get($i,'output'),true);
                 data_set($i,'output',Field::STATIC,true);
                 return $i;
             });
