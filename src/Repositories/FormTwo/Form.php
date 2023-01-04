@@ -4,7 +4,7 @@ namespace Nabre\Repositories\FormTwo;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Form implements FormInterface
+class Form
 {
     use Render;
     use Storage;

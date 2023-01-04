@@ -11,6 +11,10 @@ trait Structure
     static $create = 'post';
     static $update = 'put';
 
+    function build()
+    {
+    }
+
     function label($label = null, $overwrite = false)
     {
         $this->push(compact(__FUNCTION__), $overwrite);
@@ -23,7 +27,8 @@ trait Structure
         return $this;
     }
 
-    function embed($embed = null, $overwrite = false){
+    function embed($embed = null, $overwrite = false)
+    {
         $this->push(compact(__FUNCTION__), $overwrite);
         return $this;
     }
@@ -34,19 +39,22 @@ trait Structure
         return $this;
     }
 
-    function addHtml($html){
-        $this->add(null,Field::HTML)->push(['value'=>get_defined_vars()],true)->fake();
+    function addHtml($html)
+    {
+        $this->add(null, Field::HTML)->push(['value' => get_defined_vars()], true)->fake();
         return $this;
     }
 
-    function addMsg($text,$theme='secondary'){
-        $this->add(null,Field::MSG)->push(['value'=>get_defined_vars()],true)->fake();
+    function addMsg($text, $theme = 'secondary')
+    {
+        $this->add(null, Field::MSG)->push(['value' => get_defined_vars()], true)->fake();
         return $this;
     }
 
-    function fake(){
-        $this->push(['type'=>'fake'],true);
-        return$this;
+    function fake()
+    {
+        $this->push(['type' => 'fake'], true);
+        return $this;
     }
 
     private function push(array $array, $overwrite = false)
@@ -243,10 +251,10 @@ trait Structure
 
     private function methodForm()
     {
-        if(is_null(data_get($this->data,'id'))){
-            $this->method=self::$create;
-        }else{
-            $this->method=self::$update;
+        if (is_null(data_get($this->data, 'id'))) {
+            $this->method = self::$create;
+        } else {
+            $this->method = self::$update;
         }
 
         return $this;
@@ -325,7 +333,8 @@ trait Structure
 
     private function errors()
     {
-        $mode ="local"; strtolower(env('APP_ENV', 'production'));
+        $mode = "local";
+        strtolower(env('APP_ENV', 'production'));
 
         switch ($mode) {
             case "local":
@@ -358,7 +367,7 @@ trait Structure
                         $errors = $errors->push('Campo etichetta lista non definito.');
                     }
 
-                    if(!($this->isAttribute($label, $this->collection) || $this->isFillable($label, $this->collection))){
+                    if (!($this->isAttribute($label, $this->collection) || $this->isFillable($label, $this->collection))) {
                         $errors = $errors->push('Campo etichetta non valido.');
                     }
                 }
