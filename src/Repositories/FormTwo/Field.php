@@ -105,11 +105,15 @@ class Field
         $empty = $it['set']['list']['empty'] ?? null;
         $disabled = (array)($it['set']['list']['disabled'] ?? null);
         $options = (array)($it['set']['options'] ?? null);
-        $errors = session('errors');
+        $errors = session()->get('errors');
 
         if (!is_null($errors)) {
+          //  dd($errors);
+           // $errors=collect($errors);
             if ($errors->has($name)) {
                 self::classAdd($options['class'], 'is-invalid');
+            }else{
+                self::classAdd($options['class'], 'is-valid');
             }
         }
 

@@ -18,7 +18,7 @@ trait Render
         $html = '';
         $class = 'container';
         $method = $this->method;
-      //  $html.=var_export(request());
+        //  $html.=var_export(request());
         $html .= Form::open(compact(['url', 'method', 'class'])) . "\r\n";
         $html .= $this->buttonBack() . "\r\n";
 
