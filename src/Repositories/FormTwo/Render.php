@@ -49,10 +49,10 @@ trait Render
         }
 
         switch ($this->getItemData('output')) {
-            case Field::HIDDEN:
             case Field::MSG:
             case Field::HTML:
                 $this->firstItem = true;
+            case Field::HIDDEN:
                 return $this->fieldGenerate() . "\r\n";
                 break;
             default:
