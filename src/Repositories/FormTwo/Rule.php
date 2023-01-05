@@ -2,10 +2,12 @@
 
 namespace Nabre\Repositories\FormTwo;
 
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rule as ValidationeRule;
 
-class Rules
+class Rule
 {
+    use ParseRule;
+
     static function accepted()
     {
         return __FUNCTION__;
@@ -138,7 +140,7 @@ class Rules
 
     static function exists(string $table, ?string $column = null)
     {
-        return Rule::exists($table, $column);
+        return ValidationeRule::exists($table, $column);
     }
 
     static function file(?int $size)
@@ -158,7 +160,7 @@ class Rules
 
     static function in(array $array)
     {
-        return Rule::in($array);
+        return ValidationeRule::in($array);
     }
 
     static function integer(?int $size = null)
@@ -223,7 +225,7 @@ class Rules
 
     static function not_in(array $array)
     {
-        return Rule::notIn($array);
+        return ValidationeRule::notIn($array);
     }
 
     static function not_regex(string $pattern)

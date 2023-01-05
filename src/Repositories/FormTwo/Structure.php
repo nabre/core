@@ -124,24 +124,27 @@ trait Structure
         return $this;
     }
 
-    private function rulesMessages(){
+    private function rulesMessages()
+    {
         collect([self::$update, self::$create])->each(function ($method) {
             if (is_null($this->getItemData('set.request.' . $method) ?? null)) {
-                $this->request('nullable', $method);
+                $this->rule(Rule::nullable(), $method);
             }
         });
 
-        collect($this->requests())->sortBy(function($i){
-            return ($i=='required')?0:1;
-        })->values()->each(function ($i) {
-            switch ($i) {
+        collect($this->requests())->sortBy(function ($i) {
+            return ($i == 'required') ? 0 : 1;
+        })->values()->each(function ($fn) {
+            $attribute='"' . $this->getItemData('label') . '"';
+            $msg = (new Rule)->parseRule($fn,$attribute);
+            switch ($fn) {
                 case "required":
-                    $this->info('<i class="fa-solid fa-asterisk" title="'. __('validation.required', ['attribute' => '"' . $this->getItemData('label') . '"']).'"></i>', 'danger');
+                    $this->info('<i class="fa-solid fa-asterisk" title="' . $msg . '"></i>', 'danger');
                     break;
                 case "nullable":
                     break;
                 default:
-                    $this->info($i, 'secondary');
+                    $this->info($msg, 'secondary');
                     break;
             }
         });

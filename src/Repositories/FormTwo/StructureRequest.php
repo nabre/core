@@ -2,7 +2,7 @@
 
 namespace Nabre\Repositories\FormTwo;
 
-use Illuminate\Validation\Rule;
+use Nabre\Repositories\FormTwo\Rule;
 
 trait StructureRequest
 {
@@ -13,23 +13,23 @@ trait StructureRequest
 
     function required($method = null)
     {
-        $this->request("required", $method);
+        $this->rule(Rule::required(), $method);
         return $this;
     }
 
     function requestCreate($string)
     {
-        $this->request($string, self::$create);
+        $this->rule($string, self::$create);
         return $this;
     }
 
     function requestUpdate($string)
     {
-        $this->request($string, self::$update);
+        $this->rule($string, self::$update);
         return $this;
     }
 
-    function request($string, $method = null)
+    function rule($string, $method = null)
     {
         $this->checkMethods($method);
         $string = explode("|", implode("|", (array)$string));
