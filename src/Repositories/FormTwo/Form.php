@@ -16,6 +16,7 @@ class Form
     private $collection;
     private $request;
     private $view = false;
+    private $redirect=null;
 
     private $prefix = null;
     private $wire = false;
@@ -43,6 +44,12 @@ class Form
     {
         $this->model = $model;
         $this->check();
+        return $this;
+    }
+
+    public function redirect(array $array){
+        $this->redirect=$array;
+
         return $this;
     }
 

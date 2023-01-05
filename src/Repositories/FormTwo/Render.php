@@ -12,9 +12,25 @@ trait Render
     private $submitError = false;
     private $card = false;
 
-    private function render($url)
+    private function submitUrl()
     {
-        $this->checkUrl($url);
+        if ($this->method == self::$create) {
+            $find = 'store';
+        } else {
+            $find = 'update';
+        }
+
+        $url = $this->redirect[$find] ?? null;
+
+        if (is_null($url)) {
+            $this->submit = false;
+        }
+        return $url;
+    }
+
+    private function render()
+    {
+        $url = $this->submitUrl();
         $html = '';
         $class = 'container';
         $method = $this->method;
@@ -32,13 +48,13 @@ trait Render
             $body = Html::div($html, ['class' => 'card-body']);
             return Html::div($title . $body, ['class' => 'card']);
         }
-
+        session()->forget('errors');
         return $html;
     }
 
     private function fieldsOut()
     {
-        return $this->elements->map(fn ($i, $n) => $this->fieldItem($i, (bool)!$n))->implode('');
+        return $this->elements->map(fn ($i) => $this->fieldItem($i))->implode('');
     }
 
     private function fieldItem($i)
@@ -86,30 +102,20 @@ trait Render
 
     private function infoField()
     {
-        $html = '';
-
-        if ($this->isRequired()) {
-            $html .= Html::div('<i class="fa-solid fa-asterisk"></i>', ['class' => 'badge bg-danger', 'title' => __('validation.required', ['attribute' => '"' . $this->getItemData('label') . '"'])]);
-        }
-
-        $html .= $this->getItemData('set.info', collect([]))->map(fn ($i) => (string) Html::div(data_get($i, 'text'), ['class' => 'alert m-0 p-1 alert-' . data_get($i, 'theme')]))->implode('');
-        return $html;
-    }
-
-    private function checkUrl(&$url)
-    {
-        if (is_null($url)) {
-            $this->submit = false;
-        }
-        return $this;
+        return $this->getItemData('set.info', collect([]))->map(fn ($i) => (string) Html::div(data_get($i, 'text'), ['class' => 'badge text-bg-' . data_get($i, 'theme')]))->implode('<br>');
     }
 
     private function buttonBack()
     {
+        $url = $this->redirect['index'] ?? null;
+        if (is_null($url)) {
+            $this->back = false;
+        }
+
         if (!$this->back) {
             return;
         }
-        return Html::a('<i class="fa-solid fa-angles-left"></i>', ['class' => 'btn btn-secondary', 'href' => 'javascript:history.back()']) . '<hr>';
+        return Html::a('<i class="fa-solid fa-angles-left"></i>', ['class' => 'btn btn-secondary', 'href' => $url]) . '<hr>';
     }
 
     private function buttonSubmit()

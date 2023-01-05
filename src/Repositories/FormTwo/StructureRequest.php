@@ -2,6 +2,8 @@
 
 namespace Nabre\Repositories\FormTwo;
 
+use Illuminate\Validation\Rule;
+
 trait StructureRequest
 {
     private $method = null;
@@ -55,11 +57,6 @@ trait StructureRequest
         }
 
         return $this;
-    }
-
-    private function isRequired()
-    {
-        return in_array('required', $this->requests()) ;
     }
 
     private function requests()

@@ -8,7 +8,7 @@ use Nabre\Http\Controllers\Auth\NewPasswordController;
 use Nabre\Http\Controllers\Auth\PasswordResetLinkController;
 use Nabre\Http\Controllers\Auth\RegisteredUserController;
 use Nabre\Http\Controllers\Auth\VerifyEmailController;
-use Nabre\Models\Image;
+use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['web']], function () {
     Route::get('/', [\Nabre\Http\Controllers\PagesController::class,'welcome'])->name('welcome');

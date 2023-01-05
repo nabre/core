@@ -3,22 +3,42 @@
 namespace Nabre\Repositories\FormTwo;
 
 
+use Illuminate\Http\Exceptions\HttpResponseException;
+
 trait Storage
 {
+    private function formUrl()
+    {
+        if ($this->method == self::$create) {
+            $find = 'create';
+        } else {
+            $find = 'edit';
+        }
+
+        return  $this->redirect[$find] ?? null;
+    }
+
     private function storage()
     {
-        $rules = $this->elements->pluck('set.request.' . $this->method, 'variable');
-
-        $validator = \Validator::make($this->request->all(), $rules->toArray());
+        $rules = $this->elements->pluck('set.request.' . $this->method, 'variable')->toArray();
+        $validator = \Validator::make($this->request->all(), $rules);
 
         if ($validator->fails()) {
-            $this->request->session()->flash('errors', $validator->errors());
-            return redirect()->back()->withErrors( $validator->errors());
+            $destination = $this->formUrl();
+            $response = redirect($destination);
+
+            if (is_null($destination)) {
+                $response = $response->back();
+            }
+
+            $errors=$validator->errors();
+            session()->put('errors',$errors);
+            throw new HttpResponseException($response);
         }
 
         $vars = $validator->validated();
         $this->data->recursiveSave($vars);
 
-        return null;
+        return $this->data;
     }
 }

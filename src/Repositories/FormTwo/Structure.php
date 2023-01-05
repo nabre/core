@@ -112,14 +112,39 @@ trait Structure
             return $this;
         }
 
+        $this->methodForm();
+
         $this->elements = collect([]);
         $this->build();
         $this->insert();
 
-        $this->methodForm();
-
         $this->errors();
         $this->checkSubmitAviable();
+
+        return $this;
+    }
+
+    private function rulesMessages(){
+        collect([self::$update, self::$create])->each(function ($method) {
+            if (is_null($this->getItemData('set.request.' . $method) ?? null)) {
+                $this->request('nullable', $method);
+            }
+        });
+
+        collect($this->requests())->sortBy(function($i){
+            return ($i=='required')?0:1;
+        })->values()->each(function ($i) {
+            switch ($i) {
+                case "required":
+                    $this->info('<i class="fa-solid fa-asterisk" title="'. __('validation.required', ['attribute' => '"' . $this->getItemData('label') . '"']).'"></i>', 'danger');
+                    break;
+                case "nullable":
+                    break;
+                default:
+                    $this->info($i, 'secondary');
+                    break;
+            }
+        });
 
         return $this;
     }
@@ -131,12 +156,7 @@ trait Structure
             $this->output();
             $this->query();
             $this->labelDefine();
-
-            collect([self::$update, self::$create])->each(function ($method) {
-                if (is_null($this->getItemData('set.request.' . $method) ?? null)) {
-                    $this->request('nullable', $method);
-                }
-            });
+            $this->rulesMessages();
 
             $this->elements = $this->elements->push($this->item);
             $this->item = null;
