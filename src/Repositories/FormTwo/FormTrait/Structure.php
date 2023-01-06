@@ -35,7 +35,7 @@ trait Structure
 
     function embed($embed = null, $overwrite = false)
     {
-        $this->push(compact(__FUNCTION__), $overwrite);
+        $this->push(['embed.wire.form'=>$embed], $overwrite);
         return $this;
     }
 

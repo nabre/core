@@ -33,10 +33,11 @@ trait StructureErrors
                 switch ($output) {
                     case Field::EMBEDS_MANY:
                     case Field::EMBEDS_ONE:
-                        $string = data_get($i, 'embed', false);
+                        $string = data_get($i, 'embed.wire.form', false);
                         if (!$string) {
                             $errors = $errors->push('Il form nidificato non è stato definito.');
                         }
+
                         break;
                     default:
                         $array = Field::fieldsListRequired();

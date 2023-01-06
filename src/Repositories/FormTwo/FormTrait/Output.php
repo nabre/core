@@ -79,5 +79,15 @@ trait Output
         }
 
         $this->setItemData('output', $output ?? Field::STATIC, true);
+
+        #prepara le informazione necessarie per livewire FormEmbed
+        if(in_array($this->getItemData('output'),[Field::EMBEDS_MANY,Field::EMBEDS_ONE])){
+            $this->setItemData('embed.parent.model', $this->model, true);
+            $this->setItemData('embed.parent.dataKey', data_get($this->data,$this->data->getKeyName()), true);
+            $this->setItemData('embed.parent.variable', $this->getItemData('variable'), true);
+            $this->setItemData('embed.wire.output', $this->getItemData('output'), true);
+        }
+        return $this;
     }
+
 }

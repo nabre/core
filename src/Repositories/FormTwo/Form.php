@@ -19,6 +19,7 @@ class Form
     use StructureRequest;
     use Output;
 
+
     private $model = null;
     private $data = null;
     private $collection;

@@ -212,13 +212,8 @@ class Field
                 break;
                 ###
             case self::EMBEDS_MANY:
-                /*
-                $prefix = data_get($it,'variable');
-                $embedsModel = data_get($it,'set.rel.model');
-                $toPut = data_get($it,'set.embeds');
-                $html = Form::hidden($prefix) . livewire('formembedsmany', compact('value', 'prefix', 'embedsModel', 'toPut'));
-*/
-                $html = "embed many";
+                $embed=data_get($it,'embed');
+                $html = livewire('formembed', compact('embed'));
                 break;
                 ###
             case self::TEXT_LANG:
