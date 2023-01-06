@@ -1,9 +1,10 @@
 <?php
 
-namespace Nabre\Repositories\FormTwo;
+namespace Nabre\Repositories\FormTwo\FormTrait;
 
 use Collective\Html\HtmlFacade as Html;
 use Collective\Html\FormFacade as Form;
+use Nabre\Repositories\FormTwo\Field;
 
 trait Render
 {

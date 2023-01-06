@@ -1,6 +1,6 @@
 <?php
 
-namespace Nabre\Repositories\FormTwo;
+namespace Nabre\Repositories\FormTwo\FormTrait;
 
 
 use Illuminate\Http\Exceptions\HttpResponseException;

@@ -85,32 +85,24 @@ class Field
     {
 
         if (optional(data_get($it, 'errors'))->count()) {
-            switch (strtolower(env('APP_ENV', 'production'))) {
-                case "local":
-                    $msg= data_get($it, 'errors')->implode('<br>');
-                    break;
-                default:
-                    $msg= "Configurazione non corretta.";
-                    break;
-            }
-
-            return '<div class="alert alert-danger m-0 p-1">'.$msg.'</div>';
+            $msg = data_get($it, 'errors')->implode('<br>');
+            return '<div class="alert alert-danger m-0 p-1">' . $msg . '</div>';
         }
 
         $html = '';
-        $name = data_get($it,'variable');
-        $value = old($name, data_get($it,'value'));
-        $output = data_get($it,'output');
-        $list = data_get($it,'set.list.items',collect([])) ;
-        $empty = data_get($it,'set.list.empty',);
-        $disabled = data_get($it,'set.list.disabled',[]);
-        $options = data_get($it,'set.options',[]);
+        $name = data_get($it, 'variable');
+        $value = old($name, data_get($it, 'value'));
+        $output = data_get($it, 'output');
+        $list = data_get($it, 'set.list.items', collect([]));
+        $empty = data_get($it, 'set.list.empty',);
+        $disabled = data_get($it, 'set.list.disabled', []);
+        $options = data_get($it, 'set.options', []);
         $errors = session()->get('errors');
 
         if (!is_null($errors)) {
             if ($errors->has($name)) {
                 self::classAdd($options['class'], 'is-invalid');
-            }else{
+            } else {
                 self::classAdd($options['class'], 'is-valid');
             }
         }
@@ -161,19 +153,19 @@ class Field
                 break;
                 ###
             case self::FIELD_TYPE_LIST:
-                data_set($it,'output',self::SELECT);
-                data_set($it,'set.list.empty','-Seleziona-');
+                data_set($it, 'output', self::SELECT);
+                data_set($it, 'set.list.empty', '-Seleziona-');
                 $list = FormFieldType::get()->pluck('string', 'key')->sort();
                 $list = $list->reject(function ($v, $k) {
                     return in_array($k, [self::LIVEWIRE, self::MSG, self::EMBEDS_MANY, self::EMBEDS_ONE]);
                 })->sort();
-                data_set($it,'set.list.items',$list);
+                data_set($it, 'set.list.items', $list);
                 $html = self::generate($it);
                 break;
             case self::LANG_SELECT:
                 $list = (new LocalizationRepositorie)->aviableLang()->pluck('language', 'lang')->sort();
-                data_set($it,'output',self::SELECT);
-                data_set($it,'set.list.items',$list);
+                data_set($it, 'output', self::SELECT);
+                data_set($it, 'set.list.items', $list);
                 $html = self::generate($it);
                 break;
             case self::BOOLEAN:
@@ -204,13 +196,13 @@ class Field
                 })->implode('html');
 
                 $html .= collect($list)->map(function ($v, $k) use ($value, $it, $name, $options, $disabled) {
-                    data_set($options,'id', data_get($it,'variable') . '-' . $k);
+                    data_set($options, 'id', data_get($it, 'variable') . '-' . $k);
 
                     if (in_array($k, $disabled)) {
                         $options[] = 'disabled';
                     }
                     $bool = in_array($k, $value);
-                    $html = '<div class="form-check">' . Form::checkbox($name, $k, $bool, $options) . " " . Form::label(data_get($options,'id'), $v, ['class' => "form-check-label"]) . '</div>';
+                    $html = '<div class="form-check">' . Form::checkbox($name, $k, $bool, $options) . " " . Form::label(data_get($options, 'id'), $v, ['class' => "form-check-label"]) . '</div>';
                     return compact('html');
                 })->implode('html');
                 break;
@@ -220,10 +212,13 @@ class Field
                 break;
                 ###
             case self::EMBEDS_MANY:
+                /*
                 $prefix = data_get($it,'variable');
                 $embedsModel = data_get($it,'set.rel.model');
                 $toPut = data_get($it,'set.embeds');
-                $html = Form::hidden($prefix) . Livewire::load('formembedsmany', compact('value', 'prefix', 'embedsModel', 'toPut'));
+                $html = Form::hidden($prefix) . livewire('formembedsmany', compact('value', 'prefix', 'embedsModel', 'toPut'));
+*/
+                $html = "embed many";
                 break;
                 ###
             case self::TEXT_LANG:
@@ -232,35 +227,35 @@ class Field
 
                 self::name($name);
                 $langs->sortBy(['position', 'language'])->values()->each(function ($i) use ($name, &$html, $value, $options, $numLangs) {
-                    $name .= '[' . data_get($i,'lang') . ']';
-                    if (!is_null(data_get($options,'wire:model.defer'))) {
-                        $options['wire:model.defer'] .= "." . data_get($i,'lang');
+                    $name .= '[' . data_get($i, 'lang') . ']';
+                    if (!is_null(data_get($options, 'wire:model.defer'))) {
+                        $options['wire:model.defer'] .= "." . data_get($i, 'lang');
                     }
-                    $value = data_get($value,data_get($i,'lang'));
+                    $value = data_get($value, data_get($i, 'lang'));
                     self::classAdd($options['class'], "form-control");
                     $input = Form::input('text', $name, $value, $options);
                     if ($numLangs == 1) {
                         $html .= $input;
                     } else {
-                        $span = Html::tag('span', data_get($i,'icon'), ['class' => 'input-group-text', "title" => data_get($i,'language')]);
+                        $span = Html::tag('span', data_get($i, 'icon'), ['class' => 'input-group-text', "title" => data_get($i, 'language')]);
                         $html .= Html::div($span . $input, ['class' => 'input-group mb-1']);
                     }
                 });
                 break;
                 ###
             case self::MSG:
-                $html = Html::div(data_get($value,'text'), ['class' => 'alert p-1 alert-' . data_get($value,'theme')]);
+                $html = Html::div(data_get($value, 'text'), ['class' => 'alert p-1 alert-' . data_get($value, 'theme')]);
                 break;
                 ###
             case self::HTML:
-                $html = data_get($value,'html');
+                $html = data_get($value, 'html');
                 break;
             case self::STATIC:
                 //  $html="static variable";
 
                 if (!is_null($list ?? null) && optional($list)->count()) {
                     $value = collect((array)$value)->map(function ($v) use ($list) {
-                        return data_get($list,$v) ?? null;
+                        return data_get($list, $v) ?? null;
                     })->unique()->values()->toArray();
                 }
 
@@ -290,7 +285,7 @@ class Field
         }
 
         if (!is_null($errors)) {
-            $id = data_get($options,'id',data_get($it,'variable'));
+            $id = data_get($options, 'id', data_get($it, 'variable'));
             $id .= "Feedback";
             if ($errors->has($name)) {
                 $mode = 'invalid';
