@@ -98,18 +98,16 @@ class Field
         }
 
         $html = '';
-        $name = $it['variable'];
-        $value = old($name, $it['value'] ?? null);
-        $output = $it['output'];
-        $list = $it['set']['list']['items'] ?? collect([]);
-        $empty = $it['set']['list']['empty'] ?? null;
-        $disabled = (array)($it['set']['list']['disabled'] ?? null);
-        $options = (array)($it['set']['options'] ?? null);
+        $name = data_get($it,'variable');
+        $value = old($name, data_get($it,'value'));
+        $output = data_get($it,'output');
+        $list = data_get($it,'set.list.items',collect([])) ;
+        $empty = data_get($it,'set.list.empty',);
+        $disabled = data_get($it,'set.list.disabled',[]);
+        $options = data_get($it,'set.options',[]);
         $errors = session()->get('errors');
 
         if (!is_null($errors)) {
-          //  dd($errors);
-           // $errors=collect($errors);
             if ($errors->has($name)) {
                 self::classAdd($options['class'], 'is-invalid');
             }else{
@@ -163,29 +161,20 @@ class Field
                 break;
                 ###
             case self::FIELD_TYPE_LIST:
-                $it['output'] = self::SELECT;
-                $it['set']['list']['empty'] = '-Seleziona-';
-
+                data_set($it,'output',self::SELECT);
+                data_set($it,'set.list.empty','-Seleziona-');
                 $list = FormFieldType::get()->pluck('string', 'key')->sort();
-
-                /*
-                $list = self::getConstants();
-                $list = collect(array_combine($list, $list));
-                */
-
                 $list = $list->reject(function ($v, $k) {
                     return in_array($k, [self::LIVEWIRE, self::MSG, self::EMBEDS_MANY, self::EMBEDS_ONE]);
                 })->sort();
-                $it['set']['list']['items'] = $list;
+                data_set($it,'set.list.items',$list);
                 $html = self::generate($it);
                 break;
             case self::LANG_SELECT:
                 $list = (new LocalizationRepositorie)->aviableLang()->pluck('language', 'lang')->sort();
-                $it['output'] = self::SELECT;
-                $it['set']['list']['items'] = $list;
-
+                data_set($it,'output',self::SELECT);
+                data_set($it,'set.list.items',$list);
                 $html = self::generate($it);
-
                 break;
             case self::BOOLEAN:
                 $options['role'] = 'switch';
@@ -215,36 +204,25 @@ class Field
                 })->implode('html');
 
                 $html .= collect($list)->map(function ($v, $k) use ($value, $it, $name, $options, $disabled) {
-                    $options['id'] = $it['variable'] . '-' . $k;
+                    data_set($options,'id', data_get($it,'variable') . '-' . $k);
 
                     if (in_array($k, $disabled)) {
                         $options[] = 'disabled';
                     }
                     $bool = in_array($k, $value);
-                    $html = '<div class="form-check">' . Form::checkbox($name, $k, $bool, $options) . " " . Form::label($options['id'], $v, ['class' => "form-check-label"]) . '</div>';
+                    $html = '<div class="form-check">' . Form::checkbox($name, $k, $bool, $options) . " " . Form::label(data_get($options,'id'), $v, ['class' => "form-check-label"]) . '</div>';
                     return compact('html');
                 })->implode('html');
                 break;
                 ###
             case self::EMBEDS_ONE:
-                /* $html .= '<ul class="list-group">';
-                $eForm = new $it['set']['embeds']['model'];
-                $eForm->prefix = $it['variable'];
-                $eForm = $eForm->collection($it['set']['rel']->model);
-                $eForm = $eForm->data($value);
-                $eForm = $eForm->generate();
-                $eForm = $eForm->add('_id', Field::HIDDEN)->lastInsert();
-                $build = (new Build)->structure($eForm);
-                $embed = $build->embedHtml($value);
-                $html .= '<li class="list-group-item">' . $embed . '</li>';
-                $html .= '</ul>';*/
                 $html = 'definisci codice';
                 break;
                 ###
             case self::EMBEDS_MANY:
-                $prefix = $it['variable'];
-                $embedsModel = $it['set']['rel']->model;
-                $toPut = $it['set']['embeds'];
+                $prefix = data_get($it,'variable');
+                $embedsModel = data_get($it,'set.rel.model');
+                $toPut = data_get($it,'set.embeds');
                 $html = Form::hidden($prefix) . Livewire::load('formembedsmany', compact('value', 'prefix', 'embedsModel', 'toPut'));
                 break;
                 ###
@@ -254,35 +232,35 @@ class Field
 
                 self::name($name);
                 $langs->sortBy(['position', 'language'])->values()->each(function ($i) use ($name, &$html, $value, $options, $numLangs) {
-                    $name .= '[' . $i->lang . ']';
-                    if (!is_null($options['wire:model.defer'] ?? null)) {
-                        $options['wire:model.defer'] .= "." . $i->lang;
+                    $name .= '[' . data_get($i,'lang') . ']';
+                    if (!is_null(data_get($options,'wire:model.defer'))) {
+                        $options['wire:model.defer'] .= "." . data_get($i,'lang');
                     }
-                    $value = $value[$i->lang] ?? null;
+                    $value = data_get($value,data_get($i,'lang'));
                     self::classAdd($options['class'], "form-control");
                     $input = Form::input('text', $name, $value, $options);
                     if ($numLangs == 1) {
                         $html .= $input;
                     } else {
-                        $span = Html::tag('span', $i->icon, ['class' => 'input-group-text', "title" => $i->language]);
+                        $span = Html::tag('span', data_get($i,'icon'), ['class' => 'input-group-text', "title" => data_get($i,'language')]);
                         $html .= Html::div($span . $input, ['class' => 'input-group mb-1']);
                     }
                 });
                 break;
                 ###
             case self::MSG:
-                $html = Html::div($value['text'], ['class' => 'alert p-1 alert-' . $value['theme']]);
+                $html = Html::div(data_get($value,'text'), ['class' => 'alert p-1 alert-' . data_get($value,'theme')]);
                 break;
                 ###
             case self::HTML:
-                $html = $value['html'];
+                $html = data_get($value,'html');
                 break;
             case self::STATIC:
                 //  $html="static variable";
 
                 if (!is_null($list ?? null) && optional($list)->count()) {
-                    $value = collect((array)$value)->map(function ($v) use ($it) {
-                        return $list[$v] ?? null;
+                    $value = collect((array)$value)->map(function ($v) use ($list) {
+                        return data_get($list,$v) ?? null;
                     })->unique()->values()->toArray();
                 }
 
@@ -312,7 +290,7 @@ class Field
         }
 
         if (!is_null($errors)) {
-            $id = $options['id'] ?? $it['variable'];
+            $id = data_get($options,'id',data_get($it,'variable'));
             $id .= "Feedback";
             if ($errors->has($name)) {
                 $mode = 'invalid';

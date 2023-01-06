@@ -102,7 +102,14 @@ trait Render
 
     private function infoField()
     {
+        if ($this->haveError()) {
+            return;
+        }
         return $this->getItemData('set.info', collect([]))->map(fn ($i) => (string) Html::div(data_get($i, 'text'), ['class' => 'badge text-bg-' . data_get($i, 'theme')]))->implode('<br>');
+    }
+
+    private function haveError(){
+        return (bool) (!$this->getItemData('type') || $this->getItemData('errors',collect([]))->count());
     }
 
     private function buttonBack()

@@ -6,7 +6,7 @@ use Illuminate\Validation\Rule as ValidationeRule;
 
 class Rule
 {
-    use ParseRule;
+    use RuleParse;
 
     static function accepted()
     {

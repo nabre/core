@@ -49,10 +49,16 @@ class Controller extends BaseController
     {
         $array = collect([]);
 
-        collect(['index', 'edit', 'update', 'create', 'store'])->map(function ($i) use (&$array, $data) {
+        if(is_null(data_get($data,$data->getKeyName()))){
+            $suffix=['index', 'create', 'store'];
+        }else{
+            $suffix=['index', 'edit', 'update'];
+        }
+
+        collect($suffix)->map(function ($i) use (&$array, $data) {
             $route = $this->getRoute($i);
             if (!is_null(Route::getRoutes()->getByName($route))) {
-                $url = route($route, (in_array($i, ['index', 'create'])) ? null : $data);
+                $url = route($route, (in_array($i, ['index', 'create','store'])) ? null : $data);
                 $array = $array->put($i, $url);
             }
         });

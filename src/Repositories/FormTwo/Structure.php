@@ -69,6 +69,11 @@ trait Structure
         return $this;
     }
 
+    function value($value){
+        $this->push(get_defined_vars(), true);
+        return $this;
+    }
+
     private function push(array $array, $overwrite = false)
     {
         $this->item = (array)$this->item;
@@ -95,9 +100,10 @@ trait Structure
         } else {
             $set = (array)$this->getItemData($find);
             data_set($set, $var, $value, $overwrite);
+            $overwrite=true;
         }
 
-        return data_set($target, $find, $set, true);
+        return data_set($target, $find, $set, $overwrite);
     }
 
     private function getItemData($key, $default = null)
@@ -132,19 +138,45 @@ trait Structure
             }
         });
 
-        collect($this->requests())->sortBy(function ($i) {
-            return ($i == 'required') ? 0 : 1;
-        })->values()->each(function ($fn) {
-            $attribute='"' . $this->getItemData('label') . '"';
-            $msg = (new Rule)->parseRule($fn,$attribute);
+        $rules = collect($this->requests())
+            ->map(fn ($fn) => (new Rule)->parseRule($fn, "\"" . $this->getItemData('label') . "\""));
+
+        $this->setItemData('set.rules.fn', $rules->pluck('fn')->unique()->values()->toArray(), true);
+
+        $rulesOut = collect([]);
+
+        $rules->reject(fn ($i) => in_array(data_get($i, 'fn'), Rule::allSubRule()))->each(function ($i) use ($rules, &$rulesOut) {
+            $fn = data_get($i, 'fn');
+            if (in_array($fn, Rule::combinedRule())) {
+                $rules->whereIn('fn', Rule::subRule($fn))->each(function ($s) use ($i, &$rulesOut) {
+                    $fn = data_get($i, 'fn') . "." . data_get($s, 'fn');
+                    data_set($i, 'fn', $fn, true);
+                    $params = array_unique(array_merge(data_get($i, 'params'), data_get($s, 'params')));
+                    data_set($i, 'params', $params, true);
+                    $rulesOut = $rulesOut->push($i);
+                });
+            } else {
+                $rulesOut = $rulesOut->push($i);
+            }
+        });
+
+        $rulesOut->sortBy(function ($i) {
+            $fn = data_get($i, 'fn');
+            return ($fn == 'required') ? 0 : 1;
+        })->values()->each(function ($i) {
+            $fn = data_get($i, 'fn');
+            $msg = trim(__('Nabre::validation.' . $fn, data_get($i, 'params')));
+
             switch ($fn) {
                 case "required":
-                    $this->info('<i class="fa-solid fa-asterisk" title="' . $msg . '"></i>', 'danger');
+                    $this->info('<i class="fa-solid fa-asterisk" title="' . htmlspecialchars($msg) . '"></i>', 'danger');
                     break;
                 case "nullable":
                     break;
                 default:
-                    $this->info($msg, 'secondary');
+                    if (!empty($msg)) {
+                        $this->info($msg, 'secondary');
+                    }
                     break;
             }
         });
@@ -156,10 +188,12 @@ trait Structure
     {
         if (!is_null($this->item ?? null)) {
             $this->variableCheck();
+            $this->rulesMessages();
+
             $this->output();
             $this->query();
             $this->labelDefine();
-            $this->rulesMessages();
+
 
             $this->elements = $this->elements->push($this->item);
             $this->item = null;
@@ -292,12 +326,13 @@ trait Structure
     }
 
     #Output
-    //static $requestOutput = ['email' => Field::TEXT];
+    static $ruleOutput = ['email' => Field::TEXT, 'password' => [Field::PASSWORD2, Field::PASSWORD]];
 
     private function output()
     {
         $output = $this->getItemData('output');
         $type = $this->getItemData('type');
+        $rules = $this->getItemData('set.rules.fn', []);
         $enabled = collect([]);
 
         if ($type != 'fake') {
@@ -322,10 +357,14 @@ trait Structure
                             $enabled = $enabled->push(Field::TEXTAREA_CKEDITOR);
                             break;
                         default:
-                            $enabled = $enabled->merge([Field::TEXT, Field::TEXTAREA, Field::TEXTAREA_CKEDITOR, Field::HIDDEN]);
-                            /*collect(self::$requestOutput)->each(function ($en) use (&$enabled) {
-                            $enabled = array_unique(array_merge((array)$en, (array)$enabled));
-                        });*/
+                            $ruleEnable = array_intersect($rules, array_keys(self::$ruleOutput));
+                            if (count($ruleEnable)) {
+                                collect(self::$ruleOutput)->filter(fn ($v, $k) => in_array($k, $ruleEnable))->each(function ($fieldType) use (&$enabled) {
+                                    $enabled = $enabled->merge((array)$fieldType);
+                                });
+                            } else {
+                                $enabled = $enabled->merge([Field::TEXT, Field::TEXTAREA, Field::TEXTAREA_CKEDITOR, Field::HIDDEN]);
+                            }
                             break;
                     }
                     break;
@@ -410,7 +449,7 @@ trait Structure
 
     private function checkSubmitAviable()
     {
-        if ((new QueryElements($this->elements))->removeInexistents()->withErrors()->results()->count()) {
+        if (!(new QueryElements($this->elements))->removeInexistents()->excludeWithErrors()->results()->count()) {
             $this->submit = false;
             $this->submitError = true;
         }

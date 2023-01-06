@@ -40,4 +40,13 @@ class QueryElements
 
         return $this;
     }
+
+    function excludeWithErrors()
+    {
+        $this->elements = $this->elements->reject(function ($i) {
+            return data_get($i, 'errors', collect([]))->count();
+        })->values();
+
+        return $this;
+    }
 }

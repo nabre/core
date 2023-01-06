@@ -162,7 +162,7 @@ class Form
                             break;
                     }
                 }
-                $overwrite = !is_null($value);
+                $overwrite =$this->method==self::$update;
                 $this->setData($i, 'value', $value, $overwrite);
             }
 
