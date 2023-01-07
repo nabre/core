@@ -14,7 +14,9 @@ class FormEmbed extends Component
     var $html = null;
     var $model = null;
     var $form = null;
+    var $wireValues = null;
     private $parent;
+    private $output;
     private $values;
 
     function mount()
@@ -33,25 +35,48 @@ class FormEmbed extends Component
 
         $this->model = data_get($this->embed, 'wire.model');
         $this->form = data_get($this->embed, 'wire.form');
+        $this->output = data_get($this->embed, 'wire.output');
+        $this->values();
+
         return $this;
+    }
+
+    private function values()
+    {
+        switch ($this->output) {
+            case Field::EMBEDS_MANY:
+                $this->wireValues = [];
+                $this->values->each(function ($item) {
+                    $this->wireValues[] = $this->array($item);
+                });
+                break;
+            case Field::EMBEDS_ONE:
+                $item = $this->values ?? $this->model::make();
+                $this->wireValues = $this->array($item);
+                break;
+        }
+    }
+
+    private function array($data)
+    {
+        return [];
     }
 
     private function generate()
     {
-        switch (data_get($this->embed, 'wire.output')) {
+        switch ($this->output) {
             case Field::EMBEDS_MANY:
-                $this->html .= $this->values->map(function ($item) {
+                $this->html .= collect($this->wireValues)->keys()->map(function ($num) {
                     return '<div class="row">
                                 <div class="col-auto">|</div>
-                                <div class="col">' . $this->itemRender($item) . '</div>
+                                <div class="col">' . $this->itemRender($num) . '</div>
                                 <div class="col-auto">Rimuovi</div>
                             </div>';
                 })->implode('');
                 $this->html .= $this->addButton();
                 break;
             case Field::EMBEDS_ONE:
-                $item = $this->values ?? $this->model::make();
-                $this->html = $this->itemRender($item);
+                $this->html = $this->itemRender();
                 break;
         }
     }
@@ -61,9 +86,11 @@ class FormEmbed extends Component
         return '<div>Aggiungi</div>';
     }
 
-    private function itemRender($data)
+    private function itemRender($num = null)
     {
-        return (new $this->form)->data($data)->embedMode()->generate();
+        $prefix = null;
+        $wire = 'wireValues' . !is_null($num) ? '.' . $num : '';
+        return (new $this->form)->model($this->model)->embedMode($prefix, $wire)->generate();
     }
 
     public function render()
