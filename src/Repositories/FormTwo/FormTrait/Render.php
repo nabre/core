@@ -12,6 +12,7 @@ trait Render
     private $submit = true;
     private $submitError = false;
     private $card = false;
+    private $form = true;
 
     private function submitUrl()
     {
@@ -36,13 +37,13 @@ trait Render
         $class = 'container';
         $method = $this->method;
         //  $html.=var_export(request());
-        $html .= Form::open(compact(['url', 'method', 'class'])) . "\r\n";
+        $html .= $this->form? Form::open(compact(['url', 'method', 'class'])) . "\r\n":null;
         $html .= $this->buttonBack() . "\r\n";
 
         $html .= $this->fieldsOut();
 
         $html .= $this->buttonSubmit() . "\r\n";
-        $html .= Form::close();
+        $html .= $this->form?Form::close():null;
 
         if ($this->card) {
             $title = (is_null($this->title ?? null) ? null : Html::div($this->title, ['class' => 'card-header']));
@@ -109,8 +110,9 @@ trait Render
         return $this->getItemData('set.info', collect([]))->map(fn ($i) => (string) Html::div(data_get($i, 'text'), ['class' => 'badge text-bg-' . data_get($i, 'theme')]))->implode('<br>');
     }
 
-    private function haveError(){
-        return (bool) (!$this->getItemData('type') || $this->getItemData('errors',collect([]))->count());
+    private function haveError()
+    {
+        return (bool) (!$this->getItemData('type') || $this->getItemData('errors', collect([]))->count());
     }
 
     private function buttonBack()

@@ -86,6 +86,7 @@ trait Output
             $this->setItemData('embed.parent.dataKey', data_get($this->data,$this->data->getKeyName()), true);
             $this->setItemData('embed.parent.variable', $this->getItemData('variable'), true);
             $this->setItemData('embed.wire.output', $this->getItemData('output'), true);
+            $this->setItemData('embed.wire.model', $this->getItemData('set.rel.model'), true);
         }
         return $this;
     }

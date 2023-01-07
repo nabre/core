@@ -208,9 +208,6 @@ class Field
                 break;
                 ###
             case self::EMBEDS_ONE:
-                $html = 'definisci codice';
-                break;
-                ###
             case self::EMBEDS_MANY:
                 $embed=data_get($it,'embed');
                 $html = livewire('formembed', compact('embed'));

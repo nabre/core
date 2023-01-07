@@ -25,7 +25,7 @@ class Form
     private $collection;
     private $request;
     private $view = false;
-    private $redirect=null;
+    private $redirect = null;
 
     private $prefix = null;
     private $wire = false;
@@ -56,8 +56,9 @@ class Form
         return $this;
     }
 
-    public function redirect(array $array){
-        $this->redirect=$array;
+    public function redirect(array $array)
+    {
+        $this->redirect = $array;
 
         return $this;
     }
@@ -69,6 +70,7 @@ class Form
         $this->wire = $wire;
         $this->back = false;
         $this->submit = false;
+        $this->form = false;
 
         $this->elements = $this->elements->map(function ($i) {
             if ($this->wire !== false) {
@@ -171,7 +173,7 @@ class Form
                             break;
                     }
                 }
-                $overwrite =!is_null($value);
+                $overwrite = !is_null($value);
                 $this->setData($i, 'value', $value, $overwrite);
             }
 
