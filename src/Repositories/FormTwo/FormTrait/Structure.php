@@ -35,7 +35,7 @@ trait Structure
 
     function embed($embed = null, $overwrite = false)
     {
-        $this->push(['embed.wire.form'=>$embed], $overwrite);
+        $this->push(['embed.wire.form' => $embed], $overwrite);
         return $this;
     }
 
@@ -73,7 +73,8 @@ trait Structure
         return $this;
     }
 
-    function value($value){
+    function value($value)
+    {
         $this->push(get_defined_vars(), true);
         return $this;
     }
@@ -104,7 +105,7 @@ trait Structure
         } else {
             $set = (array)$this->getItemData($find);
             data_set($set, $var, $value, $overwrite);
-            $overwrite=true;
+            $overwrite = true;
         }
 
         return data_set($target, $find, $set, $overwrite);
@@ -128,10 +129,15 @@ trait Structure
         $this->build();
         $this->insert();
 
-        $this->errors();
-        $this->checkSubmitAviable();
+        $this->checkErrors();
 
         return $this;
+    }
+
+    private function checkErrors()
+    {
+        $this->errors();
+        $this->checkSubmitAviable();
     }
 
     private function rulesMessages()

@@ -261,6 +261,7 @@ class Field
             default:
                 $output = self::HIDDEN;
             case self::HIDDEN:
+                $html='';
                 $value = (array)$value;
                 self::name($name);
                 switch (count($value)) {

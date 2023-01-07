@@ -63,18 +63,23 @@ class Form
         return $this;
     }
 
-    public function embedMode($prefix = null, bool $wire = false)
+    public function embedMode($prefix = null,  $wire = false)
     {
+        $this->elements = null;
         $this->check();
+        $this->add('_id', Field::HIDDEN)->insert();
+
         $this->prefix = $prefix;
         $this->wire = $wire;
+
         $this->back = false;
         $this->submit = false;
         $this->form = false;
 
         $this->elements = $this->elements->map(function ($i) {
             if ($this->wire !== false) {
-                $this->setData($i, 'set.options.wire:model', $this->wire, true);
+                $wire = $this->wire . "." . data_get($i, 'variable');
+                $this->setData($i, 'set.options.wire:model', $wire, true);
             }
 
             if (!is_null($this->prefix)) {
@@ -97,7 +102,7 @@ class Form
     public function generate(?string $submit = null)
     {
         $this->check();
-        $this->valueAssign();
+        $this->values();
 
         if ($this->view) {
             $this->elements = $this->elements->map(function ($i) {
@@ -108,6 +113,14 @@ class Form
         }
 
         return $this->render($submit);
+    }
+
+    public function values()
+    {
+        $this->check();
+        $this->valueAssign();
+
+        return $this->elements->pluck('value', 'variable')->toArray();
     }
 
     public function save(?array $request = null)
@@ -163,7 +176,9 @@ class Form
         $this->elements = $this->elements->map(function ($i) {
             $type = data_get($i, 'type');
             if ($type && $type != 'fake') {
-                $value = $this->data->readValue(data_get($i, 'variable'));
+                $name = data_get($i, 'variable');
+                $value = $this->data->readValue($name);
+
                 if ($type == 'relation') {
                     switch (data_get($i, 'set.rel.type')) {
                         case "EmbedsMany":

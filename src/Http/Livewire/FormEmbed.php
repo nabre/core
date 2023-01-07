@@ -14,31 +14,36 @@ class FormEmbed extends Component
     var $html = null;
     var $model = null;
     var $form = null;
-    var $wireValues = null;
+    var $wireValues = [];
+    var $output = null;
+
     private $parent;
-    private $output;
     private $values;
+    private $prefix;
 
     function mount()
     {
-        $this->loadValue();
-        $this->generate();
-    }
-
-    private function loadValue()
-    {
         $model = data_get($this->embed, 'parent.model');
         $id = data_get($this->embed, 'parent.dataKey');
-        $variable = data_get($this->embed, 'parent.variable');
+        $this->prefix = data_get($this->embed, 'parent.variable');
         $this->parent = is_null($id) ? $model::make() : $model::findOrFail($id);
-        $this->values = $this->parent->readValue($variable);
+        $this->values = $this->parent->readValue($this->prefix);
 
         $this->model = data_get($this->embed, 'wire.model');
         $this->form = data_get($this->embed, 'wire.form');
         $this->output = data_get($this->embed, 'wire.output');
         $this->values();
+    }
 
-        return $this;
+    function addItem()
+    {
+        $this->wireValues[] = $this->array();
+        $this->wireValues = array_values($this->wireValues);
+    }
+
+    function removeItem(int $id){
+        unset($this->wireValues[$id]);
+        $this->wireValues = array_values(array_filter($this->wireValues));
     }
 
     private function values()
@@ -51,27 +56,68 @@ class FormEmbed extends Component
                 });
                 break;
             case Field::EMBEDS_ONE:
-                $item = $this->values ?? $this->model::make();
-                $this->wireValues = $this->array($item);
+                $this->wireValues = $this->array($this->values ?? null);
                 break;
         }
     }
 
-    private function array($data)
+    private function array($data = null)
     {
-        return [];
+        $data = $data ?? $this->model::make();
+        return (new $this->form)->data($data)->values();
+    }
+
+    private function moveButton()
+    {
+        $btn = Html::div('<i class="fa-solid fa-grip-vertical"></i>', ['class' => 'btn btn-dark btn-sm h-100']);
+        return Html::div($btn, ['class' => 'col-auto']);
+    }
+
+    private function removeButton(int $num)
+    {
+        $btn = Html::div(
+            '<i class="fa-solid fa-trash-can"></i>',
+            [
+                'title' => 'Elimina',
+                'wire:click' => "removeItem($num)",
+                'class' => 'btn btn-danger btn-sm h-100',
+            ]
+        );
+        return Html::div($btn, ['class' => 'col-auto']);
+    }
+
+    private function addButton()
+    {
+        return Html::tag(
+            'button',
+            '<i class="fa-regular fa-square-plus"></i>',
+            [
+                'title' => 'Aggiungi',
+                'wire:click' => 'addItem',
+                'type' => 'button',
+                'class' => " text-center list-group-item list-group-item-action list-group-item-success"
+            ]
+        );
+    }
+
+    private function itemRender($num = null)
+    {
+        $prefix = $this->prefix . (!is_null($num) ? '.' . $num : '');
+        $wire = 'wireValues' . (!is_null($num) ? '.' . $num : '');
+        return (new $this->form)->model($this->model)->embedMode($prefix, $wire)->generate();
     }
 
     private function generate()
     {
+        $this->html = '';
         switch ($this->output) {
             case Field::EMBEDS_MANY:
                 $this->html .= collect($this->wireValues)->keys()->map(function ($num) {
-                    return '<div class="row">
-                                <div class="col-auto">|</div>
-                                <div class="col">' . $this->itemRender($num) . '</div>
-                                <div class="col-auto">Rimuovi</div>
-                            </div>';
+                    $html = '';
+                    $html .= (count($this->wireValues) > 1) ? $this->moveButton() : null;
+                    $html .= Html::div($this->itemRender($num), ['class' => 'col']);
+                    $html .= $this->removeButton($num);
+                    return (string) Html::div(Html::div($html, ['class' => 'row']), ['class' => 'list-group-item p-1']);
                 })->implode('');
                 $this->html .= $this->addButton();
                 break;
@@ -81,20 +127,19 @@ class FormEmbed extends Component
         }
     }
 
-    private function addButton()
-    {
-        return '<div>Aggiungi</div>';
-    }
-
-    private function itemRender($num = null)
-    {
-        $prefix = null;
-        $wire = 'wireValues' . !is_null($num) ? '.' . $num : '';
-        return (new $this->form)->model($this->model)->embedMode($prefix, $wire)->generate();
-    }
-
     public function render()
     {
-        return '<div>' . $this->html . '</div>';
+        $this->generate();
+        $param = [];
+        switch ($this->output) {
+            case Field::EMBEDS_MANY:
+                $param = ['class' => 'list-group'];
+                break;
+            case Field::EMBEDS_ONE:
+                $param = [];
+                break;
+        }
+
+        return '<div>' . Html::div($this->html, $param) . '</div>';
     }
 }

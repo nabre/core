@@ -99,7 +99,7 @@ trait Render
 
     private function fieldGenerate()
     {
-        return Field::generate($this->item);
+        return (string) Field::generate($this->item);
     }
 
     private function infoField()
