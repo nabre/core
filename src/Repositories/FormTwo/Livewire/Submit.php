@@ -9,8 +9,10 @@ trait Submit
     function submit()
     {
         $this->form();
-        $this->validateRules = $this->form->rules();
+        $success = $this->form->save($this->wireValues);
 
-        dd($this->wireValues, $this->validateRules);
+        if ($success) {
+        } else {
+        }
     }
 }

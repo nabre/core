@@ -119,7 +119,9 @@ class Form
         $rules = $rules->merge($elements->pluck($RULES_PATH, 'variable'));
 
         $elements = (new QueryElements($this->elements))->rulesAviable()->rulesOnlyEmbeds()->results();
-        $elements->each(function ($i) use (&$rules) {
+        $elements->each(function ($i) use (&$rules, $RULES_PATH) {
+            $rulesGeneral = data_get($i, $RULES_PATH);
+
             $prefix = data_get($i, 'embed.parent.variable');
             $output = data_get($i, 'embed.wire.output');
             switch ($output) {
@@ -127,23 +129,31 @@ class Form
                     $prefix .= '.*';
                     break;
             }
+
             $embedForm = data_get($i, 'embed.wire.form');
             $model = data_get($i, 'set.rel.model');
 
             $embedRules = $this->embedObject($embedForm, $model)->rules();
 
-            $add = collect($embedRules)->mapWithKeys(fn ($i,$k) => [$prefix . "." . $k=>$i])->toArray();
+            $add = collect($embedRules)->mapWithKeys(fn ($i, $k) => [$prefix . "." . $k => $i])->map(function ($i) use ($rulesGeneral) {
+                $rules=array_values(array_unique(array_merge($i, $rulesGeneral)));
+                if(count($rules)>1){
+                    $rules=collect($rules)->reject(fn($str)=>$str=='nullable')->values()->toArray();
+                }
+                sort($rules);
+                return $rules;
+            })->toArray();
             $rules = $rules->merge($add);
         });
 
-        return $rules->sort()->toArray();
+        return $rules->sortBy(fn ($r, $k) => $k)->toArray();
         //return $this->elements->pluck('value', 'variable')->toArray();
     }
 
-    public function save(?array $request = null)
+    public function save(array $request = [])
     {
         $this->check();
-        $this->request = $request ?? request();
+        $this->request = $request;
 
         $this->elements = $this->elements->filter(function ($i) {
             $type = data_get($i, 'type');

@@ -20,25 +20,26 @@ trait Storage
 
     private function storage()
     {
-        dd($this->request->all());
-        $rules = $this->elements->pluck('set.request.' . $this->method, 'variable')->toArray();
-        $validator = \Validator::make($this->request->all(), $rules);
+        $rules = $this->rules();
+        $validator = \Validator::make($this->request, $rules);
 
         if ($validator->fails()) {
+            $errors = $validator->errors();
+            session()->put('errors', $errors);
+            return false;
+
+            /*
             $destination = $this->formUrl();
             $response = redirect($destination);
 
             if (is_null($destination)) {
                 $response = $response->back();
             }
-
-            $errors=$validator->errors();
-            session()->put('errors',$errors);
-            throw new HttpResponseException($response);
+            throw new HttpResponseException($response);*/
+        } else {
+            $vars = $validator->validated();
+            $this->data->recursiveSave($vars);
         }
-
-        $vars = $validator->validated();
-        $this->data->recursiveSave($vars);
 
         return $this->data;
     }
