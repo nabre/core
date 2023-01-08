@@ -20,6 +20,7 @@ trait Storage
 
     private function storage()
     {
+        dd($this->request->all());
         $rules = $this->elements->pluck('set.request.' . $this->method, 'variable')->toArray();
         $validator = \Validator::make($this->request->all(), $rules);
 

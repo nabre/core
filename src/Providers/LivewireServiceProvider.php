@@ -9,6 +9,7 @@ use Nabre\Http\Livewire\FormEmbedsMany;
 use Nabre\Http\Livewire\TableRender;
 use Livewire;
 use Nabre\Http\Livewire\FormEmbed;
+use Nabre\Http\Livewire\FormManage;
 use Nabre\Http\Livewire\NavigationConsole;
 
 class LivewireServiceProvider extends ServiceProvider
@@ -18,6 +19,7 @@ class LivewireServiceProvider extends ServiceProvider
         //  parent::boot();
         Livewire::component('formembedsmany', FormEmbedsMany::class);
         Livewire::component('formembed',FormEmbed::class);
+        Livewire::component('form',FormManage::class);
         Livewire::component('databasedumprestore', DatabaseDumpRestore::class);
         Livewire::component('tablerender', TableRender::class);
         Livewire::component('navigationconsole', NavigationConsole::class);

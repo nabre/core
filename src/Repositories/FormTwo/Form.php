@@ -19,7 +19,6 @@ class Form
     use StructureRequest;
     use Output;
 
-
     private $model = null;
     private $data = null;
     private $collection;
@@ -27,32 +26,33 @@ class Form
     private $view = false;
     private $redirect = null;
 
-    private $prefix = null;
-    private $wire = false;
+    private $wire = null;
+
+    static function public($data, $back = null)
+    {
+        $model = get_class($data);
+        $idData = data_get($data, $data->getKeyName());
+        $formClass = get_called_class();
+        unset($data);
+        return livewire('form', get_defined_vars());
+    }
 
     function __construct($data = null)
     {
+        $this->input($data);
+        return $this;
+    }
+
+    function input($data)
+    {
         if (!is_null($data)) {
             if (is_string($data)) {
-                $this->model($data);
+                $this->model = $data;
             } else {
-                $this->data($data);
+                $this->data = $data;
             }
+            $this->check();
         }
-        return $this;
-    }
-
-    public function data(Model $data)
-    {
-        $this->data = $data;
-        $this->check();
-        return $this;
-    }
-
-    public function model(string $model)
-    {
-        $this->model = $model;
-        $this->check();
         return $this;
     }
 
@@ -63,32 +63,18 @@ class Form
         return $this;
     }
 
-    public function embedMode($prefix = null,  $wire = false)
+    public function embedMode($wire = null)
     {
         $this->elements = null;
         $this->check();
-        $this->add('_id', Field::HIDDEN)->insert();
+        $this->add($this->collection->getKeyName())->insert();
+        $this->checkErrors();
 
-        $this->prefix = $prefix;
         $this->wire = $wire;
 
         $this->back = false;
         $this->submit = false;
         $this->form = false;
-
-        $this->elements = $this->elements->map(function ($i) {
-            if ($this->wire !== false) {
-                $wire = $this->wire . "." . data_get($i, 'variable');
-                $this->setData($i, 'set.options.wire:model', $wire, true);
-            }
-
-            if (!is_null($this->prefix)) {
-                $variable = collect(explode('.', $this->prefix))->merge(collect(explode('.', data_get($i, 'variable'))))->implode('.');
-                $this->setData($i, 'variable', $variable, true);
-            }
-
-            return $i;
-        });
 
         return $this;
     }
@@ -121,6 +107,28 @@ class Form
         $this->valueAssign();
 
         return $this->elements->pluck('value', 'variable')->toArray();
+    }
+
+    public function rules()
+    {
+        $RULES_PATH = 'set.request.' . $this->method;
+        $this->check();
+
+        $rules = collect([]);
+        $elements = (new QueryElements($this->elements))->rulesAviable();
+
+        $rules = $rules->merge($elements->rulesExcludeEmbeds()->results()->pluck($RULES_PATH, 'variable'));
+
+        $elements->rulesOnlyEmbeds()->results()->each(function($i){
+            $embedForm = data_get($i, 'embed.wire.form');
+            $model= data_get($i, 'set.rel.model');
+            $embedRules=$this->embedObject($embedForm,$model)->rules();
+
+            dd($embedRules);
+        });
+
+        return $rules->toArray();
+        //return $this->elements->pluck('value', 'variable')->toArray();
     }
 
     public function save(?array $request = null)
@@ -171,6 +179,10 @@ class Form
         return $this;
     }
 
+    private function embedObject($embedForm,$data){
+        return (new $embedForm($data))->embedMode();
+    }
+
     private function valueAssign()
     {
         $this->elements = $this->elements->map(function ($i) {
@@ -182,9 +194,16 @@ class Form
                 if ($type == 'relation') {
                     switch (data_get($i, 'set.rel.type')) {
                         case "EmbedsMany":
+                            $embedForm = data_get($i, 'embed.wire.form');
+                            $value = [];
+                            $this->data->$name->each(function ($item) use (&$value, $embedForm) {
+                                $value[] = $this->embedObject($embedForm,$item)->values();
+                            });
+                            break;
                         case "EmbedsOne":
-                            $this->setData($i, 'set.embeds.modelKey', $this->data->{$this->data->getKeyName()} ?? null);
-                            $this->setData($i, 'set.embeds.variable', data_get($i, 'variable'));
+                            $embedForm = data_get($i, 'embed.wire.form');
+                            $item=$this->data->$name ?? data_get($i, 'set.rel.model');
+                            $value = $this->embedObject($embedForm,$item)->values();
                             break;
                     }
                 }

@@ -8,7 +8,7 @@ use Nabre\Repositories\FormTwo\Rule;
 
 trait Structure
 {
-    private $elements = null;
+    var $elements = null;
     private $item;
 
     function build()
@@ -24,6 +24,15 @@ trait Structure
     function listLabel($label = null, $overwrite = false)
     {
         $this->push(['set.list.label' => $label ?? 'id'], $overwrite);
+        return $this;
+    }
+
+    function listEmpty($name = null, $overwrite = false)
+    {
+        if (is_null($name)) {
+            $name = "-Seleziona-";
+        }
+        $this->push(['set.list.empty' => $name], $overwrite);
         return $this;
     }
 
@@ -103,7 +112,7 @@ trait Structure
             $find = $key;
             $set = $value;
         } else {
-            $set = (array)$this->getItemData($find);
+            $set = (array)data_get($target, $find, []);
             data_set($set, $var, $value, $overwrite);
             $overwrite = true;
         }
@@ -132,12 +141,6 @@ trait Structure
         $this->checkErrors();
 
         return $this;
-    }
-
-    private function checkErrors()
-    {
-        $this->errors();
-        $this->checkSubmitAviable();
     }
 
     private function rulesMessages()
@@ -197,19 +200,25 @@ trait Structure
     private function insert()
     {
         if (!is_null($this->item ?? null)) {
-            $this->variableCheck();
-            $this->rulesMessages();
+            if (!$this->checkDubble()) {
+                $this->variableCheck();
+                $this->rulesMessages();
 
-            $this->output();
-            $this->query();
-            $this->labelDefine();
+                $this->output();
+                $this->query();
+                $this->labelDefine();
 
-
-            $this->elements = $this->elements->push($this->item);
+                $this->elements = $this->elements->push($this->item);
+            }
             $this->item = null;
         }
 
         return $this;
+    }
+
+    private function checkDubble()
+    {
+        return in_array($this->getItemData('variable'), $this->elements->pluck('variable')->toArray());
     }
 
     private function query()
@@ -332,15 +341,6 @@ trait Structure
         $label = $this->getItemData('variable');
         $this->label($label);
 
-        return $this;
-    }
-
-    private function checkSubmitAviable()
-    {
-        if (!(new QueryElements($this->elements))->removeInexistents()->excludeWithErrors()->results()->count()) {
-            $this->submit = false;
-            $this->submitError = true;
-        }
         return $this;
     }
 }

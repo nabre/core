@@ -49,4 +49,23 @@ class QueryElements
 
         return $this;
     }
+
+    function rulesAviable()
+    {
+        return $this->removeInexistents()->excludeWithErrors();
+    }
+
+    function rulesOnlyEmbeds(){
+        $this->elements = $this->elements->filter(function ($i) {
+            return in_array(data_get($i,'output'),[Field::EMBEDS_MANY,Field::EMBEDS_ONE]);
+        })->values();
+        return $this;
+    }
+
+    function rulesExcludeEmbeds(){
+        $this->elements = $this->elements->reject(function ($i) {
+            return in_array(data_get($i,'output'),[Field::EMBEDS_MANY,Field::EMBEDS_ONE]);
+        })->values();
+        return $this;
+    }
 }

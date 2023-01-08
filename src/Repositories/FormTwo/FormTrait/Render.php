@@ -32,34 +32,10 @@ trait Render
 
     private function render()
     {
-        $url = $this->submitUrl();
-        $html = '';
-        $class = 'container';
-        $method = $this->method;
-        //  $html.=var_export(request());
-        $html .= $this->form? Form::open(compact(['url', 'method', 'class'])) . "\r\n":null;
-        $html .= $this->buttonBack() . "\r\n";
-
-        $html .= $this->fieldsOut();
-
-        $html .= $this->buttonSubmit() . "\r\n";
-        $html .= $this->form?Form::close():null;
-
-        if ($this->card) {
-            $title = (is_null($this->title ?? null) ? null : Html::div($this->title, ['class' => 'card-header']));
-            $body = Html::div($html, ['class' => 'card-body']);
-            return Html::div($title . $body, ['class' => 'card']);
-        }
-        session()->forget('errors');
-        return $html;
-    }
-
-    private function fieldsOut()
-    {
         return $this->elements->map(fn ($i) => $this->fieldItem($i))->implode('');
     }
 
-    private function fieldItem($i)
+    function fieldItem($i)
     {
         $this->item = $i;
         if (optional($this->getItemData('errors'))->count()) {
@@ -81,10 +57,11 @@ trait Render
 
     protected $firstItem = true;
 
-    private function itemHtml()
+    function itemHtml($item = null, $field = null)
     {
+        $this->item = $item ?? $this->item;
         $info = $this->infoField();
-        $field = $this->fieldGenerate();
+        $field = $field ?? $this->fieldGenerate();
         $first = $this->firstItem;
         if ($this->firstItem) {
             $this->firstItem = false;
@@ -99,6 +76,9 @@ trait Render
 
     private function fieldGenerate()
     {
+        $wire = implode(".", array_filter(['wireValues', $this->wire, $this->getItemData( 'variable')]));
+        $this->item['set']['options']['wire:model.defer']=$wire;
+        //$this->setItemData('set.options.wire:model.prevent', $wire, true);
         return (string) Field::generate($this->item);
     }
 
@@ -115,7 +95,7 @@ trait Render
         return (bool) (!$this->getItemData('type') || $this->getItemData('errors', collect([]))->count());
     }
 
-    private function buttonBack()
+    function buttonBack()
     {
         $url = $this->redirect['index'] ?? null;
         if (is_null($url)) {
@@ -128,7 +108,7 @@ trait Render
         return Html::a('<i class="fa-solid fa-angles-left"></i>', ['class' => 'btn btn-secondary', 'href' => $url]) . '<hr>';
     }
 
-    private function buttonSubmit()
+    function buttonSubmit()
     {
         if ($this->submitError) {
             return '<hr>' . Html::div('Il form non può essere inviato a causa di un errore di elaboraizone dei campi. Contattare l\'amministratore.', ['class' => "alert alert-danger"]);

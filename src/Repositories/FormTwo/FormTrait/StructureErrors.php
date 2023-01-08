@@ -8,6 +8,13 @@ use Nabre\Repositories\FormTwo\Rule;
 
 trait StructureErrors
 {
+
+    private function checkErrors()
+    {
+        $this->errors();
+        $this->checkSubmitAviable();
+    }
+
     private function errors()
     {
         $mode = strtolower(env('APP_ENV', 'production'));
@@ -74,5 +81,14 @@ trait StructureErrors
             }
             return $i;
         })->values();
+    }
+
+    private function checkSubmitAviable()
+    {
+        if (!(new QueryElements($this->elements))->removeInexistents()->excludeWithErrors()->results()->count() && $this->submit) {
+            $this->submit = false;
+            $this->submitError = true;
+        }
+        return $this;
     }
 }

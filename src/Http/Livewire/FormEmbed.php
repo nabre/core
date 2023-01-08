@@ -38,12 +38,11 @@ class FormEmbed extends Component
     function addItem()
     {
         $this->wireValues[] = $this->array();
-        $this->wireValues = array_values($this->wireValues);
     }
 
     function removeItem(int $id){
         unset($this->wireValues[$id]);
-        $this->wireValues = array_values(array_filter($this->wireValues));
+        $this->wireValues = array_values($this->wireValues);
     }
 
     private function values()
@@ -64,7 +63,7 @@ class FormEmbed extends Component
     private function array($data = null)
     {
         $data = $data ?? $this->model::make();
-        return (new $this->form)->data($data)->values();
+        return (new $this->form)->data($data)->embedMode()->values();
     }
 
     private function moveButton()
