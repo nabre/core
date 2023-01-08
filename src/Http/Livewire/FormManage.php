@@ -60,6 +60,7 @@ class FormManage extends Component
 
     public function render()
     {
-        return (string) Html::tag('form', $this->generate(), ['wire:submit.prevent' => 'submit', 'class' => 'container']);
+        $out = (string) Html::tag('form', $this->generate(), ['wire:submit.prevent' => 'submit', 'class' => 'container']);
+        return view('Nabre::livewire.form-manage',get_defined_vars());
     }
 }
