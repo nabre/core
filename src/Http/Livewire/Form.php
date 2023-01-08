@@ -115,28 +115,21 @@ class Form
         $this->check();
 
         $rules = collect([]);
-        $elements = (new QueryElements($this->elements))->rulesAviable()->rulesExcludeEmbeds()->results();
-        $rules = $rules->merge($elements->pluck($RULES_PATH, 'variable'));
+        $elements = (new QueryElements($this->elements))->rulesAviable();
 
-        $elements = (new QueryElements($this->elements))->rulesAviable()->rulesOnlyEmbeds()->results();
-        $elements->each(function ($i) use (&$rules) {
-            $prefix = data_get($i, 'embed.parent.variable');
-            $output = data_get($i, 'embed.wire.output');
-            switch ($output) {
-                case Field::EMBEDS_MANY:
-                    $prefix .= '.*';
-                    break;
-            }
+        $rules = $rules->merge($elements->rulesExcludeEmbeds()->results()->pluck($RULES_PATH, 'variable'));
+
+
+
+        $elements->rulesOnlyEmbeds()->results()->each(function($i)use(&$rules){
             $embedForm = data_get($i, 'embed.wire.form');
-            $model = data_get($i, 'set.rel.model');
+            $model= data_get($i, 'set.rel.model');
+            $embedRules=$this->embedObject($embedForm,$model)->rules();
 
-            $embedRules = $this->embedObject($embedForm, $model)->rules();
-
-            $add = collect($embedRules)->mapWithKeys(fn ($i,$k) => [$prefix . "." . $k=>$i])->toArray();
-            $rules = $rules->merge($add);
+            
         });
 
-        return $rules->sort()->toArray();
+        return $rules->unique()->sort()->values()->toArray();
         //return $this->elements->pluck('value', 'variable')->toArray();
     }
 
@@ -188,8 +181,7 @@ class Form
         return $this;
     }
 
-    private function embedObject($embedForm, $data)
-    {
+    private function embedObject($embedForm,$data){
         return (new $embedForm($data))->embedMode();
     }
 
@@ -207,13 +199,13 @@ class Form
                             $embedForm = data_get($i, 'embed.wire.form');
                             $value = [];
                             $this->data->$name->each(function ($item) use (&$value, $embedForm) {
-                                $value[] = $this->embedObject($embedForm, $item)->values();
+                                $value[] = $this->embedObject($embedForm,$item)->values();
                             });
                             break;
                         case "EmbedsOne":
                             $embedForm = data_get($i, 'embed.wire.form');
-                            $item = $this->data->$name ?? data_get($i, 'set.rel.model');
-                            $value = $this->embedObject($embedForm, $item)->values();
+                            $item=$this->data->$name ?? data_get($i, 'set.rel.model');
+                            $value = $this->embedObject($embedForm,$item)->values();
                             break;
                     }
                 }
