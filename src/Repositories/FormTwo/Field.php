@@ -209,7 +209,7 @@ class Field
                 ###
             case self::EMBEDS_ONE:
             case self::EMBEDS_MANY:
-                $embed=data_get($it,'embed');
+                $embed = data_get($it, 'embed');
                 $html = livewire('formembed', compact('embed'));
                 break;
                 ###
@@ -259,9 +259,9 @@ class Field
                 break;
                 ###
             default:
+                $html = 'non-definito<br>';
                 $output = self::HIDDEN;
             case self::HIDDEN:
-                $html='';
                 $value = (array)$value;
                 self::name($name);
                 switch (count($value)) {
