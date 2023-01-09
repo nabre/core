@@ -9,8 +9,10 @@ use Nabre\Http\Controllers\Auth\PasswordResetLinkController;
 use Nabre\Http\Controllers\Auth\RegisteredUserController;
 use Nabre\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use Nabre\Http\Livewire\Controller;
 
 Route::group(['middleware' => ['web']], function () {
+    Route::resource('live/live',Controller::class)->only(['index', 'create', 'edit', 'destroy']);
     Route::get('/', [\Nabre\Http\Controllers\PagesController::class,'welcome'])->name('welcome');
 
     Route::get('/change-language/{locale}', function ($locale) {

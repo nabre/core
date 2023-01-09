@@ -151,7 +151,12 @@ class Form
                 }
                 sort($rules);
                 return $rules;
-            })->toArray();
+            });
+
+
+            $add = $add->put(data_get($i, 'embed.parent.variable') , 'nullable');
+
+            $add = $add->toArray();
             $rules = $rules->merge($add);
         });
 

@@ -7,15 +7,9 @@ use Collective\Html\HtmlFacade as Html;
 use Collective\Html\FormFacade as Form;
 use Illuminate\Support\Str;
 use Nabre\Repositories\FormTwo\Field;
-use Nabre\Repositories\FormTwo\Livewire\Embed;
-use Nabre\Repositories\FormTwo\Livewire\Submit;
-use PhpParser\Node\Stmt\Break_;
 
 class FormManage extends Component
 {
-    use Embed;
-    use Submit;
-
     var $idData;
     var $model;
     var $formClass;
@@ -23,7 +17,6 @@ class FormManage extends Component
 
     var $print = [];
     var $wireValues = [];
-    private $validateRules = [];
 
     private $form;
     private $embedForm;
@@ -41,7 +34,6 @@ class FormManage extends Component
         return collect(data_get($i, 'set.info', []))->map(fn ($i) => (string) Html::div(data_get($i, 'text'), ['class' => 'badge text-bg-' . data_get($i, 'theme')]))->implode('<br>');
     }
 
-
     function rules()
     {
         return collect($this->form()->rules())->mapWithKeys(fn ($r, $k) => ['wireValues.' . $k => $r])->toArray();
@@ -50,8 +42,29 @@ class FormManage extends Component
     function submit()
     {
         $validatedData = $this->validate();
+       // dd($validatedData,$this->wireValues);
         $this->form()->save(data_get($validatedData,'wireValues'));
     }
+
+    function embedItRemove($param, $id)
+    {
+        $list=collect(data_get( $this->wireValues,$param,[]))->reject(fn($v,$k)=>$k==$id)->values()->toArray()??[];
+        data_set($this->wireValues,$param,$list);
+    }
+
+    function embedItAdd($param)
+    {
+        $list=collect(data_get( $this->wireValues,$param,[]))->push($this->embedArray($param))->values()->toArray();
+        data_set($this->wireValues,$param,$list);
+    }
+
+    private function embedArray($param)
+    {
+        return [];
+        //   $data = $data ?? $this->model::make();
+        //  return (new $this->form)->data($data)->embedMode()->values();
+    }
+
 
     private function print()
     {
