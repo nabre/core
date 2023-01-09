@@ -57,53 +57,58 @@ trait RecursiveSaveTrait
 
     function recursiveSave(array $data, $syncBool = true, $saveQuietly = false)
     {
-        $keyName = $this->getKeyName();
+        //$keyName = $this->getKeyName();
 
         $relations = $this->definedRelations();
-        $relations->whereIn('name', array_keys($data))->map(fn ($i) => data_set($i, 'value', data_get($data, data_get($i, 'name'))))->each(function ($rel) use ($syncBool) {
-            $name = data_get($rel, 'name');
-            $type = data_get($rel, 'type');
-            $model = data_get($rel, 'model');
-            $collection = new $model;
-            $data = data_get($rel, 'data');
+        $items = $relations->whereIn('name', array_keys($data));
+        if ($items->count()) {
+            $this->makeSave(true);
+        }
+        $items->map(fn ($i) => data_set($i, 'value', data_get($data, data_get($i, 'name'))))
+            ->each(function ($rel) use ($syncBool, $saveQuietly) {
+                $name = data_get($rel, 'name');
+                $type = data_get($rel, 'type');
+                $model = data_get($rel, 'model');
+                $collection = new $model;
+                $data = data_get($rel, 'value');
 
-            $instance = $model::whereIn('_id', (array) $data)->get();
-            $cont = $this->$name();
+                $instance = $model::whereIn('_id', (array) $data)->get();
+                $cont = $this->$name();
 
-            switch ($type) {
-                case 'BelongsTo':
-                    $cont->dissociate();
-                    $cont->associate(data_get($instance->first(), $collection->getKeyName()));
-                    break;
-                case 'BelongsToMany':
-                    $cont->sync($instance->modelKeys(), $syncBool);
-                    break;
-                case 'HasOne':
-                    $fk = data_get($rel, 'foreignKey');
-                    $pk = data_get($rel, 'ownerKey');
-                    $instance = $instance->first();
-                    if (data_get($model, $pk) != data_get($instance, $fk)) {
-                        $instance->unset($fk);
+                switch ($type) {
+                    case 'BelongsTo':
+                        $cont->dissociate();
+                        $cont->associate(data_get($instance->first(), $collection->getKeyName()));
+                        break;
+                    case 'BelongsToMany':
+                        $cont->sync($instance->modelKeys(), $syncBool);
+                        break;
+                    case 'HasOne':
+                        $fk = data_get($rel, 'foreignKey');
+                        $cont->unset($fk);
+                        $instance = $instance->first();
                         if (!is_null($instance)) {
                             $cont->save($instance);
                         }
-                    }
-                    break;
-                case 'HasMany':
-                    $fk = data_get($rel, 'foreignKey');
-                    foreach ($cont as $a) {
-                        $a->unset($fk);
-                    }
-                    $cont->saveMany($instance);
-                    break;
-                case 'EmbedsOne':
+                        break;
+                    case 'HasMany':
+                        $fk = data_get($rel, 'foreignKey');
+                        foreach ($cont as $a) {
+                            $a->unset($fk);
+                        }
+                        $cont->saveMany($instance);
+                        break;
+                    case 'EmbedsOne':
+                        if (is_null($embedModel = $this->$name)) {
+                            $embedModel = $cont->create();
+                        }
+                        $embedModel->recursiveSave($data, $syncBool, $saveQuietly);
+                        break;
+                    case 'EmbedsMany':
 
-                    break;
-                case 'EmbedsMany':
-
-                    break;
-            }
-        });
+                        break;
+                }
+            });
 
         $data = collect($data)
             ->reject(fn ($v, $k) => in_array($k, $relations->pluck('name')->toArray()))
@@ -132,11 +137,7 @@ trait RecursiveSaveTrait
 
         $this->fill($data);
 
-        if ($saveQuietly) {
-            $this->saveQuietly();
-        } else {
-            $this->save();
-        }
+        $this->makeSave($saveQuietly);
 
         return $this;
 
@@ -285,6 +286,15 @@ trait RecursiveSaveTrait
         } else {
             $model->save();
         }*/
+    }
+
+    function makeSave($saveQuietly)
+    {
+        if ($saveQuietly) {
+            $this->saveQuietly();
+        } else {
+            $this->save();
+        }
     }
 
     protected function findData($data, array $find)

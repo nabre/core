@@ -214,7 +214,19 @@ class Form
                 $value = $this->data->readValue($name);
 
                 if ($type == 'relation') {
-                    switch (data_get($i, 'set.rel.type')) {
+                    $relType = data_get($i, 'set.rel.type');
+                    if (is_null($value)) {
+                        switch ($relType) {
+                            case "HasOne":
+                            case "BelongsTo":
+                                if (is_null(data_get($i, 'set.list.empty'))) {
+                                    $value = collect(data_get($i, 'set.list.items', []))->keys()->first();
+                                }
+                                break;
+                        }
+                    }
+
+                    switch ($relType) {
                         case "EmbedsMany":
                             $embedForm = data_get($i, 'embed.wire.form');
                             $value = [];

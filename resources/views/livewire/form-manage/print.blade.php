@@ -16,6 +16,7 @@
 
         @php
             if(!is_null($_num??null)){
+                //preg_replace('/\*/', $_num, $_i['set']['options']['wire:model.defer'], 1);
                 $_i['set']['options']['wire:model.defer']=str_replace('*',$_num,$_i['set']['options']['wire:model.defer']);
             }
         @endphp

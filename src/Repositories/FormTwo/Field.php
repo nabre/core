@@ -94,7 +94,7 @@ class Field
         $value = data_get($it, 'value');
         $output = data_get($it, 'output');
         $list = collect(data_get($it, 'set.list.items', []));
-        $empty = data_get($it, 'set.list.empty',);
+        $empty = data_get($it, 'set.list.empty');
         $disabled = data_get($it, 'set.list.disabled', []);
         $options = data_get($it, 'set.options', []);
         $name = $options['wire:model.defer']??null;
@@ -203,7 +203,7 @@ class Field
                         $options[] = 'disabled';
                     }
                     //    $bool = in_array($k, $value);
-                    $html = '<div class="form-check">' . Form::checkbox(null, $k, null, $options) . " " . Form::label(data_get($options, 'id'), $v, ['class' => "form-check-label"]) . '</div>';
+                    $html = '<div class="form-check">' . Form::checkbox('', $k, null, $options) . " " . Form::label(data_get($options, 'id'), $v, ['class' => "form-check-label"]) . '</div>';
                     return compact('html');
                 })->implode('html');
                 break;
