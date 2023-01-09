@@ -9,7 +9,7 @@ use Collective\Html\FormFacade as Form;
 trait Embed
 {
 
-    static $findEmbed='{{[!embed-content]!}}';
+    static $findEmbed = '{{[!embed-content]!}}';
 
     function embedItRemove($param, $id)
     {
@@ -29,13 +29,7 @@ trait Embed
         //  return (new $this->form)->data($data)->embedMode()->values();
     }
 
-    private function htmlEmbedItem($item, $field = null)
-    {
-        $field=$field??self::$findEmbed;
-        return (string) $this->form->itemHtml($item, $field);
-    }
-
-    private function embedRenderItem($item)
+    function embedRenderItem($item)
     {
         $form = data_get($item, 'embed.wire.form');
         $model = data_get($item, 'embed.wire.model');
@@ -62,17 +56,17 @@ trait Embed
                 $html = $this->generateEmbedItem($form, $model, $parentVar);
                 break;
         }
-
+        $this->embedForm =null;
         return (string) $html;
     }
 
-    private function embedButtonMove()
+    function embedButtonMove()
     {
         $btn = Html::div('<i class="fa-solid fa-grip-vertical"></i>', ['class' => 'btn btn-dark btn-sm h-100']);
         return Html::div($btn, ['class' => 'col-auto']);
     }
 
-    private function embedButtonRemove(string $param, int $num)
+    function embedButtonRemove(string $param, int $num)
     {
         $btn = Html::div(
             '<i class="fa-solid fa-trash-can"></i>',
@@ -85,7 +79,7 @@ trait Embed
         return Html::div($btn, ['class' => 'col-auto']);
     }
 
-    private function embedButtonAdd($param)
+    function embedButtonAdd($param)
     {
         return Html::tag(
             'button',
@@ -97,10 +91,5 @@ trait Embed
                 'class' => " text-center list-group-item list-group-item-action list-group-item-success"
             ]
         );
-    }
-
-    private function generateEmbedItem($form, $model, $wire)
-    {
-        return (new $form($model))->embedMode($wire)->generate();
     }
 }

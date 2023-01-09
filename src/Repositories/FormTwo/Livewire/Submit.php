@@ -3,16 +3,9 @@
 namespace Nabre\Repositories\FormTwo\Livewire;
 
 use Nabre\Repositories\FormTwo\Field;
+use Illuminate\Support\Facades\Validator;
 
 trait Submit
 {
-    function submit()
-    {
-        $this->form();
-        $success = $this->form->save($this->wireValues);
 
-        if ($success) {
-        } else {
-        }
-    }
 }

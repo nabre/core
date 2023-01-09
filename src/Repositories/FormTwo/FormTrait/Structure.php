@@ -208,6 +208,11 @@ trait Structure
                 $this->query();
                 $this->labelDefine();
 
+                $wire = implode(".", array_filter(['wireValues', $this->wire, data_get($this->item, 'variable')]));
+                $this->item['set']['options']['wire:model.defer'] = $wire;
+
+                $this->setItemData('set.info',$this->getItemData('set.info',collect([]))->toArray());
+
                 $this->elements = $this->elements->push($this->item);
             }
             $this->item = null;
@@ -249,7 +254,7 @@ trait Structure
         if (!$this->getItemData('set.list.sort')) {
             $fnSort .= 'Desc';
         }
-        $items = $items->pluck($label, $model->getKeyName())->$fnSort($label);
+        $items = $items->pluck($label, $model->getKeyName())->$fnSort($label)->toArray();
         $this->setItemData('set.list.items', $items);
 
         return $this;

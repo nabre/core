@@ -90,22 +90,23 @@ class Field
         }
 
         $html = '';
-        //  $name = data_get($it, 'variable');
+
         $value = data_get($it, 'value');
         $output = data_get($it, 'output');
-        $list = data_get($it, 'set.list.items', collect([]));
+        $list = collect(data_get($it, 'set.list.items', []));
         $empty = data_get($it, 'set.list.empty',);
         $disabled = data_get($it, 'set.list.disabled', []);
         $options = data_get($it, 'set.options', []);
-        $errors = session()->get('errors');
-        /*
+        $name = $options['wire:model.defer']??null;
+        $errors = data_get($it, 'errors_print', null);
+
         if (!is_null($errors)) {
-            if ($errors->has($name)) {
+            if ($errors) {
                 self::classAdd($options['class'], 'is-invalid');
             } else {
                 self::classAdd($options['class'], 'is-valid');
             }
-        }*/
+        }
 
         switch ($output) {
                 ###
@@ -284,11 +285,11 @@ class Field
         if (!is_null($errors)) {
             $id = data_get($options, 'id', data_get($it, 'variable'));
             $id .= "Feedback";
-            /*  if ($errors->has($name)) {
+            if ($errors) {
                 $mode = 'invalid';
-                $msg = $errors->first($name);
+                $msg = collect($errors)->implode('<br>');
                 $html .= '<div id="' . $id . '" class="' . $mode . '-feedback">' . $msg . '</div>';
-            }*/
+            }
         }
 
 

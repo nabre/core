@@ -12,12 +12,13 @@ use Nabre\Repositories\FormTwo\FormTrait\StructureRequest;
 
 class Form
 {
-    use Render;
+
     use Storage;
     use Structure;
     use StructureErrors;
     use StructureRequest;
     use Output;
+    use Render;
 
     private $model = null;
     private $data = null;
@@ -71,6 +72,14 @@ class Form
         $this->checkErrors();
 
         $this->wire = $wire;
+
+        $this->elements = $this->elements->map(function ($i) {
+            $wire = implode(".", array_filter(['wireValues', $this->wire, data_get($i, 'variable')]));
+            $i['set']['options']['wire:model.defer'] = $wire;
+
+            return $i;
+        });
+
 
         $this->back = false;
         $this->submit = false;
@@ -136,9 +145,9 @@ class Form
             $embedRules = $this->embedObject($embedForm, $model)->rules();
 
             $add = collect($embedRules)->mapWithKeys(fn ($i, $k) => [$prefix . "." . $k => $i])->map(function ($i) use ($rulesGeneral) {
-                $rules=array_values(array_unique(array_merge($i, $rulesGeneral)));
-                if(count($rules)>1){
-                    $rules=collect($rules)->reject(fn($str)=>$str=='nullable')->values()->toArray();
+                $rules = array_values(array_unique(array_merge($i, $rulesGeneral)));
+                if (count($rules) > 1) {
+                    $rules = collect($rules)->reject(fn ($str) => $str == 'nullable')->values()->toArray();
                 }
                 sort($rules);
                 return $rules;
@@ -152,15 +161,8 @@ class Form
 
     public function save(array $request = [])
     {
-        $this->check();
-        $this->request = $request;
-
-        $this->elements = $this->elements->filter(function ($i) {
-            $type = data_get($i, 'type');
-            return $type && $type != 'fake';
-        });
-
-        return $this->storage();
+        $this->data->recursiveSave($request);
+        return $this->data;
     }
 
     private function check()

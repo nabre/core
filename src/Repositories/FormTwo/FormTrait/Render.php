@@ -78,7 +78,7 @@ trait Render
     {
         $wire = implode(".", array_filter(['wireValues', $this->wire, $this->getItemData( 'variable')]));
         $this->item['set']['options']['wire:model.defer']=$wire;
-        //$this->setItemData('set.options.wire:model.prevent', $wire, true);
+        //$this->setItemData('variable',$name);
         return (string) Field::generate($this->item);
     }
 

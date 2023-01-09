@@ -57,17 +57,64 @@ trait RecursiveSaveTrait
 
     function recursiveSave(array $data, $btmSync = true, $saveQuietly = false)
     {
-        $model = $this;
+        $keyName = $this->getKeyName();
 
-        #carica model contronto getKeyName()
-        $keyName = $model->getKeyName();
-        if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
-            $class = get_class($model);
-            $model = $class::firstOrNew($data[$keyName]);
+        $relations = $this->definedRelations();
+        $relations->whereIn('name', array_keys($data))->map(fn ($i) => data_set($i, 'value', data_get($data, data_get($i, 'name'))))->each(function ($rel) {
+            $type = data_get($rel, 'type');
+            switch ($type) {
+                case 'BelongsTo':
+                    break;
+                case 'BelongsToMany':
+                    break;
+                case 'HasOne':
+                    break;
+                case 'HasMany':
+                    break;
+            }
+        });
+
+        $data = collect($data)->reject(fn ($v, $k) => in_array($k, $relations->pluck('name')->toArray()))->map(function ($val, $key) {
+            $type = data_get($this->casts, $key);
+            switch ($type) {
+                case "array":
+                    $val = array_values(array_filter((array)$val, 'strlen'));
+                    break;
+                case "boolean":
+                    $val = (bool)$val;
+                    break;
+                case "integer":
+                    $val = (int)$val;
+                    break;
+                case "object":
+                    $val = (object)$val;
+                    break;
+                case "string":
+                    $val = (string)$val;
+                    break;
+            }
+            return $val;
+        })->toArray();
+
+        $this->fill($data);
+
+        if ($saveQuietly) {
+            $this->saveQuietly();
+        } else {
+            $this->save();
         }
 
+        return $this;
+
+        #carica model contronto getKeyName()
+
+        /*  if (($model->$keyName ?? null) != ($data[$keyName] ?? null) && !is_null($data[$keyName] ?? null)) {
+            $class = get_class($model);
+            $model = $class::firstOrNew($data[$keyName]);
+        }*/
+        /*
         if(is_null(data_get($model,'id'))){
-        //    $model->saveQuietly();
+            $model->saveQuietly();
         }
 
         $data = collect(array_undot($data));
@@ -83,7 +130,7 @@ trait RecursiveSaveTrait
                 $model->save();
             }
         }
-        
+
         foreach ($dataSave as $name => $value) {
             $rel = $model->reletionshipFind($name);
             $modelRel = $rel->model;
@@ -147,7 +194,7 @@ trait RecursiveSaveTrait
                         if (is_null($dbItem)) {
                             $dbItem = $asso->create();
                         }
-                        $dbItem->recursiveSave((array)$value);
+                     //   $dbItem->recursiveSave((array)$value);
                     }
                     break;
                 case "EmbedsMany":
@@ -203,9 +250,7 @@ trait RecursiveSaveTrait
             $model->saveQuietly();
         } else {
             $model->save();
-        }
-
-        return $model;
+        }*/
     }
 
     protected function findData($data, array $find)

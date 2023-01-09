@@ -8,13 +8,12 @@ use Collective\Html\FormFacade as Form;
 use Illuminate\Support\Str;
 use Nabre\Repositories\FormTwo\Field;
 use Nabre\Repositories\FormTwo\Livewire\Embed;
-use Nabre\Repositories\FormTwo\Livewire\Render;
 use Nabre\Repositories\FormTwo\Livewire\Submit;
+use PhpParser\Node\Stmt\Break_;
 
 class FormManage extends Component
 {
     use Embed;
-    use Render;
     use Submit;
 
     var $idData;
@@ -27,40 +26,88 @@ class FormManage extends Component
     private $validateRules = [];
 
     private $form;
-
+    private $embedForm;
     function mount()
     {
-        $this->form();
-
-        $this->wireValues = $this->form->values();
-
-        $this->print[] = $this->form->buttonBack();
-        $this->form->elements->each(function ($item) {
-            switch (data_get($item, 'output')) {
-                case Field::EMBEDS_MANY:
-                    data_set($item, 'html', $this->htmlEmbedItem($item));
-                    $this->print[] = $item;
-                    break;
-                case Field::EMBEDS_ONE:
-                    $this->print[] = $this->htmlEmbedItem($item, $this->embedRenderItem($item));
-                    break;
-                default:
-                    $this->print[] = $this->htmlDefaultItem($item);
-                    break;
-            }
-        });
-        $this->print[] = $this->form->buttonSubmit();
+        $this->wireValues = $this->form()->values();
+        $this->print();
     }
 
-    private function form()
+    function info($i)
     {
-        $data = $this->model::find($this->idData) ?? $this->model::make();
-        $this->form = (new $this->formClass)->redirect(['index' => $this->back])->input($data);
+        if ($this->haveError($i)) {
+            return;
+        }
+        return collect(data_get($i, 'set.info', []))->map(fn ($i) => (string) Html::div(data_get($i, 'text'), ['class' => 'badge text-bg-' . data_get($i, 'theme')]))->implode('<br>');
+    }
+
+
+    function rules()
+    {
+        return collect($this->form()->rules())->mapWithKeys(fn ($r, $k) => ['wireValues.' . $k => $r])->toArray();
+    }
+
+    function submit()
+    {
+        $validatedData = $this->validate();
+        $this->form()->save(data_get($validatedData,'wireValues'));
+    }
+
+    private function print()
+    {
+        $this->print = collect([]);
+        $this->print = $this->print->merge($this->form()->buttonBack());
+        $this->print = $this->print->merge($this->recursivePrint());
+        $this->print = $this->print->merge($this->form()->buttonSubmit());
+    }
+
+    function htmlItem($item, $field = null)
+    {
+        return (string) $this->form()->itemHtml($item, $field);
     }
 
     public function render()
     {
-        $out = (string) Html::tag('form', $this->generate(), ['wire:submit.prevent' => 'submit', 'class' => 'container']);
-        return view('Nabre::livewire.form-manage',get_defined_vars());
+        return view('Nabre::livewire.form-manage.index');
+    }
+
+    private function haveError($i)
+    {
+        return (bool) (!data_get($i, 'type') || data_get($i, 'errors', collect([]))->count());
+    }
+
+    private function recursivePrint($elements = null)
+    {
+        $elements = $elements ?? $this->form()->elements;
+
+        $elements = $elements->map(function ($i) {
+            $this->embedForm = null;
+            switch (data_get($i, 'output')) {
+                case Field::EMBEDS_MANY:
+                    $wire = '.*';
+                case Field::EMBEDS_ONE:
+                    $wire = data_get($i, 'embed.parent.variable') . ($wire ?? null);
+                    $form = data_get($i, 'embed.wire.form');
+                    $model = data_get($i, 'embed.wire.model');
+                    $add = $this->generateEmbedItem($form, $model, $wire)->elements;
+                    data_set($i, 'embed.wire.elements', $add);
+                    break;
+            }
+            return $i;
+        });
+
+        return $elements;
+    }
+
+    private function form()
+    {
+        $this->form = $this->form ?? (new $this->formClass)->redirect(['index' => $this->back])->input($this->model::find($this->idData) ?? $this->model::make());
+        return $this->form;
+    }
+
+    private function generateEmbedItem($form, $model, $wire)
+    {
+        $this->embedForm = $this->embedForm ?? (new $form($model))->embedMode($wire);
+        return $this->embedForm;
     }
 }
