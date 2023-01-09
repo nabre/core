@@ -32,7 +32,7 @@ class CollectionField extends Model
     function getRelationAttribute()
     {
         $class = optional($this->coll)->class;
-        return (new $class)->reletionshipFind($this->name);
+        return (new $class)->relationshipFind($this->name);
     }
 
     function getIsRelationAttribute()
@@ -45,7 +45,7 @@ class CollectionField extends Model
         $class = $this->coll->class;
         $model = new $class;
 
-        if (!is_null($model->reletionshipFind($this->name))) {
+        if (!is_null($model->relationshipFind($this->name))) {
             return 'relation';
         } else
         if (in_array($this->name, $model->attributesList())) {

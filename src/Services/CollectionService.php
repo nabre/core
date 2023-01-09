@@ -49,7 +49,7 @@ class CollectionService
 
             $items->skip(1)->reverse()->each(function ($name) use (&$collection) {
                 if (!is_null($collection)) {
-                    $class = optional($collection->reletionshipFind($name))->model;
+                    $class = optional($collection->relationshipFind($name))->model;
                     $collection = is_null($class) ? null : new $class;
                 }
             });

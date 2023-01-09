@@ -143,7 +143,7 @@ class NavigationConsole extends Component
                 }
             });
 
-            $class = optional((new $class)->reletionshipFind($fn))->model;
+            $class = optional((new $class)->relationshipFind($fn))->model;
             if (!is_null($class)) {
                 $this->array[$class] = $this->arrayFindOrCreate($class)->whereIn('id', $current->pluck('id')->toArray())->values();
                 if ($with) {

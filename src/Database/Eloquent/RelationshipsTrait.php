@@ -58,7 +58,7 @@ trait RelationshipsTrait
         })->filter()->sortBy("name")->values();
     }
 
-    function reletionshipFind(string $name)
+    function relationshipFind(string $name)
     {
         return $this->definedRelations()->where('name', $name)->first();
     }

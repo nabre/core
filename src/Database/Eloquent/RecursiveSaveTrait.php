@@ -12,7 +12,7 @@ trait RecursiveSaveTrait
             if (!is_null($value)) {
                 if (in_array($v, $this->getFillable())) {
                     $value = $value->getRawOriginal($v);
-                } elseif (!is_null($rel = $this->reletionshipFind($v))) {
+                } elseif (!is_null($rel = $this->relationshipFind($v))) {
                     $value = $value->$v;
                     switch ($rel->type) {
                         case "BelongsTo":
@@ -55,46 +55,80 @@ trait RecursiveSaveTrait
         return $this->recursiveSave($data, $btmSync, true);
     }
 
-    function recursiveSave(array $data, $btmSync = true, $saveQuietly = false)
+    function recursiveSave(array $data, $syncBool = true, $saveQuietly = false)
     {
         $keyName = $this->getKeyName();
 
         $relations = $this->definedRelations();
-        $relations->whereIn('name', array_keys($data))->map(fn ($i) => data_set($i, 'value', data_get($data, data_get($i, 'name'))))->each(function ($rel) {
+        $relations->whereIn('name', array_keys($data))->map(fn ($i) => data_set($i, 'value', data_get($data, data_get($i, 'name'))))->each(function ($rel) use ($syncBool) {
+            $name = data_get($rel, 'name');
             $type = data_get($rel, 'type');
+            $model = data_get($rel, 'model');
+            $collection = new $model;
+            $data = data_get($rel, 'data');
+
+            $instance = $model::whereIn('_id', (array) $data)->get();
+            $cont = $this->$name();
+
             switch ($type) {
                 case 'BelongsTo':
+                    $cont->dissociate();
+                    $cont->associate(data_get($instance->first(), $collection->getKeyName()));
                     break;
                 case 'BelongsToMany':
+                    $cont->sync($instance->modelKeys(), $syncBool);
                     break;
                 case 'HasOne':
+                    $fk = data_get($rel, 'foreignKey');
+                    $pk = data_get($rel, 'ownerKey');
+                    $instance = $instance->first();
+                    if (data_get($model, $pk) != data_get($instance, $fk)) {
+                        $instance->unset($fk);
+                        if (!is_null($instance)) {
+                            $cont->save($instance);
+                        }
+                    }
                     break;
                 case 'HasMany':
+                    $fk = data_get($rel, 'foreignKey');
+                    foreach ($cont as $a) {
+                        $a->unset($fk);
+                    }
+                    $cont->saveMany($instance);
+                    break;
+                case 'EmbedsOne':
+
+                    break;
+                case 'EmbedsMany':
+
                     break;
             }
         });
 
-        $data = collect($data)->reject(fn ($v, $k) => in_array($k, $relations->pluck('name')->toArray()))->map(function ($val, $key) {
-            $type = data_get($this->casts, $key);
-            switch ($type) {
-                case "array":
-                    $val = array_values(array_filter((array)$val, 'strlen'));
-                    break;
-                case "boolean":
-                    $val = (bool)$val;
-                    break;
-                case "integer":
-                    $val = (int)$val;
-                    break;
-                case "object":
-                    $val = (object)$val;
-                    break;
-                case "string":
-                    $val = (string)$val;
-                    break;
-            }
-            return $val;
-        })->toArray();
+        $data = collect($data)
+            ->reject(fn ($v, $k) => in_array($k, $relations->pluck('name')->toArray()))
+            ->reject(fn ($v, $k) => in_array($k, $this->attributesList()))
+            ->map(function ($val, $key) {
+                $type = data_get($this->casts, $key);
+                switch ($type) {
+                    case "array":
+                        $val = array_values(array_filter((array)$val, 'strlen'));
+                        break;
+                    case "boolean":
+                        $val = (bool)$val;
+                        break;
+                    case "integer":
+                        $val = (int)$val;
+                        break;
+                    case "object":
+                        $val = (object)$val;
+                        break;
+                    case "string":
+                        $val = (string)$val;
+                        break;
+                }
+                return $val;
+            })->toArray();
 
         $this->fill($data);
 
@@ -132,7 +166,7 @@ trait RecursiveSaveTrait
         }
 
         foreach ($dataSave as $name => $value) {
-            $rel = $model->reletionshipFind($name);
+            $rel = $model->relationshipFind($name);
             $modelRel = $rel->model;
             if (in_array($rel->type, ["EmbedsMany", "EmbedsOne"])) {
             } else

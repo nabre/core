@@ -147,7 +147,7 @@ class Structure
 
     private function isRelation($v, &$model, &$rel)
     {
-        $rel = $model->reletionshipFind($v);
+        $rel = $model->relationshipFind($v);
 
         #Conrollo bolonstTo,HasOne
 
