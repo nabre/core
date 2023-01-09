@@ -8,9 +8,11 @@ use Nabre\Repositories\FormTwo\Field;
 
 trait Render
 {
-    private $back = true;
     private $submit = true;
     private $submitError = false;
+
+
+    private $back = true;
     private $card = false;
     private $form = true;
 
@@ -108,15 +110,4 @@ trait Render
         return Html::a('<i class="fa-solid fa-angles-left"></i>', ['class' => 'btn btn-secondary', 'href' => $url]) . '<hr>';
     }
 
-    function buttonSubmit()
-    {
-        if ($this->submitError) {
-            return '<hr>' . Html::div('Il form non può essere inviato a causa di un errore di elaboraizone dei campi. Contattare l\'amministratore.', ['class' => "alert alert-danger"]);
-        }
-
-        if (!$this->submit) {
-            return;
-        }
-        return '<hr>' . Html::btn('<i class="fa-regular fa-floppy-disk"></i>', ['class' => 'btn btn-info', 'type' => 'submit']);
-    }
 }

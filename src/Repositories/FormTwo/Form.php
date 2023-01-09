@@ -29,7 +29,7 @@ class Form
 
     private $wire = null;
 
-    static function public($data, $back = null)
+    static function public($data)
     {
         $model = get_class($data);
         $idData = data_get($data, $data->getKeyName());

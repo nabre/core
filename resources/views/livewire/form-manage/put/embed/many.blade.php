@@ -12,7 +12,7 @@
             <li class="list-group-item">
                 <div class="row">
                     <div class="col-auto">MOVE</div>
-                    <div class="col">@include('Nabre::livewire.form-manage.embed.one')</div>
+                    <div class="col">@include('Nabre::livewire.form-manage.put.embed.one')</div>
                     <div class="col-auto">
                         <button type="button" class="btn btn-danger btn-sm h-100" title="Elimina"
                             wire:click="embedItRemove('{{ $_embedStr }}',{{ $_num }})">

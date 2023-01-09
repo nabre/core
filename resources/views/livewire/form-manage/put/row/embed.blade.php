@@ -5,11 +5,11 @@
     <div class="col">
         @switch(data_get($_i,'output'))
             @case(\Nabre\Repositories\FormTwo\Field::EMBEDS_MANY)
-                @include('Nabre::livewire.form-manage.embed.many')
+                @include('Nabre::livewire.form-manage.put.embed.many')
             @break
 
             @case(\Nabre\Repositories\FormTwo\Field::EMBEDS_ONE)
-                @include('Nabre::livewire.form-manage.embed.one')
+                @include('Nabre::livewire.form-manage.put.embed.one')
             @break
         @endswitch
     </div>

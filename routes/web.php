@@ -1,5 +1,6 @@
 <?php
 
+
 use Nabre\Http\Controllers\Auth\AuthenticatedSessionController;
 use Nabre\Http\Controllers\Auth\ConfirmablePasswordController;
 use Nabre\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -9,11 +10,11 @@ use Nabre\Http\Controllers\Auth\PasswordResetLinkController;
 use Nabre\Http\Controllers\Auth\RegisteredUserController;
 use Nabre\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
-use Nabre\Http\Livewire\Controller;
 
 Route::group(['middleware' => ['web']], function () {
-    Route::resource('live/live',Controller::class)->only(['index', 'create', 'edit', 'destroy']);
-    Route::get('/', [\Nabre\Http\Controllers\PagesController::class,'welcome'])->name('welcome');
+
+
+    Route::get('/', [\Nabre\Http\Controllers\PagesController::class, 'welcome'])->name('welcome');
 
     Route::get('/change-language/{locale}', function ($locale) {
         $array = array_unique(array_merge(array_values((array) config('app.available_locales')), (array)  config('app.locale'), (array) config('app.fallback_locale')));
