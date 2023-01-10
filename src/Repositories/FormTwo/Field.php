@@ -238,11 +238,11 @@ class Field
                 $html = data_get($value, 'html');
                 break;
             case self::STATIC:
-                if (!is_null($list ?? null) && optional($list)->count()) {
+              /*  if (!is_null($list ?? null) && optional($list)->count()) {
                     $value = collect((array)$value)->map(function ($v) use ($list) {
                         return data_get($list, $v) ?? null;
                     })->unique()->values()->toArray();
-                }
+                }*/
 
                 $html = self::valuePrint($value);
                 break;
@@ -296,7 +296,7 @@ class Field
             $content=collect($value)->map(function($value){
                 return (string)Html::div(self::valuePrint($value),['class'=>'list-group-item p-1']);
             })->implode('');
-            $value = Html::div($content,['class'=>'list-group']);
+            $value = empty($content)?null:Html::div($content,['class'=>'list-group']);
         }
 
         return $value;

@@ -3,7 +3,7 @@
         {{ data_get($_i, 'label') }}:
     </div>
     <div class="col">
-        @include('Nabre::livewire.form-manage.put.item')
+        @include('Nabre::livewire.form-manage.item')
     </div>
     <div class="col-md-3 pt-1">
         {!! $this->info($_i) !!}

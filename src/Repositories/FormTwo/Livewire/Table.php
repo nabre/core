@@ -12,7 +12,7 @@ trait Table
         $this->modelKey = (new $this->model)->getKeyName();
         $this->cols=$this->form()->elements->toArray();
         $this->itemsTable = $this->query()->map(function ($data) {
-            $item = (new $this->formClass)->input($data)->values();
+            $item = (new $this->formClass)->input($data)->valuesHtml();
             data_set($item, $this->modelKey, data_get($data, $this->modelKey));
             return $item;
         })->toArray();

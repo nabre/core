@@ -1,5 +1,5 @@
 <div class="row">
     <div class="col">
-        @include('Nabre::livewire.form-manage.put.item')
+        @include('Nabre::livewire.form-manage.item')
     </div>
 </div>

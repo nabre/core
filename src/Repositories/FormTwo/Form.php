@@ -29,7 +29,7 @@ class Form
 
     private $wire = null;
 
-    static function public($data)
+    static function public($data,$modal=false)
     {
         $model = get_class($data);
         $idData = data_get($data, $data->getKeyName());
@@ -54,13 +54,6 @@ class Form
             }
             $this->check();
         }
-        return $this;
-    }
-
-    public function redirect(array $array)
-    {
-        $this->redirect = $array;
-
         return $this;
     }
 
@@ -94,27 +87,17 @@ class Form
         return $this;
     }
 
-    public function generate(?string $submit = null)
+    public function values($html = false, $embed = false)
     {
         $this->check();
-        $this->values();
+        $this->valueAssign($html, $embed);
 
-        if ($this->view) {
-            $this->elements = $this->elements->map(function ($i) {
-                data_set($i, 'output_original', data_get($i, 'output'), true);
-                data_set($i, 'output', Field::STATIC, true);
-                return $i;
-            });
-        }
-
-        return $this->render($submit);
+        return $this->elements->pluck('value', 'variable')->toArray();
     }
 
-    public function values()
+    public function valuesHtml()
     {
-        $this->check();
-        $this->valueAssign();
-
+        $this->values(true);
         return $this->elements->pluck('value', 'variable')->toArray();
     }
 
@@ -154,7 +137,7 @@ class Form
             });
 
 
-            $add = $add->put(data_get($i, 'embed.parent.variable') , 'nullable');
+            $add = $add->put(data_get($i, 'embed.parent.variable'), 'nullable');
 
             $add = $add->toArray();
             $rules = $rules->merge($add);
@@ -210,9 +193,13 @@ class Form
         return (new $embedForm($data))->embedMode();
     }
 
-    private function valueAssign()
+    private function valueAssign($html = false, $embed = false)
     {
-        $this->elements = $this->elements->map(function ($i) {
+        if ($html) {
+            $this->elements = $this->elements->reject(fn ($i) => in_array(data_get($i, 'output'), [Field::HIDDEN]))->values();
+        }
+
+        $this->elements = $this->elements->map(function ($i) use ($html, $embed) {
             $type = data_get($i, 'type');
             if ($type && $type != 'fake') {
                 $name = data_get($i, 'variable');
@@ -235,22 +222,62 @@ class Form
                         case "EmbedsMany":
                             $embedForm = data_get($i, 'embed.wire.form');
                             $value = [];
-                            $this->data->$name->each(function ($item) use (&$value, $embedForm) {
-                                $value[] = $this->embedObject($embedForm, $item)->values();
+                            $this->data->$name->each(function ($item) use (&$value, $embedForm, $html) {
+                                $value[] = $this->embedObject($embedForm, $item)->values($html, true);
                             });
                             break;
                         case "EmbedsOne":
                             $embedForm = data_get($i, 'embed.wire.form');
                             $item = $this->data->$name ?? data_get($i, 'set.rel.model');
-                            $value = $this->embedObject($embedForm, $item)->values();
+                            $value = $this->embedObject($embedForm, $item)->values($html, true);
                             break;
                     }
                 }
                 $overwrite = !is_null($value);
+
+
                 $this->setData($i, 'value', $value, $overwrite);
+            }
+
+
+            if ($embed) {
+                $this->setData($i, 'value_label', data_get($i, 'label'), $overwrite);
+            }
+
+            if ($html) {
+                $this->listValue($i);
             }
 
             return $i;
         });
+    }
+
+    private function listValue(&$i)
+    {
+        $output = data_get($i, 'output');
+
+        if (in_array($output, Field::fieldsListRequired())) {
+            $value = data_get($i, 'value');
+
+            $list = collect(data_get($i, 'set.list.items', []));
+            $value = collect((array)$value)->map(function ($v) use ($list) {
+                return data_get($list, $v) ?? null;
+            })->unique()->values()->toArray();
+            $relType = data_get($i, 'set.rel.type');
+            switch ($relType) {
+                case "HasOne":
+                case "BelongsTo":
+                    $value = collect($value)->implode('');
+                    break;
+            }
+            data_set($i, 'value', $value);
+        }
+
+        $label = data_get($i, 'value_label', false);
+        if ($label) {
+            $value = data_get($i, 'value');
+            $value = view('Nabre::livewire.form-manage.item-embed',compact('label','value'));
+            data_set($i, 'value', $value);
+        }
     }
 }

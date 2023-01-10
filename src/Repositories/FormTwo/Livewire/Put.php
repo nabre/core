@@ -11,7 +11,7 @@ trait Put
     {
         $this->values();
         $this->printForm();
-        $this->title=is_null($this->idData)?'Crea':'Modifica';
+        $this->title = is_null($this->idData) ? 'Crea' : 'Modifica';
     }
 
     private function values()
@@ -37,7 +37,13 @@ trait Put
         $this->form()->save(data_get($validatedData, 'wireValues'));
         $this->modeTable();
     }
-
+    /*
+    function delete($id)
+    {
+        $this->model::find($id)->delete();
+        $this->modeTable();
+    }
+*/
     function embedItRemove($param, $id)
     {
         $list = collect(data_get($this->wireValues, $param, []))->reject(fn ($v, $k) => $k == $id)->values()->toArray() ?? [];
@@ -59,15 +65,14 @@ trait Put
 
     private function printForm()
     {
-        $this->printForm = collect([]);
-        $this->printForm = $this->printForm->merge($this->recursivePrint());
+        $this->printForm = collect([])->merge($this->recursivePrint())->toArray();
+        return $this;
     }
 
     function htmlItem($item, $field = null)
     {
         return (string) $this->form()->itemHtml($item, $field);
     }
-
 
     private function haveError($i)
     {

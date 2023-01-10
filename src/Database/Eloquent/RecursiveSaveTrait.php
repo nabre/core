@@ -70,9 +70,37 @@ trait RecursiveSaveTrait
     function recursiveSave(array $data, $syncBool = true, $saveQuietly = false)
     {
         $relations = $this->definedRelations();
+
+        $dataFill = collect($data)
+            ->reject(fn ($v, $k) => in_array($k, $relations->pluck('name')->toArray()))
+            ->reject(fn ($v, $k) => in_array($k, $this->attributesList()))
+            ->map(function ($val, $key) {
+                $type = data_get($this->casts, $key);
+                switch ($type) {
+                    case "array":
+                        $val = array_values(array_filter((array)$val, 'strlen'));
+                        break;
+                    case "boolean":
+                        $val = (bool)$val;
+                        break;
+                    case "integer":
+                        $val = (int)$val;
+                        break;
+                    case "object":
+                        $val = (object)$val;
+                        break;
+                    case "string":
+                        $val = (string)$val;
+                        break;
+                }
+                return $val;
+            })->toArray();
+
+        $this->fill($dataFill);
+
         $items = $relations->whereIn('name', array_keys($data));
         if ($items->count()) {
-            $this->makeSave($saveQuietly);
+            $this->makeSave(is_null(data_get($this, $this->getKeyName())) ? false : $saveQuietly);
         }
 
         $items->map(fn ($i) => data_set($i, 'value', data_get($data, data_get($i, 'name'))))
@@ -158,33 +186,6 @@ trait RecursiveSaveTrait
                         break;
                 }
             });
-
-        $data = collect($data)
-            ->reject(fn ($v, $k) => in_array($k, $relations->pluck('name')->toArray()))
-            ->reject(fn ($v, $k) => in_array($k, $this->attributesList()))
-            ->map(function ($val, $key) {
-                $type = data_get($this->casts, $key);
-                switch ($type) {
-                    case "array":
-                        $val = array_values(array_filter((array)$val, 'strlen'));
-                        break;
-                    case "boolean":
-                        $val = (bool)$val;
-                        break;
-                    case "integer":
-                        $val = (int)$val;
-                        break;
-                    case "object":
-                        $val = (object)$val;
-                        break;
-                    case "string":
-                        $val = (string)$val;
-                        break;
-                }
-                return $val;
-            })->toArray();
-
-        $this->fill($data);
 
         $this->makeSave($saveQuietly);
 

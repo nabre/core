@@ -15,4 +15,4 @@
         data_set($_i, 'errors_print',$_ins);
     @endphp
 @endif
-{!! \Nabre\Repositories\FormTwo\Field::generate($_i) !!}
+{!! \Nabre\Repositories\FormTwo\Field::generate($_i)??$emptyValue !!}

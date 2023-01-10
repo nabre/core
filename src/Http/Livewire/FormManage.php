@@ -17,39 +17,48 @@ class FormManage extends Component
 
     #input
     var $idData;
-    var $model;
-    var $formClass;
+    var string $model;
+    var string $formClass;
+    var bool $modal;
 
     #page
     var $mode = null;
     var $title = null;
+    var string $emptyValue = '---';
 
     #form
-    var $printForm = [];
-    var $wireValues = [];
+    var array $printForm = [];
+    var array $wireValues = [];
 
     #table
-    var $cols=[];
-    var $itemsTable = [];
-    var $modelKey=null;
+    var array $cols = [];
+    var array $itemsTable = [];
+    var $modelKey = null;
 
     private $form;
     private $embedForm;
 
     function mount()
     {
-        if (is_null($this->idData) && is_null($this->mode)) {
+       /* $this->modePut($this->idData);
+        return;*/
+
+        if (is_null($this->idData) && is_null($this->mode) || $this->modal) {
             $this->modeTable();
         } else {
             $this->modePut($this->idData);
         }
     }
 
-    function modePut($idData = null)
+    function modePut(?string $idData = null)
     {
         $this->mode = 'put';
+        $this->modeModelPut($idData);
+    }
+
+    function modeModelPut(?string $idData = null){
         $this->idData = $idData;
-        $this->formGenerate();
+        $this->formGenerate($idData);
     }
 
     function modeTable()
