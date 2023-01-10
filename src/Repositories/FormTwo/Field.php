@@ -238,19 +238,13 @@ class Field
                 $html = data_get($value, 'html');
                 break;
             case self::STATIC:
-                //  $html="static variable";
-
                 if (!is_null($list ?? null) && optional($list)->count()) {
                     $value = collect((array)$value)->map(function ($v) use ($list) {
                         return data_get($list, $v) ?? null;
                     })->unique()->values()->toArray();
                 }
 
-                if (is_array($value)) {
-                    $value = implode(", ", $value);
-                }
-
-                $html = $value;
+                $html = self::valuePrint($value);
                 break;
                 ###
             case self::EMBEDS_ONE:
@@ -294,6 +288,18 @@ class Field
 
 
         return $html;
+    }
+
+    static private function valuePrint($value){
+
+        if (is_array($value)) {
+            $content=collect($value)->map(function($value){
+                return (string)Html::div(self::valuePrint($value),['class'=>'list-group-item p-1']);
+            })->implode('');
+            $value = Html::div($content,['class'=>'list-group']);
+        }
+
+        return $value;
     }
 
     static function getConstants()

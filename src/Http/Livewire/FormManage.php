@@ -29,8 +29,9 @@ class FormManage extends Component
     var $wireValues = [];
 
     #table
+    var $cols=[];
     var $itemsTable = [];
-    var $modelKey;
+    var $modelKey=null;
 
     private $form;
     private $embedForm;
@@ -61,7 +62,6 @@ class FormManage extends Component
     {
         return view('Nabre::livewire.form-manage.index');
     }
-
 
     private function form()
     {
