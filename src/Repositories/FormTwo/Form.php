@@ -276,7 +276,7 @@ class Form
         $label = data_get($i, 'value_label', false);
         if ($label) {
             $value = data_get($i, 'value');
-            $value = view('Nabre::livewire.form-manage.item-embed',compact('label','value'));
+            $value = (string) view('Nabre::livewire.form-manage.item-embed',compact('label','value'));
             data_set($i, 'value', $value);
         }
     }

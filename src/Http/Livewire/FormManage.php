@@ -31,8 +31,8 @@ class FormManage extends Component
     var array $wireValues = [];
 
     #table
-    var array $cols = [];
-    var array $itemsTable = [];
+    var $cols = [];
+    var $itemsTable = [];
     var $modelKey = null;
 
     private $form;
@@ -40,9 +40,6 @@ class FormManage extends Component
 
     function mount()
     {
-       /* $this->modePut($this->idData);
-        return;*/
-
         if (is_null($this->idData) && is_null($this->mode) || $this->modal) {
             $this->modeTable();
         } else {
@@ -56,7 +53,8 @@ class FormManage extends Component
         $this->modeModelPut($idData);
     }
 
-    function modeModelPut(?string $idData = null){
+    function modeModelPut(?string $idData = null)
+    {
         $this->idData = $idData;
         $this->formGenerate($idData);
     }
