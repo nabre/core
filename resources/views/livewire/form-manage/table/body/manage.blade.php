@@ -24,7 +24,7 @@
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Close</button>
-                    <button type="button" class="btn btn-danger"
+                    <button type="button" class="btn btn-danger"  data-bs-dismiss="modal"
                         wire:click="destroy('{{ data_get($_row, $modelKey) }}')">
                         Elimina
                     </button>

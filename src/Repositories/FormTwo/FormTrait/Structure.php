@@ -203,7 +203,6 @@ trait Structure
             if (!$this->checkDubble()) {
                 $this->variableCheck();
                 $this->rulesMessages();
-
                 $this->output();
                 $this->query();
                 $this->labelDefine();
@@ -211,7 +210,7 @@ trait Structure
                 $wire = implode(".", array_filter(['wireValues', $this->wire, data_get($this->item, 'variable')]));
                 $this->item['set']['options']['wire:model.defer'] = $wire;
 
-                $this->setItemData('set.info',$this->getItemData('set.info',collect([]))->toArray());
+                $this->setItemData('set.info', $this->getItemData('set.info', collect([]))->toArray());
 
                 $this->elements = $this->elements->push($this->item);
             }
@@ -254,7 +253,12 @@ trait Structure
         if (!$this->getItemData('set.list.sort')) {
             $fnSort .= 'Desc';
         }
-        $items = $items->pluck($label, $model->getKeyName())->$fnSort($label)->toArray();
+        $items = $items->pluck($label, $model->getKeyName())->$fnSort($label);
+        $empty=$this->getItemData('set.list.empty');
+        if (!is_null($empty)) {
+            $items = $items->prepend($empty,0);
+        }
+        $items=$items->toArray();
         $this->setItemData('set.list.items', $items);
 
         return $this;
@@ -313,6 +317,29 @@ trait Structure
         unset($setrel);
 
         $this->push(get_defined_vars(), true);
+
+        #Correzione automatica
+        $type = $this->getItemData('set.rel.type');
+        $request = $this->getItemData('set.request.' . $this->method, []);
+        switch ($type) {
+            case "HasMany":
+            case "BelongsToMany":
+                $this->setItemData('set.list.empty', null, true);
+                break;
+            case "BelongsTo":
+            case "HasOne":
+                if (in_array(Rule::required(), $request)) {
+                    $this->setItemData('set.list.empty', null, true);
+                } else {
+                    $this->listEmpty();
+                }
+                break;
+            case "EmbedsOne":
+            case "EmbedsMany":
+                $request = array_values(array_intersect($request, [Rule::nullable(), Rule::required()]));
+                data_set($i, 'set.request.' . $this->method, $request);
+                break;
+        }
     }
 
     private function isFillable($v, $model)

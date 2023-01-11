@@ -4,6 +4,7 @@ namespace Nabre\Repositories\FormTwo;
 
 use Collective\Html\HtmlFacade as Html;
 use Collective\Html\FormFacade as Form;
+use Illuminate\Support\Str;
 use Nabre\Models\FormFieldType;
 use Nabre\Repositories\LocalizationRepositorie;
 use Nabre\Repositories\Livewire;
@@ -20,7 +21,7 @@ class Field
     //  const CHOICE = 'choice'; //
     const CHECKBOX = 'checkbox';
     const BOOLEAN = 'bool';
-    //   const RADIO = 'radio';
+    const RADIO = 'radio';
     const PASSWORD = 'password';
     const PASSWORD2 = 'password2';
     const HIDDEN = 'hidden';
@@ -63,7 +64,7 @@ class Field
 
     static function fieldsListRequired()
     {
-        return [self::SELECT, self::SELECT_MULTI, self::CHECKBOX];
+        return [self::SELECT, self::SELECT_MULTI, self::CHECKBOX, self::RADIO];
     }
     static function classAdd(&$class, $edit)
     {
@@ -97,7 +98,7 @@ class Field
         $empty = data_get($it, 'set.list.empty');
         $disabled = data_get($it, 'set.list.disabled', []);
         $options = data_get($it, 'set.options', []);
-        $name = $options['wire:model.defer']??null;
+        $name = $options['wire:model.defer'] ?? null;
         $errors = data_get($it, 'errors_print', null);
 
         if (!is_null($errors)) {
@@ -140,16 +141,6 @@ class Field
             case self::SELECT:
                 self::classAdd($options['class'], "form-select");
 
-                if (!is_null($empty)) {
-                    $list = $list->prepend($empty);
-                }
-
-                /*  if (!count((array)$value) || is_null($value)) {
-                    $value = (array)$list->keys()->first();
-                }*/
-
-                //   self::name($name);
-
                 $html = Form::select('', $list, null, $options);
                 break;
                 ###
@@ -182,32 +173,21 @@ class Field
                 );
                 break;
                 ###
+            case self::RADIO:
             case self::CHECKBOX:
+                //  data_set($options,'type',$output);
                 self::classAdd($options['class'], "form-check-input");
-                //   $value = (array)$value;
-                //   self::name($name);
+                $nCk = Str::random(10);
 
-                //    $html = Form::hidden(null, null);
-                //     $name .= '[]';
-                /*    $html .= $list->filter(function ($v, $k) use ($disabled,$options) {
-                    return in_array($k, $disabled) ;//&& in_array($k, $value);
-                })->map(function ($v, $k) use ($name) {
-                    $html = Form::hidden($name, $k);
-                    return compact('html');
-                })->implode('html');*/
-
-                $html .= collect($list)->map(function ($v, $k) use ($it,  $options, $disabled) {
-                    data_set($options, 'id', data_get($it, 'variable') . '-' . $k);
+                $html = $list->map(function ($v, $k) use ($it,  $options, $disabled, $output, $nCk) {
+                    data_set($options, 'id', Str::random(10));
 
                     if (in_array($k, $disabled)) {
                         $options[] = 'disabled';
                     }
-                    //    $bool = in_array($k, $value);
-                    $html = '<div class="form-check">' . Form::checkbox('', $k, null, $options) . " " . Form::label(data_get($options, 'id'), $v, ['class' => "form-check-label"]) . '</div>';
-                    return compact('html');
-                })->implode('html');
+                    return '<div class="form-check">' . Form::$output(self::RADIO == $output ? $nCk : '', $k, null,  $options) . " " . Form::label(data_get($options, 'id'), $v, ['class' => "form-check-label"]) . '</div>';
+                })->implode('');
                 break;
-
             case self::TEXT_LANG:
                 $langs = (new LocalizationRepositorie)->aviableLang();
                 $numLangs = $langs->count();
@@ -238,7 +218,7 @@ class Field
                 $html = data_get($value, 'html');
                 break;
             case self::STATIC:
-              /*  if (!is_null($list ?? null) && optional($list)->count()) {
+                /*  if (!is_null($list ?? null) && optional($list)->count()) {
                     $value = collect((array)$value)->map(function ($v) use ($list) {
                         return data_get($list, $v) ?? null;
                     })->unique()->values()->toArray();
@@ -290,13 +270,14 @@ class Field
         return $html;
     }
 
-    static private function valuePrint($value){
+    static private function valuePrint($value)
+    {
 
         if (is_array($value)) {
-            $content=collect($value)->map(function($value){
-                return (string)Html::div(self::valuePrint($value),['class'=>'list-group-item p-1']);
+            $content = collect($value)->map(function ($value) {
+                return (string)Html::div(self::valuePrint($value), ['class' => 'list-group-item p-1']);
             })->implode('');
-            $value = empty($content)?null:Html::div($content,['class'=>'list-group']);
+            $value = empty($content) ? null : Html::div($content, ['class' => 'list-group']);
         }
 
         return $value;

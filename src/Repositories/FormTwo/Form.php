@@ -29,7 +29,7 @@ class Form
 
     private $wire = null;
 
-    static function public($data,$modal=false)
+    static function public($data, $modal = false)
     {
         $model = get_class($data);
         $idData = data_get($data, $data->getKeyName());
@@ -221,15 +221,18 @@ class Form
                     switch ($relType) {
                         case "EmbedsMany":
                             $embedForm = data_get($i, 'embed.wire.form');
-                            $value = [];
-                            $this->data->$name->each(function ($item) use (&$value, $embedForm, $html) {
-                                $value[] = $this->embedObject($embedForm, $item)->values($html, true);
-                            });
+                            $value = $this->data->$name->each(function ($item) use ($embedForm, $html) {
+                                return $this->embedObject($embedForm, $item)->values($html, true);
+                            })->toArray();
+
+                            $value = null;
                             break;
                         case "EmbedsOne":
                             $embedForm = data_get($i, 'embed.wire.form');
-                            $item = $this->data->$name ?? data_get($i, 'set.rel.model');
-                            $value = $this->embedObject($embedForm, $item)->values($html, true);
+                            $required = false;
+                            $item = $this->data->$name ?? ($html || !$required ? null : data_get($i, 'set.rel.model'));
+                            $value = is_null($item) ? null : $this->embedObject($embedForm, $item)->values($html, true);
+
                             break;
                     }
                 }
@@ -276,7 +279,7 @@ class Form
         $label = data_get($i, 'value_label', false);
         if ($label) {
             $value = data_get($i, 'value');
-            $value = (string) view('Nabre::livewire.form-manage.item-embed',compact('label','value'));
+            $value = (string) view('Nabre::livewire.form-manage.item-embed', compact('label', 'value'));
             data_set($i, 'value', $value);
         }
     }

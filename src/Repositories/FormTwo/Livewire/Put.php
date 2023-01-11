@@ -11,7 +11,8 @@ trait Put
     {
         $this->values();
         $this->printForm();
-        $this->title = is_null($this->idData) ? 'Crea' : 'Modifica';
+        $this->method=$this->form()->method;
+        $this->title = $this->model . ": " . (is_null($this->idData) ? 'crea' : 'modifica')." istanza";
     }
 
     private function values()
@@ -26,26 +27,12 @@ trait Put
         return collect(data_get($i, 'set.info', []))->map(fn ($i) => (string) Html::div(data_get($i, 'text'), ['class' => 'badge text-bg-' . data_get($i, 'theme')]))->implode('<br>');
     }
 
-    function rules()
+    function embedItRemove($param, $id=null)
     {
-        return collect($this->form()->rules())->mapWithKeys(fn ($r, $k) => ['wireValues.' . $k => $r])->toArray();
-    }
-
-    function submit()
-    {
-        $validatedData = $this->validate();
-        $this->form()->save(data_get($validatedData, 'wireValues'));
-        $this->modeTable();
-    }
-    /*
-    function delete($id)
-    {
-        $this->model::find($id)->delete();
-        $this->modeTable();
-    }
-*/
-    function embedItRemove($param, $id)
-    {
+        if(is_null($id)){
+            data_set($this->wireValues, $param, null);
+            return;
+        }
         $list = collect(data_get($this->wireValues, $param, []))->reject(fn ($v, $k) => $k == $id)->values()->toArray() ?? [];
         data_set($this->wireValues, $param, $list);
     }

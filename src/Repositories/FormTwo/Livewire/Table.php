@@ -17,7 +17,7 @@ trait Table
             return $item;
         })->toArray();
 
-        $this->title='Elenco';
+        $this->title=$this->model.': elenco';
     }
 
     private function query()

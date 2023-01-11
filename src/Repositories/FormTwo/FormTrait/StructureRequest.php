@@ -6,7 +6,7 @@ use Nabre\Repositories\FormTwo\Rule;
 
 trait StructureRequest
 {
-    private $method = null;
+    var $method = null;
 
     static $create = 'post';
     static $update = 'put';

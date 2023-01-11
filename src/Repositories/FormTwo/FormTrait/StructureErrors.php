@@ -35,8 +35,8 @@ trait StructureErrors
                 $errors = $errors->push('Variabile non esistente.');
             } else {
 
+                ##controllo errori
                 $output = data_get($i, 'output', false);
-
                 switch ($output) {
                     case Field::EMBEDS_MANY:
                     case Field::EMBEDS_ONE:
@@ -47,8 +47,8 @@ trait StructureErrors
 
                         break;
                     default:
-                        $array = Field::fieldsListRequired();
-                        if (count($array) && in_array($output, $array)) {
+                        $array = (array) Field::fieldsListRequired();
+                        if (in_array($output, $array)) {
                             $list = data_get($i, 'set.list.items', false);
                             if (!$list) {
                                 $errors = $errors->push('Lista items non definita.');

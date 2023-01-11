@@ -7,11 +7,13 @@ use Collective\Html\HtmlFacade as Html;
 use Collective\Html\FormFacade as Form;
 use Illuminate\Support\Str;
 use Nabre\Repositories\FormTwo\Field;
+use Nabre\Repositories\FormTwo\Livewire\Crud;
 use Nabre\Repositories\FormTwo\Livewire\Put;
 use Nabre\Repositories\FormTwo\Livewire\Table;
 
 class FormManage extends Component
 {
+    use Crud;
     use Put;
     use Table;
 
@@ -22,18 +24,19 @@ class FormManage extends Component
     var bool $modal;
 
     #page
-    var $mode = null;
-    var $title = null;
+    var ?string $mode = null;
+    var ?string $title = null;
     var string $emptyValue = '---';
+    var ?string $method;
 
     #form
     var array $printForm = [];
     var array $wireValues = [];
 
     #table
-    var $cols = [];
-    var $itemsTable = [];
-    var $modelKey = null;
+    var array $cols = [];
+    var array $itemsTable = [];
+    var ?string $modelKey = null;
 
     private $form;
     private $embedForm;

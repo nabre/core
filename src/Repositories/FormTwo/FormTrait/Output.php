@@ -58,11 +58,11 @@ trait Output
                         switch ($this->getItemData('set.rel.type')) {
                             case "BelongsTo":
                             case "HasOne":
-                                $enabled = $enabled->push(Field::SELECT);
+                                $enabled = $enabled->merge([Field::SELECT,Field::RADIO]);
                                 break;
                             case "BelongsToMany":
                             case "HasMany":
-                                $enabled = $enabled->merge([Field::CHECKBOX, Field::SELECT]);
+                                $enabled = $enabled->merge([Field::CHECKBOX, Field::SELECT_MULTI]);
                                 break;
                             case "EmbedsMany":
                                 $enabled = $enabled->push(Field::EMBEDS_MANY);
