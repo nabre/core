@@ -3,6 +3,7 @@
 namespace Nabre\Repositories\FormTwo\FormTrait;
 
 use Nabre\Repositories\FormTwo\Field;
+use Nabre\Repositories\FormTwo\FormConst;
 use Nabre\Repositories\FormTwo\QueryElements;
 use Nabre\Repositories\FormTwo\Rule;
 
@@ -23,28 +24,28 @@ trait Structure
 
     function listLabel($label = null, $overwrite = false)
     {
-        $this->push(['set.list.label' => $label ?? 'id'], $overwrite);
+        $this->push(['set.list.label' => $label ?? $this->collection->getKeyName()], $overwrite);
         return $this;
     }
 
     function listEmpty($name = null, $overwrite = false)
     {
         if (is_null($name)) {
-            $name = "-Seleziona-";
+            $name = FormConst::labelSelect();
         }
-        $this->push(['set.list.empty' => $name], $overwrite);
+        $this->push([FormConst::LIST_EMPTY => $name], $overwrite);
         return $this;
     }
 
     function listSort(bool $asc = true, $overwrite = false)
     {
-        $this->push(['set.list.sort' => $asc], $overwrite);
+        $this->push([FormConst::LIST_SORT => $asc], $overwrite);
         return $this;
     }
 
     function embed($embed = null, $overwrite = false)
     {
-        $this->push(['embed.wire.form' => $embed], $overwrite);
+        $this->push([FormConst::EMBED_FORM => $embed], $overwrite);
         return $this;
     }
 
@@ -69,8 +70,8 @@ trait Structure
     function info($text = null, $theme = 'secondary')
     {
         if (!is_null($text)) {
-            $array = $this->getItemData('set.info', collect([]))->push(get_defined_vars());
-            $this->setItemData('set.info', $array, true);
+            $array = $this->getItemData(FormConst::INFO, collect([]))->push(get_defined_vars());
+            $this->setItemData(FormConst::INFO, $array, true);
         }
 
         return $this;
@@ -147,7 +148,7 @@ trait Structure
     private function rulesMessages()
     {
         collect([self::$update, self::$create])->each(function ($method) {
-            if (is_null($this->getItemData('set.request.' . $method) ?? null)) {
+            if (is_null($this->getItemData(FormConst::request($method)) ?? null)) {
                 $this->rule(Rule::nullable(), $method);
             }
         });
@@ -155,7 +156,7 @@ trait Structure
         $rules = collect($this->requests())
             ->map(fn ($fn) => (new Rule)->parseRule($fn, "\"" . $this->getItemData('label') . "\""));
 
-        $this->setItemData('set.rules.fn', $rules->pluck('fn')->unique()->values()->toArray(), true);
+        $this->setItemData(FormConst::RULES_FN, $rules->pluck('fn')->unique()->values()->toArray(), true);
 
         $rulesOut = collect([]);
 
@@ -176,16 +177,16 @@ trait Structure
 
         $rulesOut->sortBy(function ($i) {
             $fn = data_get($i, 'fn');
-            return ($fn == 'required') ? 0 : 1;
+            return ($fn == Rule::required()) ? 0 : 1;
         })->values()->each(function ($i) {
             $fn = data_get($i, 'fn');
             $msg = trim(__('Nabre::validation.' . $fn, data_get($i, 'params')));
 
             switch ($fn) {
-                case "required":
+                case Rule::required():
                     $this->info('<i class="fa-solid fa-asterisk" title="' . htmlspecialchars($msg) . '"></i>', 'danger');
                     break;
-                case "nullable":
+                case Rule::nullable():
                     break;
                 default:
                     if (!empty($msg)) {
@@ -208,10 +209,10 @@ trait Structure
                 $this->query();
                 $this->labelDefine();
 
-                $wire = implode(".", array_filter(['wireValues', $this->wire, data_get($this->item, 'variable')]));
-                $this->item['set']['options']['wire:model.defer'] = $wire;
+                $wire = implode(".", array_filter(['wireValues', $this->wire, data_get($this->item, FormConst::VARIABLE)]));
+                $this->setItemData(FormConst::OPTIONS_WIREMODEL, $wire, true);
 
-                $this->setItemData('set.info', $this->getItemData('set.info', collect([]))->toArray());
+                $this->setItemData(FormConst::INFO, $this->getItemData(FormConst::INFO, collect([]))->toArray());
 
                 $this->elements = $this->elements->push($this->item);
             }
@@ -223,16 +224,16 @@ trait Structure
 
     private function checkDubble()
     {
-        return in_array($this->getItemData('variable'), $this->elements->pluck('variable')->toArray());
+        return in_array($this->getItemData(FormConst::VARIABLE), $this->elements->pluck(FormConst::VARIABLE)->toArray());
     }
 
     private function query()
     {
-        if ($this->getItemData('type') != 'relation') {
+        if ($this->getItemData(FormConst::TYPE) != 'relation') {
             return $this;
         }
 
-        $string = collect(explode(".", $this->getItemData('variable')))->map(function ($part) {
+        $string = collect(explode(".", $this->getItemData(FormConst::VARIABLE)))->map(function ($part) {
             $part = ucfirst($part);
             return get_defined_vars();
         })->implode('part', '');
@@ -248,26 +249,26 @@ trait Structure
         $this->listLabel();
         $this->listSort();
 
-        $label = $this->getItemData('set.list.label');
+        $label = $this->getItemData(FormConst::LIST_LABEL);
 
         $fnSort = 'sortBy';
-        if (!$this->getItemData('set.list.sort')) {
+        if (!$this->getItemData(FormConst::LIST_SORT)) {
             $fnSort .= 'Desc';
         }
         $items = $items->pluck($label, $model->getKeyName())->$fnSort($label);
-        $empty = $this->getItemData('set.list.empty');
+        $empty = $this->getItemData(FormConst::LIST_EMPTY);
         if (!is_null($empty)) {
             $items = $items->prepend($empty, '');
         }
         $items = $items->toArray();
-        $this->setItemData('set.list.items', $items);
+        $this->setItemData(FormConst::LIST_ITEMS, $items);
 
         return $this;
     }
 
     function queryGetModel()
     {
-        $model = $this->getItemData('set.rel.model');
+        $model = $this->getItemData(FormConst::REL_MODEL);
         return new $model;
     }
 
@@ -275,8 +276,8 @@ trait Structure
     private function variableCheck()
     {
         $model = new $this->model;
-        $variable = $this->getItemData('variable');
-        $type = $this->getItemData('type', true);
+        $variable = $this->getItemData(FormConst::VARIABLE);
+        $type = $this->getItemData(FormConst::TYPE, true);
         $str =
             $cast =
             $setrel = null;
@@ -320,17 +321,17 @@ trait Structure
         $this->push(get_defined_vars(), true);
 
         #Correzione automatica
-        $type = $this->getItemData('set.rel.type');
-        $request = $this->getItemData('set.request.' . $this->method, []);
+        $type = $this->getItemData(FormConst::REL_TYPE);
+        $request = $this->getItemData(FormConst::request($this->method), []);
         switch ($type) {
             case "HasMany":
             case "BelongsToMany":
-                $this->setItemData('set.list.empty', null, true);
+                $this->setItemData(FormConst::LIST_EMPTY, null, true);
                 break;
             case "BelongsTo":
             case "HasOne":
                 if (in_array(Rule::required(), $request)) {
-                    $this->setItemData('set.list.empty', null, true);
+                    $this->setItemData(FormConst::LIST_EMPTY, null, true);
                 } else {
                     $this->listEmpty();
                 }
@@ -338,7 +339,7 @@ trait Structure
             case "EmbedsOne":
             case "EmbedsMany":
                 $request = array_values(array_intersect($request, [Rule::nullable(), Rule::required()]));
-                data_set($i, 'set.request.' . $this->method, $request);
+                data_set($i, FormConst::request($this->method), $request);
                 break;
         }
     }
@@ -371,7 +372,7 @@ trait Structure
     #label
     private function labelDefine()
     {
-        $label = $this->getItemData('variable');
+        $label = $this->getItemData(FormConst::VARIABLE);
         $this->label($label);
 
         return $this;

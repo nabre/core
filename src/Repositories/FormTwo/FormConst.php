@@ -11,7 +11,7 @@ class FormConst
     const OUTPUT = ['output'];
     const TYPE = ['type'];
     const VALUE = ['value'];
-    const VALUE_LABEL = ['value_LABEL'];
+    const VALUE_LABEL = ['value_label'];
     const LABEL = ['label'];
 
     #options
@@ -19,18 +19,26 @@ class FormConst
     const OPTIONS_WIREMODEL = ['set', 'options', 'wire:model.defer'];
     const OPTIONS_CLASS = ['set', 'options', 'class'];
 
+    #iNFO
+    const INFO = ['set', 'info'];
+
     #list
     const LIST = ['set', 'list'];
     const LIST_ITEMS = ['set', 'list', 'items'];
     const LIST_EMPTY = ['set', 'list', 'empty'];
     const LIST_LABEL = ['set', 'list', 'label'];
-    const LIST_DISABLEDL = ['set', 'list', 'disabled'];
+    const LIST_DISABLED = ['set', 'list', 'disabled'];
+    const LIST_SORT = ['set', 'list', 'sort'];
 
     #embed
     const EMBED = ['embed'];
     const EMBED_VARIABLE = ['embed', 'parent', 'variable'];
     const EMBED_OUTPUT = ['embed', 'wire', 'output'];
     const EMBED_FORM = ['embed', 'wire', 'form'];
+
+    #Rules / Request
+    const RULES_FN=['set','rules','fn'];
+    const RULES_PARAMS=['set','rules','params'];
 
     #Errors
     const ERROR = ['error'];
@@ -47,8 +55,17 @@ class FormConst
     #stringValues
     const EMPTY_KEY = '';
 
+    static function string($const){
+       // return implode('.',(array)((self::{$const}) ?? []));
+    }
+
     static function request($method)
     {
         return ['set', 'request', $method];
+    }
+
+    static function labelSelect()
+    {
+        return '-Seleziona-';
     }
 }

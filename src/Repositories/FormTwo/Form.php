@@ -5,15 +5,12 @@ namespace Nabre\Repositories\FormTwo;
 use Illuminate\Database\Eloquent\Model;
 use Nabre\Repositories\FormTwo\FormTrait\Output;
 use Nabre\Repositories\FormTwo\FormTrait\Render;
-use Nabre\Repositories\FormTwo\FormTrait\Storage;
 use Nabre\Repositories\FormTwo\FormTrait\Structure;
 use Nabre\Repositories\FormTwo\FormTrait\StructureErrors;
 use Nabre\Repositories\FormTwo\FormTrait\StructureRequest;
 
 class Form
 {
-
-    use Storage;
     use Structure;
     use StructureErrors;
     use StructureRequest;
