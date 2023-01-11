@@ -106,8 +106,9 @@ trait Structure
 
     private function setData(&$target, $key, $value, $overwrite = false)
     {
-        $var = collect(explode('.', $key))->reverse()->take(1)->implode('.');
-        $find = collect(explode('.', $key))->reverse()->skip(1)->reverse()->implode('.');
+        $key = is_array($key) ? $key : explode('.', $key);
+        $var = collect($key)->reverse()->take(1)->implode('.');
+        $find = collect($key)->reverse()->skip(1)->reverse()->implode('.');
         if (empty($find)) {
             $find = $key;
             $set = $value;
@@ -254,11 +255,11 @@ trait Structure
             $fnSort .= 'Desc';
         }
         $items = $items->pluck($label, $model->getKeyName())->$fnSort($label);
-        $empty=$this->getItemData('set.list.empty');
+        $empty = $this->getItemData('set.list.empty');
         if (!is_null($empty)) {
-            $items = $items->prepend($empty,'');
+            $items = $items->prepend($empty, '');
         }
-        $items=$items->toArray();
+        $items = $items->toArray();
         $this->setItemData('set.list.items', $items);
 
         return $this;

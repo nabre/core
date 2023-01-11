@@ -67,8 +67,8 @@ class Form
         $this->wire = $wire;
 
         $this->elements = $this->elements->map(function ($i) {
-            $wire = implode(".", array_filter(['wireValues', $this->wire, data_get($i, 'variable')]));
-            $i['set']['options']['wire:model.defer'] = $wire;
+            $wire = implode(".", array_filter(['wireValues', $this->wire, data_get($i, FormConst::VARIABLE)]));
+            data_set($i,FormConst::OPTIONS_WIREMODEL,$wire);
 
             return $i;
         });
@@ -92,52 +92,52 @@ class Form
         $this->check();
         $this->valueAssign($html, $embed);
 
-        return $this->elements->pluck('value', 'variable')->toArray();
+        return $this->elements->pluck(FormConst::VALUE, FormConst::VARIABLE)->toArray();
     }
 
     public function valuesHtml()
     {
         $this->values(true);
-        return $this->elements->pluck('value', 'variable')->toArray();
+        return $this->elements->pluck(FormConst::VALUE, FormConst::VARIABLE)->toArray();
     }
 
     public function rules()
     {
-        $RULES_PATH = 'set.request.' . $this->method;
+        $RULES_PATH = FormConst::request($this->method) ;
         $this->check();
 
         $rules = collect([]);
         $elements = (new QueryElements($this->elements))->rulesAviable()->rulesExcludeEmbeds()->results();
-        $rules = $rules->merge($elements->pluck($RULES_PATH, 'variable'));
+        $rules = $rules->merge($elements->pluck($RULES_PATH, FormConst::VARIABLE));
 
         $elements = (new QueryElements($this->elements))->rulesAviable()->rulesOnlyEmbeds()->results();
         $elements->each(function ($i) use (&$rules, $RULES_PATH) {
             $rulesGeneral = data_get($i, $RULES_PATH);
 
-            $prefix = data_get($i, 'embed.parent.variable');
-            $output = data_get($i, 'embed.wire.output');
+            $prefix = data_get($i, FormConst::EMBED_VARIABLE);
+            $output = data_get($i, FormConst::EMBED_OUTPUT);
             switch ($output) {
                 case Field::EMBEDS_MANY:
                     $prefix .= '.*';
                     break;
             }
 
-            $embedForm = data_get($i, 'embed.wire.form');
-            $model = data_get($i, 'set.rel.model');
+            $embedForm = data_get($i, FormConst::EMBED_FORM);
+            $model = data_get($i, FormConst::REL_MODEL);
 
             $embedRules = $this->embedObject($embedForm, $model)->rules();
 
             $add = collect($embedRules)->mapWithKeys(fn ($i, $k) => [$prefix . "." . $k => $i])->map(function ($i) use ($rulesGeneral) {
                 $rules = array_values(array_unique(array_merge($i, $rulesGeneral)));
                 if (count($rules) > 1) {
-                    $rules = collect($rules)->reject(fn ($str) => $str == 'nullable')->values()->toArray();
+                    $rules = collect($rules)->reject(fn ($str) => $str == Rule::nullable())->values()->toArray();
                 }
                 sort($rules);
                 return $rules;
             });
 
 
-            $add = $add->put(data_get($i, 'embed.parent.variable'), 'nullable');
+            $add = $add->put(data_get($i, FormConst::EMBED_VARIABLE), Rule::nullable());
 
             $add = $add->toArray();
             $rules = $rules->merge($add);
@@ -196,23 +196,23 @@ class Form
     private function valueAssign($html = false, $embed = false)
     {
         if ($html) {
-            $this->elements = $this->elements->reject(fn ($i) => in_array(data_get($i, 'output'), [Field::HIDDEN]))->values();
+            $this->elements = $this->elements->reject(fn ($i) => in_array(data_get($i, FormConst::OUTPUT), [Field::HIDDEN]))->values();
         }
 
         $this->elements = $this->elements->map(function ($i) use ($html, $embed) {
             $type = data_get($i, 'type');
             if ($type && $type != 'fake') {
-                $name = data_get($i, 'variable');
+                $name = data_get($i, FormConst::VARIABLE);
                 $value = $this->data->readValue($name);
 
                 if ($type == 'relation') {
-                    $relType = data_get($i, 'set.rel.type');
+                    $relType = data_get($i, FormConst::REL_TYPE);
                     if (is_null($value)) {
                         switch ($relType) {
                             case "HasOne":
                             case "BelongsTo":
-                                if (is_null(data_get($i, 'set.list.empty'))) {
-                                    $value = collect(data_get($i, 'set.list.items', []))->keys()->first();
+                                if (is_null(data_get($i, FormConst::LIST_EMPTY))) {
+                                    $value = collect(data_get($i, FormConst::LIST_ITEMS, []))->keys()->first();
                                 }
                                 $value=$value??'';
                                 break;
@@ -221,7 +221,7 @@ class Form
 
                     switch ($relType) {
                         case "EmbedsMany":
-                            $embedForm = data_get($i, 'embed.wire.form');
+                            $embedForm = data_get($i, FormConst::EMBED_FORM);
                             $value = $this->data->$name->each(function ($item) use ($embedForm, $html) {
                                 return $this->embedObject($embedForm, $item)->values($html, true);
                             })->toArray();
@@ -229,9 +229,9 @@ class Form
                             $value = null;
                             break;
                         case "EmbedsOne":
-                            $embedForm = data_get($i, 'embed.wire.form');
+                            $embedForm = data_get($i, FormConst::EMBED_FORM);
                             $required = false;
-                            $item = $this->data->$name ?? ($html || !$required ? null : data_get($i, 'set.rel.model'));
+                            $item = $this->data->$name ?? ($html || !$required ? null : data_get($i, FormConst::REL_MODEL));
                             $value = is_null($item) ? null : $this->embedObject($embedForm, $item)->values($html, true);
 
                             break;
@@ -240,12 +240,12 @@ class Form
                 $overwrite = !is_null($value);
 
 
-                $this->setData($i, 'value', $value, $overwrite);
+                $this->setData($i, FormConst::VALUE, $value, $overwrite);
             }
 
 
             if ($embed) {
-                $this->setData($i, 'value_label', data_get($i, 'label'), $overwrite);
+                $this->setData($i, FormConst::VALUE_LABEL, data_get($i, FormConst::LABEL), $overwrite);
             }
 
             if ($html) {
@@ -258,17 +258,17 @@ class Form
 
     private function listValue(&$i)
     {
-        $output = data_get($i, 'output');
+        $output = data_get($i, FormConst::OUTPUT);
 
         if (in_array($output, Field::fieldsListRequired())) {
-            $value = data_get($i, 'value');
+            $value = data_get($i, FormConst::VALUE);
 
-            $list = collect(data_get($i, 'set.list.items', []));
+            $list = collect(data_get($i, FormConst::LIST_ITEMS, []));
 
             $value = collect((array)$value)->reject(fn($v)=>$v=='')->map(function ($v) use ($list) {
                 return data_get($list, $v) ?? null;
             })->unique()->values()->toArray();
-            $relType = data_get($i, 'set.rel.type');
+            $relType = data_get($i, FormConst::REL_TYPE);
             switch ($relType) {
                 case "HasOne":
                 case "BelongsTo":
@@ -276,14 +276,14 @@ class Form
                  //   $value=empty($value)?null:$value;
                     break;
             }
-            data_set($i, 'value', $value);
+            data_set($i,FormConst::VALUE, $value);
         }
 
-        $label = data_get($i, 'value_label', false);
+        $label = data_get($i, FormConst::VALUE_LABEL, false);
         if ($label) {
-            $value = data_get($i, 'value');
+            $value = data_get($i, FormConst::VALUE);
             $value = (string) view('Nabre::livewire.form-manage.item-embed', compact('label', 'value'));
-            data_set($i, 'value', $value);
+            data_set($i, FormConst::VALUE, $value);
         }
     }
 }

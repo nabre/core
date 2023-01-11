@@ -3,6 +3,7 @@
 namespace Nabre\Repositories\FormTwo\FormTrait;
 
 use Nabre\Repositories\FormTwo\Field;
+use Nabre\Repositories\FormTwo\FormConst;
 
 trait Output
 {
@@ -10,13 +11,13 @@ trait Output
 
     private function output()
     {
-        $output = $this->getItemData('output');
-        $type = $this->getItemData('type');
+        $output = $this->getItemData(FormConst::OUTPUT);
+        $type = $this->getItemData(FormConst::TYPE);
         $rules = $this->getItemData('set.rules.fn', []);
         $enabled = collect([]);
 
         if ($type != 'fake') {
-            if ($this->getItemData('variable') == $this->collection->getKeyName()) {
+            if ($this->getItemData(FormConst::VARIABLE) == $this->collection->getKeyName()) {
                 $enabled = $enabled->merge([Field::HIDDEN]);
             } else {
                 switch ($type) {
@@ -55,10 +56,10 @@ trait Output
                         $enabled = $enabled->push(Field::STATIC);
                         break;
                     case "relation":
-                        switch ($this->getItemData('set.rel.type')) {
+                        switch ($this->getItemData(FormConst::REL_TYPE)) {
                             case "BelongsTo":
                             case "HasOne":
-                                $enabled = $enabled->merge([Field::SELECT,Field::RADIO]);
+                                $enabled = $enabled->merge([Field::SELECT, Field::RADIO]);
                                 break;
                             case "BelongsToMany":
                             case "HasMany":
@@ -82,10 +83,10 @@ trait Output
             }
         }
 
-        $this->setItemData('output', $output ?? Field::STATIC, true);
+        $this->setItemData(FormConst::OUTPUT, $output ?? Field::STATIC, true);
 
         #prepara le informazione necessarie per livewire FormEmbed
-        if (in_array($this->getItemData('output'), [Field::EMBEDS_MANY, Field::EMBEDS_ONE])) {
+        if (in_array($this->getItemData(FormConst::OUTPUT), [Field::EMBEDS_MANY, Field::EMBEDS_ONE])) {
             $this->setItemData('embed.parent.model', $this->model, true);
             $this->setItemData('embed.parent.dataKey', data_get($this->data, $this->data->getKeyName()), true);
             $this->setItemData('embed.parent.variable', $this->getItemData('variable'), true);
