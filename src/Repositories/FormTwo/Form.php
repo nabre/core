@@ -214,6 +214,7 @@ class Form
                                 if (is_null(data_get($i, 'set.list.empty'))) {
                                     $value = collect(data_get($i, 'set.list.items', []))->keys()->first();
                                 }
+                                $value=$value??'';
                                 break;
                         }
                     }
@@ -263,14 +264,16 @@ class Form
             $value = data_get($i, 'value');
 
             $list = collect(data_get($i, 'set.list.items', []));
-            $value = collect((array)$value)->map(function ($v) use ($list) {
+
+            $value = collect((array)$value)->reject(fn($v)=>$v=='')->map(function ($v) use ($list) {
                 return data_get($list, $v) ?? null;
             })->unique()->values()->toArray();
             $relType = data_get($i, 'set.rel.type');
             switch ($relType) {
                 case "HasOne":
                 case "BelongsTo":
-                    $value = collect($value)->implode('');
+                    $value = collect($value)->first();
+                 //   $value=empty($value)?null:$value;
                     break;
             }
             data_set($i, 'value', $value);

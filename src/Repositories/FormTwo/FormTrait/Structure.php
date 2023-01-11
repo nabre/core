@@ -256,7 +256,7 @@ trait Structure
         $items = $items->pluck($label, $model->getKeyName())->$fnSort($label);
         $empty=$this->getItemData('set.list.empty');
         if (!is_null($empty)) {
-            $items = $items->prepend($empty,0);
+            $items = $items->prepend($empty,'');
         }
         $items=$items->toArray();
         $this->setItemData('set.list.items', $items);

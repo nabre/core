@@ -146,7 +146,7 @@ class Field
                 ###
             case self::FIELD_TYPE_LIST:
                 data_set($it, 'output', self::SELECT);
-                data_set($it, 'set.list.empty', '-Seleziona-');
+              //  data_set($it, 'set.list.empty', '-Seleziona-');
                 $list = FormFieldType::get()->pluck('string', 'key')->sort();
                 $list = $list->reject(function ($v, $k) {
                     return in_array($k, [self::LIVEWIRE, self::MSG, self::EMBEDS_MANY, self::EMBEDS_ONE]);
