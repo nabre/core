@@ -48,6 +48,7 @@ class FormManage extends Component
         } else {
             $this->modePut($this->idData);
         }
+
     }
 
     function modePut(?string $idData = null)

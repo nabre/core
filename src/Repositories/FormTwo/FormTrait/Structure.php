@@ -24,7 +24,7 @@ trait Structure
 
     function listLabel($label = null, $overwrite = false)
     {
-        $this->push(['set.list.label' => $label ?? $this->collection->getKeyName()], $overwrite);
+        $this->push([FormConst::string('LIST_LABEL') => $label ?? $this->collection->getKeyName()], $overwrite);
         return $this;
     }
 
@@ -33,19 +33,19 @@ trait Structure
         if (is_null($name)) {
             $name = FormConst::labelSelect();
         }
-        $this->push([FormConst::LIST_EMPTY => $name], $overwrite);
+        $this->push([FormConst::string('LIST_EMPTY') => $name], $overwrite);
         return $this;
     }
 
     function listSort(bool $asc = true, $overwrite = false)
     {
-        $this->push([FormConst::LIST_SORT => $asc], $overwrite);
+        $this->push([FormConst::string('LIST_SORT') => $asc], $overwrite);
         return $this;
     }
 
     function embed($embed = null, $overwrite = false)
     {
-        $this->push([FormConst::EMBED_FORM => $embed], $overwrite);
+        $this->push([FormConst::string('EMBED_FORM') => $embed], $overwrite);
         return $this;
     }
 
@@ -57,13 +57,13 @@ trait Structure
 
     function addHtml($html)
     {
-        $this->add(null, Field::HTML)->push(['value' => get_defined_vars()], true)->fake();
+        $this->add(null, Field::HTML)->push([FormConst::string('VALUE') => get_defined_vars()], true)->fake();
         return $this;
     }
 
     function addMsg($text, $theme = 'secondary')
     {
-        $this->add(null, Field::MSG)->push(['value' => get_defined_vars()], true)->fake();
+        $this->add(null, Field::MSG)->push([FormConst::string('VALUE') => get_defined_vars()], true)->fake();
         return $this;
     }
 
@@ -79,7 +79,7 @@ trait Structure
 
     function fake()
     {
-        $this->push(['type' => 'fake'], true);
+        $this->push([FormConst::string('TYPE') => 'fake'], true);
         return $this;
     }
 
@@ -234,9 +234,8 @@ trait Structure
         }
 
         $string = collect(explode(".", $this->getItemData(FormConst::VARIABLE)))->map(function ($part) {
-            $part = ucfirst($part);
-            return get_defined_vars();
-        })->implode('part', '');
+            return ucfirst($part);
+        })->implode('');
         $fn = 'query' . $string;
 
         if (method_exists($this, $fn)) {

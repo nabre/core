@@ -1,5 +1,5 @@
 @php
-    $_wireModel = data_get($_i, 'set.options')['wire:model.defer'];
+    $_wireModel = data_get($_i, \Nabre\Repositories\FormTwo\FormConst::OPTIONS_WIREMODEL);
     $_list = collect(data_get($this, $_wireModel))->keys();
     $_moveBool = (bool) $_list->count();
     $_embedStr = collect(explode('.', $_wireModel))

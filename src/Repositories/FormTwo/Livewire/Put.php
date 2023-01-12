@@ -4,6 +4,7 @@ namespace Nabre\Repositories\FormTwo\Livewire;
 
 use Collective\Html\HtmlFacade as Html;
 use Nabre\Repositories\FormTwo\Field;
+use Nabre\Repositories\FormTwo\FormConst;
 
 trait Put
 {
@@ -24,7 +25,7 @@ trait Put
         if ($this->haveError($i)) {
             return;
         }
-        return collect(data_get($i, 'set.info', []))->map(fn ($i) => (string) Html::div(data_get($i, 'text'), ['class' => 'badge text-bg-' . data_get($i, 'theme')]))->implode('<br>');
+        return collect(data_get($i, FormConst::INFO, []))->map(fn ($i) => (string) Html::div(data_get($i, 'text'), ['class' => 'badge text-bg-' . data_get($i, 'theme')]))->implode('<br>');
     }
 
     function embedItRemove($param, $id=null)
@@ -63,7 +64,7 @@ trait Put
 
     private function haveError($i)
     {
-        return (bool) (!data_get($i, 'type') || data_get($i, 'errors', collect([]))->count());
+        return (bool) (!data_get($i, FormConst::TYPE) || data_get($i, FormConst::ERROR, collect([]))->count());
     }
 
     private function recursivePrint($elements = null)
@@ -72,15 +73,15 @@ trait Put
 
         $elements = $elements->map(function ($i) {
             $this->embedForm = null;
-            switch (data_get($i, 'output')) {
+            switch (data_get($i, FormConst::OUTPUT)) {
                 case Field::EMBEDS_MANY:
                     $wire = '.*';
                 case Field::EMBEDS_ONE:
-                    $wire = data_get($i, 'embed.parent.variable') . ($wire ?? null);
-                    $form = data_get($i, 'embed.wire.form');
-                    $model = data_get($i, 'embed.wire.model');
+                    $wire = data_get($i, FormConst::EMBED_VARIABLE) . ($wire ?? null);
+                    $form = data_get($i, FormConst::EMBED_FORM);
+                    $model = data_get($i, FormConst::REL_MODEL);
                     $add = $this->generateEmbedItem($form, $model, $wire)->elements;
-                    data_set($i, 'embed.wire.elements', $add);
+                    data_set($i, FormConst::EMBED_ELEMENTS, $add);
                     break;
             }
             return $i;

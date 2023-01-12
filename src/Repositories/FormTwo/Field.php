@@ -98,6 +98,8 @@ class Field
         $empty = data_get($it, 'set.list.empty');
         $disabled = data_get($it, 'set.list.disabled', []);
         $options = data_get($it, 'set.options', []);
+        $options['wire:model.defer']=$options['wire:model'];
+        unset($options['wire:model']);
         $name = $options['wire:model.defer'] ?? null;
         $errors = data_get($it, 'errors_print', null);
 

@@ -1,6 +1,6 @@
 @php
     $_hrBool = null;
-    $_wireModel = data_get($_i, 'set.options')['wire:model.defer'];
+    $_wireModel = data_get($_i, \Nabre\Repositories\FormTwo\FormConst::OPTIONS_WIREMODEL);
     $_embedStr = collect(explode('.', $_wireModel))
         ->skip(1)
         ->implode('.');

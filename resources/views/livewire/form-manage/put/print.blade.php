@@ -16,15 +16,15 @@
         @php
             if (!is_null($_num ?? null)) {
                 //preg_replace('/\*/', $_num, $_i['set']['options']['wire:model.defer'], 1);
-                $_i['set']['options']['wire:model.defer'] = str_replace('*', $_num, $_i['set']['options']['wire:model.defer']);
+                data_set($_i, \Nabre\Repositories\FormTwo\FormConst::OPTIONS_WIREMODEL, str_replace('*', $_num, data_get($_i, \Nabre\Repositories\FormTwo\FormConst::OPTIONS_WIREMODEL)));
             }
         @endphp
 
-        @switch(data_get($_i,'output'))
+        @switch(data_get($_i,\Nabre\Repositories\FormTwo\FormConst::OUTPUT))
             @case(\Nabre\Repositories\FormTwo\Field::EMBEDS_MANY)
             @case(\Nabre\Repositories\FormTwo\Field::EMBEDS_ONE)
                 @include('Nabre::livewire.form-manage.put.row.embed', [
-                    'printForm' => data_get($_i, 'embed.wire.elements'),
+                    'printForm' => data_get($_i, \Nabre\Repositories\FormTwo\FormConst::EMBED_ELEMENTS),
                 ])
             @break
 

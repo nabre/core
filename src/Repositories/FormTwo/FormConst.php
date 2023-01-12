@@ -16,7 +16,7 @@ class FormConst
 
     #options
     const OPTIONS = ['set', 'options'];
-    const OPTIONS_WIREMODEL = ['set', 'options', 'wire:model.defer'];
+    const OPTIONS_WIREMODEL = ['set', 'options', 'wire:model'];
     const OPTIONS_CLASS = ['set', 'options', 'class'];
 
     #iNFO
@@ -35,6 +35,7 @@ class FormConst
     const EMBED_VARIABLE = ['embed', 'parent', 'variable'];
     const EMBED_OUTPUT = ['embed', 'wire', 'output'];
     const EMBED_FORM = ['embed', 'wire', 'form'];
+    const EMBED_ELEMENTS=['embed','wire','elements'];
 
     #Rules / Request
     const RULES_FN=['set','rules','fn'];
@@ -56,7 +57,8 @@ class FormConst
     const EMPTY_KEY = '';
 
     static function string($const){
-       // return implode('.',(array)((self::{$const}) ?? []));
+        $const=constant('self::'.$const);
+       return implode('.',(array)($const ?? []));
     }
 
     static function request($method)
@@ -66,6 +68,6 @@ class FormConst
 
     static function labelSelect()
     {
-        return '-Seleziona-';
+        return '-nessuna opzione-';
     }
 }

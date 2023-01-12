@@ -3,6 +3,7 @@
 namespace Nabre\Repositories\FormTwo\FormTrait;
 
 use Nabre\Repositories\FormTwo\Field;
+use Nabre\Repositories\FormTwo\FormConst;
 use Nabre\Repositories\FormTwo\QueryElements;
 use Nabre\Repositories\FormTwo\Rule;
 
@@ -40,7 +41,7 @@ trait StructureErrors
                 switch ($output) {
                     case Field::EMBEDS_MANY:
                     case Field::EMBEDS_ONE:
-                        $string = data_get($i, 'embed.wire.form', false);
+                        $string = data_get($i, FormConst::EMBED_FORM, false);
                         if (!$string) {
                             $errors = $errors->push('Il form nidificato non è stato definito.');
                         }
@@ -49,17 +50,17 @@ trait StructureErrors
                     default:
                         $array = (array) Field::fieldsListRequired();
                         if (in_array($output, $array)) {
-                            $list = data_get($i, 'set.list.items', false);
+                            $list = data_get($i, FormConst::LIST_ITEMS, false);
                             if (!$list) {
                                 $errors = $errors->push('Lista items non definita.');
                             }
 
-                            $label = data_get($i, 'set.list.label', false);
+                            $label = data_get($i, FormConst::LIST_LABEL, false);
                             if (!$label) {
                                 $errors = $errors->push('Campo etichetta lista non definito.');
                             }
 
-                            $model = data_get($i, 'set.rel.model');
+                            $model = data_get($i, FormConst::REL_MODEL);
                             if (!($this->isAttribute($label, $model) || $this->isFillable($label, $model))) {
                                 $errors = $errors->push('Campo etichetta non valido.');
                             }
@@ -77,7 +78,7 @@ trait StructureErrors
                         $errors = $errors->push("Configurazione non corretta.");
                         break;
                 }
-                $this->setData($i, 'errors', $errors);
+                $this->setData($i, FormConst::ERROR, $errors);
             }
             return $i;
         })->values();

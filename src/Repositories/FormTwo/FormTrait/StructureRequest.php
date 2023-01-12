@@ -2,6 +2,7 @@
 
 namespace Nabre\Repositories\FormTwo\FormTrait;
 
+use Nabre\Repositories\FormTwo\FormConst;
 use Nabre\Repositories\FormTwo\Rule;
 
 trait StructureRequest
@@ -34,8 +35,8 @@ trait StructureRequest
         $this->checkMethods($method);
         $string = explode("|", implode("|", (array)$string));
         collect($method)->each(function ($method) use ($string) {
-            $value = collect((array)  $this->getItemData('set.request.' . $method))->merge($string)->unique()->filter()->values()->toArray();
-            $this->setItemData('set.request.' . $method, $value,true);
+            $value = collect((array)  $this->getItemData(FormConst::request($method)))->merge($string)->unique()->filter()->values()->toArray();
+            $this->setItemData(FormConst::request($method), $value,true);
         });
         return $this;
     }
@@ -61,7 +62,7 @@ trait StructureRequest
 
     private function requests()
     {
-        return $this->getItemData('set.request.'.$this->method,[]);
+        return $this->getItemData(FormConst::request($this->method),[]);
     }
 
 }

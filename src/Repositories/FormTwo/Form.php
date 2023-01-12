@@ -15,7 +15,6 @@ class Form
     use StructureErrors;
     use StructureRequest;
     use Output;
-    use Render;
 
     private $model = null;
     private $data = null;
@@ -65,11 +64,10 @@ class Form
 
         $this->elements = $this->elements->map(function ($i) {
             $wire = implode(".", array_filter(['wireValues', $this->wire, data_get($i, FormConst::VARIABLE)]));
-            data_set($i,FormConst::OPTIONS_WIREMODEL,$wire);
+            data_set($i, FormConst::OPTIONS_WIREMODEL, $wire);
 
             return $i;
         });
-
 
         $this->back = false;
         $this->submit = false;
@@ -100,7 +98,7 @@ class Form
 
     public function rules()
     {
-        $RULES_PATH = FormConst::request($this->method) ;
+        $RULES_PATH = FormConst::request($this->method);
         $this->check();
 
         $rules = collect([]);
@@ -132,7 +130,6 @@ class Form
                 sort($rules);
                 return $rules;
             });
-
 
             $add = $add->put(data_get($i, FormConst::EMBED_VARIABLE), Rule::nullable());
 
@@ -211,7 +208,7 @@ class Form
                                 if (is_null(data_get($i, FormConst::LIST_EMPTY))) {
                                     $value = collect(data_get($i, FormConst::LIST_ITEMS, []))->keys()->first();
                                 }
-                                $value=$value??'';
+                                $value = $value ?? '';
                                 break;
                         }
                     }
@@ -222,15 +219,16 @@ class Form
                             $value = $this->data->$name->each(function ($item) use ($embedForm, $html) {
                                 return $this->embedObject($embedForm, $item)->values($html, true);
                             })->toArray();
-
-                            $value = null;
+                            $value = !count($value) ? null : $value;
+                            $required = in_array(Rule::required(), data_get($i, FormConst::request($this->method)));
+                            $item = ($html || !$required) ? null : data_get($i, FormConst::REL_MODEL);
+                            $value = is_null($item) ? $value : ($value ?? [$this->embedObject($embedForm, $item)->values($html, true)]);
                             break;
                         case "EmbedsOne":
                             $embedForm = data_get($i, FormConst::EMBED_FORM);
-                            $required = false;
+                            $required = in_array(Rule::required(), data_get($i, FormConst::request($this->method)));
                             $item = $this->data->$name ?? ($html || !$required ? null : data_get($i, FormConst::REL_MODEL));
                             $value = is_null($item) ? null : $this->embedObject($embedForm, $item)->values($html, true);
-
                             break;
                     }
                 }
@@ -262,7 +260,7 @@ class Form
 
             $list = collect(data_get($i, FormConst::LIST_ITEMS, []));
 
-            $value = collect((array)$value)->reject(fn($v)=>$v=='')->map(function ($v) use ($list) {
+            $value = collect((array)$value)->reject(fn ($v) => $v == '')->map(function ($v) use ($list) {
                 return data_get($list, $v) ?? null;
             })->unique()->values()->toArray();
             $relType = data_get($i, FormConst::REL_TYPE);
@@ -270,10 +268,9 @@ class Form
                 case "HasOne":
                 case "BelongsTo":
                     $value = collect($value)->first();
-                 //   $value=empty($value)?null:$value;
                     break;
             }
-            data_set($i,FormConst::VALUE, $value);
+            data_set($i, FormConst::VALUE, $value);
         }
 
         $label = data_get($i, FormConst::VALUE_LABEL, false);
